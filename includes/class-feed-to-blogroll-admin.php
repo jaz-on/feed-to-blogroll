@@ -118,13 +118,13 @@ class Feed_To_Blogroll_Admin {
 			'feed_to_blogroll_options',
 			array(
 				'sanitize_callback' => array( $this, 'sanitize_options' ),
-				'default' => array(
+				'default'           => array(
 					'feedbin_username' => '',
 					'feedbin_password' => '',
-					'sync_frequency' => 'daily',
-					'auto_sync' => true,
-					'last_sync' => '',
-					'sync_status' => 'idle',
+					'sync_frequency'   => 'daily',
+					'auto_sync'        => true,
+					'last_sync'        => '',
+					'sync_status'      => 'idle',
 				),
 			)
 		);
@@ -225,7 +225,7 @@ class Feed_To_Blogroll_Admin {
 	 * Username field callback
 	 */
 	public function username_field_callback() {
-		$options = get_option( 'feed_to_blogroll_options', array() );
+		$options  = get_option( 'feed_to_blogroll_options', array() );
 		$username = isset( $options['feedbin_username'] ) ? $options['feedbin_username'] : '';
 
 		printf(
@@ -239,7 +239,7 @@ class Feed_To_Blogroll_Admin {
 	 * Password field callback
 	 */
 	public function password_field_callback() {
-		$options = get_option( 'feed_to_blogroll_options', array() );
+		$options  = get_option( 'feed_to_blogroll_options', array() );
 		$password = isset( $options['feedbin_password'] ) ? $options['feedbin_password'] : '';
 
 		printf(
@@ -260,7 +260,7 @@ class Feed_To_Blogroll_Admin {
 	 * Auto sync field callback
 	 */
 	public function auto_sync_field_callback() {
-		$options = get_option( 'feed_to_blogroll_options', array() );
+		$options   = get_option( 'feed_to_blogroll_options', array() );
 		$auto_sync = isset( $options['auto_sync'] ) ? $options['auto_sync'] : true;
 
 		printf(
@@ -275,7 +275,7 @@ class Feed_To_Blogroll_Admin {
 	 * Sync frequency field callback
 	 */
 	public function sync_frequency_field_callback() {
-		$options = get_option( 'feed_to_blogroll_options', array() );
+		$options   = get_option( 'feed_to_blogroll_options', array() );
 		$frequency = isset( $options['sync_frequency'] ) ? $options['sync_frequency'] : 'daily';
 		$auto_sync = isset( $options['auto_sync'] ) ? $options['auto_sync'] : true;
 
@@ -286,9 +286,9 @@ class Feed_To_Blogroll_Admin {
 		);
 
 		$disabled = $auto_sync ? '' : 'disabled';
-		$class = $auto_sync ? 'regular-text' : 'regular-text sync-frequency-disabled';
+		$class    = $auto_sync ? 'regular-text' : 'regular-text sync-frequency-disabled';
 
-		echo '<select id="sync_frequency" name="feed_to_blogroll_options[sync_frequency]" ' . $disabled . ' class="' . $class . '">';
+		echo '<select id="sync_frequency" name="feed_to_blogroll_options[sync_frequency]" ' . esc_attr( $disabled ) . ' class="' . esc_attr( $class ) . '">';
 		foreach ( $frequencies as $value => $label ) {
 			printf(
 				'<option value="%s" %s>%s</option>',
@@ -307,7 +307,7 @@ class Feed_To_Blogroll_Admin {
 			echo '<span class="next-sync-time ' . esc_attr( $next_sync_info['class'] ) . '">' . esc_html( $next_sync_info['text'] ) . '</span>';
 			echo '</p>';
 			echo '<p class="sync-schedule-info">';
-			echo '<small>' . $this->get_schedule_details( $frequency ) . '</small>';
+			echo '<small>' . esc_html( $this->get_schedule_details( $frequency ) ) . '</small>';
 			echo '</p>';
 			echo '</div>';
 		} else {
@@ -349,10 +349,10 @@ class Feed_To_Blogroll_Admin {
 				'ajaxUrl' => esc_url( admin_url( 'admin-ajax.php' ) ),
 				'nonce'   => wp_create_nonce( 'feed_to_blogroll_admin' ),
 				'strings' => array(
-					'testing'     => __( 'Testing connection...', 'feed-to-blogroll' ),
-					'syncing'     => __( 'Synchronizing...', 'feed-to-blogroll' ),
-					'exporting'   => __( 'Exporting...', 'feed-to-blogroll' ),
-					'error'       => __( 'An error occurred', 'feed-to-blogroll' ),
+					'testing'   => __( 'Testing connection...', 'feed-to-blogroll' ),
+					'syncing'   => __( 'Synchronizing...', 'feed-to-blogroll' ),
+					'exporting' => __( 'Exporting...', 'feed-to-blogroll' ),
+					'error'     => __( 'An error occurred', 'feed-to-blogroll' ),
 				),
 			)
 		);
@@ -369,13 +369,22 @@ class Feed_To_Blogroll_Admin {
 	 * Main admin page
 	 */
 	public function admin_page() {
-		$sync = new Feed_To_Blogroll_Sync();
-		$stats = $sync->get_sync_stats();
-		$api = new Feed_To_Blogroll_Feedbin_API();
+		$sync       = new Feed_To_Blogroll_Sync();
+		$stats      = $sync->get_sync_stats();
+		$api        = new Feed_To_Blogroll_Feedbin_API();
 		$api_status = $api->get_api_status();
 
-		// Get current tab
-		$current_tab = isset( $_GET['tab'] ) ? sanitize_text_field( $_GET['tab'] ) : 'dashboard';
+		// Get current tab with validation
+		$allowed_tabs = array( 'dashboard', 'blogs', 'export', 'settings' );
+		$current_tab  = 'dashboard';
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		if ( isset( $_GET['tab'] ) ) {
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$requested_tab = sanitize_text_field( wp_unslash( $_GET['tab'] ) );
+			if ( in_array( $requested_tab, $allowed_tabs, true ) ) {
+				$current_tab = $requested_tab;
+			}
+		}
 		?>
 		<div class="wrap">
 			<h1 class="wp-heading-inline"><?php esc_html_e( 'Feed to Blogroll', 'feed-to-blogroll' ); ?></h1>
@@ -383,19 +392,19 @@ class Feed_To_Blogroll_Admin {
 			<hr class="wp-header-end">
 			
 			<nav class="nav-tab-wrapper wp-clearfix">
-				<a href="?page=feed-to-blogroll&tab=dashboard" class="nav-tab <?php echo esc_attr( $current_tab === 'dashboard' ? 'nav-tab-active' : '' ); ?>">
+				<a href="?page=feed-to-blogroll&tab=dashboard" class="nav-tab <?php echo esc_attr( 'dashboard' === $current_tab ? 'nav-tab-active' : '' ); ?>">
 					<span class="dashicons dashicons-dashboard"></span>
 					<?php esc_html_e( 'Dashboard', 'feed-to-blogroll' ); ?>
 				</a>
-				<a href="?page=feed-to-blogroll&tab=blogs" class="nav-tab <?php echo esc_attr( $current_tab === 'blogs' ? 'nav-tab-active' : '' ); ?>">
+				<a href="?page=feed-to-blogroll&tab=blogs" class="nav-tab <?php echo esc_attr( 'blogs' === $current_tab ? 'nav-tab-active' : '' ); ?>">
 					<span class="dashicons dashicons-rss"></span>
 					<?php esc_html_e( 'Blogs', 'feed-to-blogroll' ); ?>
 				</a>
-				<a href="?page=feed-to-blogroll&tab=export" class="nav-tab <?php echo esc_attr( $current_tab === 'export' ? 'nav-tab-active' : '' ); ?>">
+				<a href="?page=feed-to-blogroll&tab=export" class="nav-tab <?php echo esc_attr( 'export' === $current_tab ? 'nav-tab-active' : '' ); ?>">
 					<span class="dashicons dashicons-download"></span>
 					<?php esc_html_e( 'Export', 'feed-to-blogroll' ); ?>
 				</a>
-				<a href="?page=feed-to-blogroll&tab=settings" class="nav-tab <?php echo esc_attr( $current_tab === 'settings' ? 'nav-tab-active' : '' ); ?>">
+				<a href="?page=feed-to-blogroll&tab=settings" class="nav-tab <?php echo esc_attr( 'settings' === $current_tab ? 'nav-tab-active' : '' ); ?>">
 					<span class="dashicons dashicons-admin-settings"></span>
 					<?php esc_html_e( 'Settings', 'feed-to-blogroll' ); ?>
 				</a>
@@ -517,8 +526,8 @@ class Feed_To_Blogroll_Admin {
 								<td>
 									<?php
 									$connection_status = $api_status['connection_test'] ?? 'unknown';
-									$status_class = $this->get_status_class( $connection_status );
-									$status_label = $this->get_status_label( $connection_status );
+									$status_class      = $this->get_status_class( $connection_status );
+									$status_label      = $this->get_status_label( $connection_status );
 									?>
 									<span class="dashicons dashicons-<?php echo esc_attr( $status_class['icon'] ); ?>"></span>
 									<span class="status-<?php echo esc_attr( $connection_status ); ?>">
@@ -530,7 +539,7 @@ class Feed_To_Blogroll_Admin {
 								<th scope="row"><?php esc_html_e( 'Sync Status', 'feed-to-blogroll' ); ?></th>
 								<td>
 									<?php
-									$sync_status = $stats['sync_status'];
+									$sync_status  = $stats['sync_status'];
 									$status_class = $this->get_status_class( $sync_status );
 									$status_label = $this->get_status_label( $sync_status );
 									?>
@@ -765,28 +774,28 @@ class Feed_To_Blogroll_Admin {
 	 */
 	private function get_status_class( $status ) {
 		$classes = array(
-			'success' => array(
-				'icon' => 'yes-alt',
+			'success'   => array(
+				'icon'  => 'yes-alt',
 				'color' => '#28a745',
 			),
-			'error' => array(
-				'icon' => 'dismiss',
+			'error'     => array(
+				'icon'  => 'dismiss',
 				'color' => '#dc3545',
 			),
-			'running' => array(
-				'icon' => 'update',
+			'running'   => array(
+				'icon'  => 'update',
 				'color' => '#ffc107',
 			),
 			'completed' => array(
-				'icon' => 'yes-alt',
+				'icon'  => 'yes-alt',
 				'color' => '#17a2b8',
 			),
-			'idle' => array(
-				'icon' => 'clock',
+			'idle'      => array(
+				'icon'  => 'clock',
 				'color' => '#6c757d',
 			),
-			'unknown' => array(
-				'icon' => 'minus',
+			'unknown'   => array(
+				'icon'  => 'minus',
 				'color' => '#6c757d',
 			),
 		);
@@ -802,12 +811,12 @@ class Feed_To_Blogroll_Admin {
 	 */
 	private function get_status_label( $status ) {
 		$labels = array(
-			'success' => __( 'Success', 'feed-to-blogroll' ),
-			'error'   => __( 'Error', 'feed-to-blogroll' ),
-			'running' => __( 'Running', 'feed-to-blogroll' ),
+			'success'   => __( 'Success', 'feed-to-blogroll' ),
+			'error'     => __( 'Error', 'feed-to-blogroll' ),
+			'running'   => __( 'Running', 'feed-to-blogroll' ),
 			'completed' => __( 'Completed', 'feed-to-blogroll' ),
-			'idle'    => __( 'Idle', 'feed-to-blogroll' ),
-			'unknown' => __( 'Unknown', 'feed-to-blogroll' ),
+			'idle'      => __( 'Idle', 'feed-to-blogroll' ),
+			'unknown'   => __( 'Unknown', 'feed-to-blogroll' ),
 		);
 
 		return isset( $labels[ $status ] ) ? $labels[ $status ] : $labels['unknown'];
@@ -828,7 +837,7 @@ class Feed_To_Blogroll_Admin {
 			wp_send_json_error( esc_html__( 'Insufficient permissions', 'feed-to-blogroll' ) );
 		}
 
-		$api = new Feed_To_Blogroll_Feedbin_API();
+		$api    = new Feed_To_Blogroll_Feedbin_API();
 		$result = $api->test_connection();
 
 		if ( is_wp_error( $result ) ) {
@@ -855,16 +864,16 @@ class Feed_To_Blogroll_Admin {
 
 		$blogs = get_posts(
 			array(
-				'post_type'      => 'blogroll',
-				'post_status'    => 'publish',
-				'posts_per_page' => -1,
-				'no_found_rows'  => true,
+				'post_type'              => 'blogroll',
+				'post_status'            => 'publish',
+				'posts_per_page'         => -1,
+				'no_found_rows'          => true,
 				'update_post_meta_cache' => false,
 				'update_post_term_cache' => false,
 			)
 		);
 
-		$opml = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
+		$opml  = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 		$opml .= '<opml version="2.0">' . "\n";
 		$opml .= '  <head>' . "\n";
 		$opml .= '    <title>' . esc_html( get_bloginfo( 'name' ) ) . ' Blogroll</title>' . "\n";
@@ -873,7 +882,7 @@ class Feed_To_Blogroll_Admin {
 		$opml .= '  <body>' . "\n";
 
 		foreach ( $blogs as $blog ) {
-			$rss_url = get_field( 'rss_url', $blog->ID );
+			$rss_url  = get_field( 'rss_url', $blog->ID );
 			$site_url = get_field( 'site_url', $blog->ID );
 
 			if ( $rss_url ) {
@@ -886,8 +895,8 @@ class Feed_To_Blogroll_Admin {
 
 		wp_send_json_success(
 			array(
-				'opml' => $opml,
-				'filename' => 'blogroll-' . date( 'Y-m-d' ) . '.opml',
+				'opml'     => $opml,
+				'filename' => 'blogroll-' . gmdate( 'Y-m-d' ) . '.opml',
 			)
 		);
 	}
@@ -896,17 +905,18 @@ class Feed_To_Blogroll_Admin {
 	 * Last sync info field callback
 	 */
 	public function last_sync_info_callback() {
-		$options = get_option( 'feed_to_blogroll_options', array() );
-		$last_sync = isset( $options['last_sync'] ) ? $options['last_sync'] : '';
+		$options     = get_option( 'feed_to_blogroll_options', array() );
+		$last_sync   = isset( $options['last_sync'] ) ? $options['last_sync'] : '';
 		$sync_status = isset( $options['sync_status'] ) ? $options['sync_status'] : 'idle';
 
 		if ( $last_sync ) {
 			$last_sync_time = strtotime( $last_sync );
-			$time_ago = human_time_diff( $last_sync_time, current_time( 'timestamp' ) );
+			$time_ago       = human_time_diff( $last_sync_time, time() );
 
 			echo '<div class="last-sync-info">';
 			echo '<p><strong>' . esc_html__( 'Last sync:', 'feed-to-blogroll' ) . '</strong> ';
 			echo esc_html( date_i18n( 'F j, Y \a\t g:i a', $last_sync_time ) );
+			/* translators: %s: time ago */
 			echo ' <em>(' . esc_html( sprintf( __( '%s ago', 'feed-to-blogroll' ), $time_ago ) ) . ')</em></p>';
 
 			echo '<p><strong>' . esc_html__( 'Status:', 'feed-to-blogroll' ) . '</strong> ';
@@ -938,15 +948,16 @@ class Feed_To_Blogroll_Admin {
 		$last_sync_time = strtotime( $last_sync );
 		$next_sync_time = $this->calculate_next_sync( $last_sync_time, $frequency );
 
-		if ( $next_sync_time <= current_time( 'timestamp' ) ) {
+		if ( time() >= $next_sync_time ) {
 			return array(
 				'text'  => __( 'Due now', 'feed-to-blogroll' ),
 				'class' => 'due-now',
 			);
 		}
 
-		$time_until = human_time_diff( current_time( 'timestamp' ), $next_sync_time );
+		$time_until = human_time_diff( time(), $next_sync_time );
 		return array(
+			/* translators: %s: time until next sync */
 			'text'  => sprintf( __( 'In %s', 'feed-to-blogroll' ), $time_until ),
 			'class' => 'scheduled',
 		);
@@ -1103,9 +1114,9 @@ class Feed_To_Blogroll_Admin {
 	 * Display database status
 	 */
 	private function display_database_status() {
-		$blogroll_count = wp_count_posts( 'blogroll' );
+		$blogroll_count   = wp_count_posts( 'blogroll' );
 		$categories_count = wp_count_terms( 'blogroll_category' );
-		$options = get_option( 'feed_to_blogroll_options', array() );
+		$options          = get_option( 'feed_to_blogroll_options', array() );
 
 		echo '<table class="form-table" role="presentation">';
 		echo '<tbody>';

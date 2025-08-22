@@ -89,14 +89,14 @@ class Feed_To_Blogroll_Sync {
 	 */
 	public function sync_blogroll() {
 		$start_time = microtime( true );
-		$result = array(
-			'success'     => false,
-			'message'     => '',
-			'blogs_added' => 0,
-			'blogs_updated' => 0,
+		$result     = array(
+			'success'           => false,
+			'message'           => '',
+			'blogs_added'       => 0,
+			'blogs_updated'     => 0,
 			'blogs_deactivated' => 0,
-			'errors'      => array(),
-			'duration'    => 0,
+			'errors'            => array(),
+			'duration'          => 0,
 		);
 
 		try {
@@ -134,7 +134,7 @@ class Feed_To_Blogroll_Sync {
 			);
 
 		} catch ( Exception $e ) {
-			$result['message'] = $e->getMessage();
+			$result['message']  = $e->getMessage();
 			$result['errors'][] = $e->getMessage();
 			$this->update_sync_status( 'error' );
 		}
@@ -160,11 +160,11 @@ class Feed_To_Blogroll_Sync {
 		if ( isset( $existing_blogs[ $feed_id ] ) ) {
 			// Update existing blog
 			$this->update_blog( $existing_blogs[ $feed_id ], $subscription );
-			$result['blogs_updated']++;
+			++$result['blogs_updated'];
 		} else {
 			// Create new blog
 			$this->create_blog( $subscription );
-			$result['blogs_added']++;
+			++$result['blogs_added'];
 		}
 	}
 
@@ -258,7 +258,7 @@ class Feed_To_Blogroll_Sync {
 				);
 
 				update_field( 'sync_status', 'inactive', $blog['ID'] );
-				$result['blogs_deactivated']++;
+				++$result['blogs_deactivated'];
 			}
 		}
 	}
@@ -303,7 +303,7 @@ class Feed_To_Blogroll_Sync {
 	 * @param string $status Status to set.
 	 */
 	private function update_sync_status( $status ) {
-		$options = get_option( 'feed_to_blogroll_options', array() );
+		$options                = get_option( 'feed_to_blogroll_options', array() );
 		$options['sync_status'] = $status;
 		update_option( 'feed_to_blogroll_options', $options );
 	}
@@ -312,7 +312,7 @@ class Feed_To_Blogroll_Sync {
 	 * Update last synchronization time
 	 */
 	private function update_last_sync() {
-		$options = get_option( 'feed_to_blogroll_options', array() );
+		$options              = get_option( 'feed_to_blogroll_options', array() );
 		$options['last_sync'] = current_time( 'mysql' );
 		update_option( 'feed_to_blogroll_options', $options );
 	}
@@ -338,6 +338,7 @@ class Feed_To_Blogroll_Sync {
 				$log_entry .= ' - Errors: ' . implode( ', ', $result['errors'] );
 			}
 
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
 			error_log( 'Feed to Blogroll: ' . $log_entry );
 		}
 	}
@@ -351,9 +352,9 @@ class Feed_To_Blogroll_Sync {
 		$options = get_option( 'feed_to_blogroll_options', array() );
 
 		$stats = array(
-			'last_sync'     => isset( $options['last_sync'] ) ? $options['last_sync'] : '',
-			'sync_status'   => isset( $options['sync_status'] ) ? $options['sync_status'] : 'idle',
-			'total_blogs'   => wp_count_posts( 'blogroll' )->publish,
+			'last_sync'      => isset( $options['last_sync'] ) ? $options['last_sync'] : '',
+			'sync_status'    => isset( $options['sync_status'] ) ? $options['sync_status'] : 'idle',
+			'total_blogs'    => wp_count_posts( 'blogroll' )->publish,
 			'inactive_blogs' => wp_count_posts( 'blogroll' )->draft,
 		);
 

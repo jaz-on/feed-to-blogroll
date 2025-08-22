@@ -3,6 +3,7 @@
 	<description>PHP CodeSniffer ruleset for Feed to Blogroll plugin</description>
 
 	<!-- Include WordPress Coding Standards -->
+	<rule ref="WordPress-Core"/>
 	<rule ref="WordPress-Extra"/>
 	<rule ref="WordPress-Docs"/>
 
@@ -28,6 +29,9 @@
 	<exclude-pattern>node_modules/</exclude-pattern>
 	<exclude-pattern>assets/</exclude-pattern>
 	<exclude-pattern>languages/</exclude-pattern>
+	<exclude-pattern>tests/</exclude-pattern>
+	<exclude-pattern>build/</exclude-pattern>
+	<exclude-pattern>dist/</exclude-pattern>
 
 	<!-- Exclude specific files -->
 	<exclude-pattern>*.min.js</exclude-pattern>

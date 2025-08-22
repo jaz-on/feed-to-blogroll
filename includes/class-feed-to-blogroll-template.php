@@ -52,9 +52,9 @@ class Feed_To_Blogroll_Template {
 	public function blogroll_shortcode( $atts ) {
 		$atts = shortcode_atts(
 			array(
-				'category' => '',
-				'limit'    => -1,
-				'columns'  => 4,
+				'category'    => '',
+				'limit'       => -1,
+				'columns'     => 4,
 				'show_export' => 'true',
 			),
 			$atts,
@@ -63,7 +63,7 @@ class Feed_To_Blogroll_Template {
 
 		// Generate cache key based on attributes + cache version
 		$cache_version = (int) get_option( 'feed_to_blogroll_cache_version', 1 );
-		$cache_key = 'blogroll_shortcode_v' . $cache_version . '_' . md5( serialize( $atts ) );
+		$cache_key     = 'blogroll_shortcode_v' . $cache_version . '_' . md5( wp_json_encode( $atts ) );
 		$cached_output = wp_cache_get( $cache_key, 'feed_to_blogroll' );
 
 		if ( false !== $cached_output ) {
@@ -71,12 +71,12 @@ class Feed_To_Blogroll_Template {
 		}
 
 		$query_args = array(
-			'post_type'      => 'blogroll',
-			'post_status'    => 'publish',
-			'posts_per_page' => intval( $atts['limit'] ),
-			'orderby'        => 'title',
-			'order'          => 'ASC',
-			'no_found_rows'  => true, // Optimize for performance
+			'post_type'              => 'blogroll',
+			'post_status'            => 'publish',
+			'posts_per_page'         => intval( $atts['limit'] ),
+			'orderby'                => 'title',
+			'order'                  => 'ASC',
+			'no_found_rows'          => true, // Optimize for performance
 			'update_post_meta_cache' => false, // We'll load meta separately
 			'update_post_term_cache' => false, // We'll load terms separately
 		);
@@ -133,11 +133,14 @@ class Feed_To_Blogroll_Template {
 	 * @param WP_Post $post Post object.
 	 * @param bool    $update Whether this is an existing post being updated or not.
 	 */
-	public function bust_blogroll_caches( $post_id, $post, $update ) {
+	public function bust_blogroll_caches( $post_id, $post, $update = false ) {
 		// Only for our CPT
 		if ( 'blogroll' !== $post->post_type ) {
 			return;
 		}
+
+		// Prevent unused parameter warning
+		unset( $update );
 
 		// Increment cache version to invalidate all shortcode caches
 		$version = (int) get_option( 'feed_to_blogroll_cache_version', 1 );
@@ -189,27 +192,27 @@ class Feed_To_Blogroll_Template {
 	private function render_blog_card( $blog ) {
 		// Get all meta fields in one query to avoid multiple database calls
 		$meta_fields = get_fields( $blog->ID );
-		$site_url = $meta_fields['site_url'] ?? '';
-		$rss_url = $meta_fields['rss_url'] ?? '';
-		$author = $meta_fields['author'] ?? '';
+		$site_url    = $meta_fields['site_url'] ?? '';
+		$rss_url     = $meta_fields['rss_url'] ?? '';
+		$author      = $meta_fields['author'] ?? '';
 
 		// Get categories efficiently
 		$categories = wp_get_object_terms( $blog->ID, 'blogroll_category', array( 'fields' => 'names' ) );
 
 		// Prepare structured data
 		$structured_data = array(
-			'@context' => 'https://schema.org',
-			'@type' => 'WebSite',
-			'name' => $blog->post_title,
-			'url' => $site_url,
+			'@context'    => 'https://schema.org',
+			'@type'       => 'WebSite',
+			'name'        => $blog->post_title,
+			'url'         => $site_url,
 			'description' => $blog->post_excerpt,
-			'author' => array(
+			'author'      => array(
 				'@type' => 'Person',
-				'name' => $author ?: 'Unknown Author',
+				'name'  => $author ? $author : 'Unknown Author',
 			),
-			'publisher' => array(
+			'publisher'   => array(
 				'@type' => 'Organization',
-				'name' => get_bloginfo( 'name' ),
+				'name'  => get_bloginfo( 'name' ),
 			),
 		);
 
@@ -254,14 +257,17 @@ class Feed_To_Blogroll_Template {
 					</div>
 				<?php endif; ?>
 
+				<?php /* translators: %s: blog title */ ?>
 				<div class="blog-actions" role="group" aria-label="<?php echo esc_attr( sprintf( __( 'Actions for %s', 'feed-to-blogroll' ), $blog->post_title ) ); ?>">
 					<?php if ( $site_url ) : ?>
+						<?php /* translators: %s: blog title */ ?>
 						<a href="<?php echo esc_url( $site_url ); ?>" target="_blank" rel="noopener noreferrer" class="button button-secondary u-url" itemprop="url" aria-label="<?php echo esc_attr( sprintf( __( 'Visit %s website', 'feed-to-blogroll' ), $blog->post_title ) ); ?>">
 							<?php esc_html_e( 'Visit Site', 'feed-to-blogroll' ); ?>
 						</a>
 					<?php endif; ?>
 
 					<?php if ( $rss_url ) : ?>
+						<?php /* translators: %s: blog title */ ?>
 						<a href="<?php echo esc_url( $rss_url ); ?>" target="_blank" rel="noopener noreferrer" class="button button-primary" aria-label="<?php echo esc_attr( sprintf( __( 'Subscribe to RSS feed for %s', 'feed-to-blogroll' ), $blog->post_title ) ); ?>">
 							<svg class="rss-icon" width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" focusable="false">
 								<path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm1.5 2.5c5.523 0 10 4.477 10 10a1 1 0 1 1-2 0 8 8 0 0 0-8-8 1 1 0 0 1 0-2zm0 4a6 6 0 0 1 6 6 1 1 0 1 1-2 0 4 4 0 0 0-4-4 1 1 0 0 1 0-2zm.5 7a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/>
@@ -287,8 +293,8 @@ class Feed_To_Blogroll_Template {
 		// Check if this is a blogroll post type
 		if ( 'blogroll' === get_post_type() ) {
 			$site_url = get_field( 'site_url', $post->ID );
-			$rss_url = get_field( 'rss_url', $post->ID );
-			$author = get_field( 'author', $post->ID );
+			$rss_url  = get_field( 'rss_url', $post->ID );
+			$author   = get_field( 'author', $post->ID );
 
 			$blogroll_info = '<div class="blogroll-meta">';
 
@@ -363,12 +369,12 @@ class Feed_To_Blogroll_Template {
 	 */
 	public function get_blogroll_rest( $request ) {
 		$category = sanitize_text_field( $request->get_param( 'category' ) );
-		$limit = intval( $request->get_param( 'limit' ) ?: 12 );
+		$limit    = intval( $request->get_param( 'limit' ) ? $request->get_param( 'limit' ) : 12 );
 
 		// Cache REST response for a short period and invalidate via version bump
-		$version = (int) get_option( 'feed_to_blogroll_cache_version', 1 );
-		$cache_key = 'rest_blogroll_v' . $version . '_' . md5( serialize( array( $category, $limit ) ) );
-		$cached = wp_cache_get( $cache_key, 'feed_to_blogroll' );
+		$version   = (int) get_option( 'feed_to_blogroll_cache_version', 1 );
+		$cache_key = 'rest_blogroll_v' . $version . '_' . md5( wp_json_encode( array( $category, $limit ) ) );
+		$cached    = wp_cache_get( $cache_key, 'feed_to_blogroll' );
 		if ( false !== $cached ) {
 			return rest_ensure_response( $cached );
 		}
@@ -391,7 +397,7 @@ class Feed_To_Blogroll_Template {
 			);
 		}
 
-		$blogs = get_posts( $query_args );
+		$blogs         = get_posts( $query_args );
 		$blogroll_data = array();
 
 		foreach ( $blogs as $blog ) {
@@ -447,9 +453,9 @@ class Feed_To_Blogroll_Template {
 	 */
 	public function get_blogroll_stats() {
 		$stats = array(
-			'total_blogs'     => wp_count_posts( 'blogroll' )->publish,
+			'total_blogs'      => wp_count_posts( 'blogroll' )->publish,
 			'total_categories' => wp_count_terms( 'blogroll_category' ),
-			'last_sync'       => get_option( 'feed_to_blogroll_options' )['last_sync'] ?? '',
+			'last_sync'        => get_option( 'feed_to_blogroll_options' )['last_sync'] ?? '',
 		);
 
 		return $stats;
@@ -466,7 +472,7 @@ class Feed_To_Blogroll_Template {
 
 		// Generate OPML content
 		$cache_key = 'feed_to_blogroll_opml';
-		$opml = wp_cache_get( $cache_key, 'feed_to_blogroll' );
+		$opml      = wp_cache_get( $cache_key, 'feed_to_blogroll' );
 		if ( false === $opml ) {
 			$opml = $this->generate_opml();
 			wp_cache_set( $cache_key, $opml, 'feed_to_blogroll', HOUR_IN_SECONDS );
@@ -474,8 +480,8 @@ class Feed_To_Blogroll_Template {
 
 		wp_send_json_success(
 			array(
-				'opml' => $opml,
-				'filename' => 'blogroll-' . date( 'Y-m-d' ) . '.opml',
+				'opml'     => $opml,
+				'filename' => 'blogroll-' . gmdate( 'Y-m-d' ) . '.opml',
 			)
 		);
 	}
@@ -488,18 +494,18 @@ class Feed_To_Blogroll_Template {
 	public function generate_opml() {
 		$blogs = get_posts(
 			array(
-				'post_type'      => 'blogroll',
-				'post_status'    => 'publish',
-				'posts_per_page' => -1,
-				'no_found_rows'  => true,
+				'post_type'              => 'blogroll',
+				'post_status'            => 'publish',
+				'posts_per_page'         => -1,
+				'no_found_rows'          => true,
 				'update_post_meta_cache' => false,
 				'update_post_term_cache' => false,
-				'orderby'        => 'title',
-				'order'          => 'ASC',
+				'orderby'                => 'title',
+				'order'                  => 'ASC',
 			)
 		);
 
-		$opml = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
+		$opml  = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 		$opml .= '<opml version="2.0">' . "\n";
 		$opml .= '  <head>' . "\n";
 		$opml .= '    <title>' . esc_html( get_bloginfo( 'name' ) ) . ' Blogroll</title>' . "\n";
@@ -508,7 +514,7 @@ class Feed_To_Blogroll_Template {
 		$opml .= '  <body>' . "\n";
 
 		foreach ( $blogs as $blog ) {
-			$rss_url = get_field( 'rss_url', $blog->ID );
+			$rss_url  = get_field( 'rss_url', $blog->ID );
 			$site_url = get_field( 'site_url', $blog->ID );
 
 			if ( $rss_url ) {

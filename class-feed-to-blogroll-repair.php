@@ -100,6 +100,7 @@ class Feed_To_Blogroll_Repair {
 
 		// Log the repair
 		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
 			error_log( 'Feed to Blogroll: CPT registration repaired manually' );
 		}
 	}

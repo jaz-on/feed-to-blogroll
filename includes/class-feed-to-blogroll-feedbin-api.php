@@ -43,7 +43,7 @@ class Feed_To_Blogroll_Feedbin_API {
 	 * Load API credentials from options
 	 */
 	private function load_credentials() {
-		$options = get_option( 'feed_to_blogroll_options', array() );
+		$options           = get_option( 'feed_to_blogroll_options', array() );
 		$this->credentials = array(
 			'username' => isset( $options['feedbin_username'] ) ? $options['feedbin_username'] : '',
 			'password' => isset( $options['feedbin_password'] ) ? $options['feedbin_password'] : '',
@@ -72,10 +72,11 @@ class Feed_To_Blogroll_Feedbin_API {
 			return new WP_Error( 'no_credentials', __( 'Feedbin credentials not configured', 'feed-to-blogroll' ) );
 		}
 
-		$url = $this->api_base . $endpoint;
+		$url  = $this->api_base . $endpoint;
 		$args = array(
 			'method'  => $method,
 			'headers' => array(
+				// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
 				'Authorization' => 'Basic ' . base64_encode( $this->credentials['username'] . ':' . $this->credentials['password'] ),
 				'Content-Type'  => 'application/json',
 				'User-Agent'    => 'Feed-To-Blogroll/' . FEED_TO_BLOGROLL_VERSION,
@@ -165,6 +166,7 @@ class Feed_To_Blogroll_Feedbin_API {
 		if ( is_wp_error( $result ) ) {
 			// Log detailed error for debugging
 			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
 				error_log( 'Feedbin API Test Error: ' . $result->get_error_message() );
 			}
 			return $result;
@@ -234,6 +236,7 @@ class Feed_To_Blogroll_Feedbin_API {
 				substr( $response_body, 0, 200 ) . ( strlen( $response_body ) > 200 ? '...' : '' )
 			);
 
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
 			error_log( 'Feedbin API: ' . $log_entry );
 		}
 	}
@@ -248,6 +251,7 @@ class Feed_To_Blogroll_Feedbin_API {
 			$this->api_base . 'subscriptions.json',
 			array(
 				'headers' => array(
+					// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
 					'Authorization' => 'Basic ' . base64_encode( $this->credentials['username'] . ':' . $this->credentials['password'] ),
 				),
 			)
@@ -257,7 +261,7 @@ class Feed_To_Blogroll_Feedbin_API {
 			return array();
 		}
 
-		$headers = wp_remote_retrieve_headers( $response );
+		$headers         = wp_remote_retrieve_headers( $response );
 		$rate_limit_info = array();
 
 		if ( isset( $headers['X-RateLimit-Limit'] ) ) {
@@ -305,7 +309,7 @@ class Feed_To_Blogroll_Feedbin_API {
 		);
 
 		if ( $this->has_credentials() ) {
-			$connection_test = $this->test_connection();
+			$connection_test           = $this->test_connection();
 			$status['connection_test'] = is_wp_error( $connection_test ) ? 'error' : 'success';
 
 			$rate_limit = $this->get_rate_limit_info();

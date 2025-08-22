@@ -32,36 +32,36 @@ wp_clear_scheduled_hook( 'feed_to_blogroll_sync_cron' );
 // Clean up custom post types and their data
 $post_types = array( 'blogroll' );
 
-foreach ( $post_types as $post_type ) {
+foreach ( $post_types as $plugin_post_type ) {
 	// Get all posts of this type
-	$posts = get_posts(
-		array(
-			'post_type'      => $post_type,
-			'post_status'    => 'any',
-			'posts_per_page' => -1,
-			'fields'         => 'ids',
-		)
-	);
+			$plugin_posts = get_posts(
+				array(
+					'post_type'      => $plugin_post_type,
+					'post_status'    => 'any',
+					'posts_per_page' => -1,
+					'fields'         => 'ids',
+				)
+			);
 
 	// Delete each post
-	foreach ( $posts as $post_id ) {
-		wp_delete_post( $post_id, true );
+	foreach ( $plugin_posts as $plugin_post_id ) {
+		wp_delete_post( $plugin_post_id, true );
 	}
 }
 
 // Clean up taxonomies
 $taxonomies = array( 'blogroll_category' );
 
-foreach ( $taxonomies as $taxonomy ) {
-	$terms = get_terms(
+foreach ( $taxonomies as $plugin_taxonomy ) {
+	$plugin_terms = get_terms(
 		array(
-			'taxonomy'   => $taxonomy,
+			'taxonomy'   => $plugin_taxonomy,
 			'hide_empty' => false,
 		)
 	);
 
-	foreach ( $terms as $term ) {
-		wp_delete_term( $term->term_id, $taxonomy );
+	foreach ( $plugin_terms as $plugin_term ) {
+		wp_delete_term( $plugin_term->term_id, $plugin_taxonomy );
 	}
 }
 
@@ -77,7 +77,7 @@ if ( function_exists( 'acf_get_field_groups' ) ) {
 }
 
 // Clean up uploaded files (if any)
-$upload_dir = wp_upload_dir();
+$upload_dir        = wp_upload_dir();
 $plugin_upload_dir = $upload_dir['basedir'] . '/feed-to-blogroll/';
 
 if ( is_dir( $plugin_upload_dir ) ) {

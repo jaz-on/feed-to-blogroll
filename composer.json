@@ -1,0 +1,57 @@
+{
+    "name": "jaz-on/feed-to-blogroll",
+    "description": "Automatic blogroll synchronization with Feedbin API, integrated with Distributed theme",
+    "type": "wordpress-plugin",
+    "license": "GPL-2.0-or-later",
+    "keywords": [
+        "wordpress",
+        "plugin",
+        "blogroll",
+        "rss",
+        "feedbin",
+        "api",
+        "synchronization"
+    ],
+    "authors": [
+        {
+            "name": "Jason Rouet",
+            "email": "bonjour@jasonrouet.com",
+            "homepage": "https://jasonrouet.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^8.2"
+    },
+    "require-dev": {
+        "squizlabs/php_codesniffer": "^3.7",
+        "wp-coding-standards/wpcs": "^3.0",
+        "dealerdirect/phpcodesniffer-composer-installer": "^1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "FeedToBlogroll\\": "includes/"
+        }
+    },
+    "scripts": {
+        "phpcs": "phpcs --standard=WordPress-Extra --extensions=php .",
+        "phpcbf": "phpcbf --standard=WordPress-Extra --extensions=php .",
+        "test": "phpcs --standard=WordPress-Extra --extensions=php .",
+        "validate": "composer validate"
+    },
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        },
+        "optimize-autoloader": true,
+        "sort-packages": true
+    },
+    "support": {
+        "issues": "https://github.com/jaz-on/feed-to-blogroll/issues",
+        "source": "https://github.com/jaz-on/feed-to-blogroll",
+        "docs": "https://github.com/jaz-on/feed-to-blogroll#readme"
+    },
+    "homepage": "https://github.com/jaz-on/feed-to-blogroll",
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}

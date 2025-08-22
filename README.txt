@@ -2,7 +2,7 @@
 Contributors: jasonrouet
 Tags: blogroll, rss, feedbin, api, synchronization
 Requires at least: 6.0
-Tested up to: 6.4
+Tested up to: 6.5
 Requires PHP: 8.2
 Stable tag: 1.0.0
 License: GPLv2 or later
@@ -165,8 +165,8 @@ define( 'WP_DEBUG_LOG', true );
 = Support =
 
 For support and feature requests, please visit:
-* GitHub: https://github.com/jasonrouet/feed-to-blogroll
-* WordPress.org: [Plugin Support Forum]
+* GitHub: https://github.com/jaz-on/feed-to-blogroll
+* Issues: https://github.com/jaz-on/feed-to-blogroll/issues
 
 = Changelog =
 
@@ -186,6 +186,8 @@ For support and feature requests, please visit:
 Developed by Jason Rouet
 Built with WordPress best practices
 Integrated with Distributed theme
+
+For more information, visit: https://github.com/jaz-on/feed-to-blogroll
 
 == Frequently Asked Questions ==
 

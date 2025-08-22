@@ -125,75 +125,75 @@ class Feed_To_Blogroll_CPT {
 			acf_add_local_field_group(
 				array(
 					'key'                   => 'group_blogroll_fields',
-					'title'                  => __( 'Blog Information', 'feed-to-blogroll' ),
-					'fields'                 => array(
+					'title'                 => __( 'Blog Information', 'feed-to-blogroll' ),
+					'fields'                => array(
 						array(
-							'key'               => 'field_blogroll_site_url',
-							'label'              => __( 'Site URL', 'feed-to-blogroll' ),
-							'name'               => 'site_url',
-							'type'               => 'url',
-							'instructions'       => __( 'The main URL of the blog', 'feed-to-blogroll' ),
-							'required'           => 1,
-							'default_value'      => '',
-							'placeholder'        => 'https://example.com',
+							'key'           => 'field_blogroll_site_url',
+							'label'         => __( 'Site URL', 'feed-to-blogroll' ),
+							'name'          => 'site_url',
+							'type'          => 'url',
+							'instructions'  => __( 'The main URL of the blog', 'feed-to-blogroll' ),
+							'required'      => 1,
+							'default_value' => '',
+							'placeholder'   => 'https://example.com',
 						),
 						array(
-							'key'               => 'field_blogroll_rss_url',
-							'label'              => __( 'RSS Feed URL', 'feed-to-blogroll' ),
-							'name'               => 'rss_url',
-							'type'               => 'url',
-							'instructions'       => __( 'The RSS feed URL of the blog', 'feed-to-blogroll' ),
-							'required'           => 1,
-							'default_value'      => '',
-							'placeholder'        => 'https://example.com/feed/',
+							'key'           => 'field_blogroll_rss_url',
+							'label'         => __( 'RSS Feed URL', 'feed-to-blogroll' ),
+							'name'          => 'rss_url',
+							'type'          => 'url',
+							'instructions'  => __( 'The RSS feed URL of the blog', 'feed-to-blogroll' ),
+							'required'      => 1,
+							'default_value' => '',
+							'placeholder'   => 'https://example.com/feed/',
 						),
 						array(
-							'key'               => 'field_blogroll_author',
-							'label'              => __( 'Author', 'feed-to-blogroll' ),
-							'name'               => 'author',
-							'type'               => 'text',
-							'instructions'       => __( 'The main author of the blog', 'feed-to-blogroll' ),
-							'required'           => 0,
-							'default_value'      => '',
-							'placeholder'        => __( 'Author name', 'feed-to-blogroll' ),
+							'key'           => 'field_blogroll_author',
+							'label'         => __( 'Author', 'feed-to-blogroll' ),
+							'name'          => 'author',
+							'type'          => 'text',
+							'instructions'  => __( 'The main author of the blog', 'feed-to-blogroll' ),
+							'required'      => 0,
+							'default_value' => '',
+							'placeholder'   => __( 'Author name', 'feed-to-blogroll' ),
 						),
 						array(
-							'key'               => 'field_blogroll_feedbin_id',
-							'label'              => __( 'Feedbin ID', 'feed-to-blogroll' ),
-							'name'               => 'feedbin_id',
-							'type'               => 'number',
-							'instructions'       => __( 'The unique identifier in Feedbin', 'feed-to-blogroll' ),
-							'required'           => 0,
-							'readonly'           => 1,
+							'key'          => 'field_blogroll_feedbin_id',
+							'label'        => __( 'Feedbin ID', 'feed-to-blogroll' ),
+							'name'         => 'feedbin_id',
+							'type'         => 'number',
+							'instructions' => __( 'The unique identifier in Feedbin', 'feed-to-blogroll' ),
+							'required'     => 0,
+							'readonly'     => 1,
 						),
 						array(
-							'key'               => 'field_blogroll_last_sync',
-							'label'              => __( 'Last Synchronization', 'feed-to-blogroll' ),
-							'name'               => 'last_sync',
-							'type'               => 'date_time_picker',
-							'instructions'       => __( 'Date and time of the last synchronization', 'feed-to-blogroll' ),
-							'required'           => 0,
-							'readonly'           => 1,
-							'display_format'     => 'd/m/Y H:i',
-							'return_format'      => 'Y-m-d H:i:s',
+							'key'            => 'field_blogroll_last_sync',
+							'label'          => __( 'Last Synchronization', 'feed-to-blogroll' ),
+							'name'           => 'last_sync',
+							'type'           => 'date_time_picker',
+							'instructions'   => __( 'Date and time of the last synchronization', 'feed-to-blogroll' ),
+							'required'       => 0,
+							'readonly'       => 1,
+							'display_format' => 'd/m/Y H:i',
+							'return_format'  => 'Y-m-d H:i:s',
 						),
 						array(
-							'key'               => 'field_blogroll_sync_status',
-							'label'              => __( 'Sync Status', 'feed-to-blogroll' ),
-							'name'               => 'sync_status',
-							'type'               => 'select',
-							'instructions'       => __( 'Synchronization status with Feedbin', 'feed-to-blogroll' ),
-							'required'           => 0,
-							'choices'            => array(
-								'active'    => __( 'Active', 'feed-to-blogroll' ),
-								'inactive'  => __( 'Inactive', 'feed-to-blogroll' ),
-								'error'     => __( 'Error', 'feed-to-blogroll' ),
+							'key'           => 'field_blogroll_sync_status',
+							'label'         => __( 'Sync Status', 'feed-to-blogroll' ),
+							'name'          => 'sync_status',
+							'type'          => 'select',
+							'instructions'  => __( 'Synchronization status with Feedbin', 'feed-to-blogroll' ),
+							'required'      => 0,
+							'choices'       => array(
+								'active'   => __( 'Active', 'feed-to-blogroll' ),
+								'inactive' => __( 'Inactive', 'feed-to-blogroll' ),
+								'error'    => __( 'Error', 'feed-to-blogroll' ),
 							),
-							'default_value'      => 'active',
-							'return_format'      => 'value',
+							'default_value' => 'active',
+							'return_format' => 'value',
 						),
 					),
-					'location'                => array(
+					'location'              => array(
 						array(
 							array(
 								'param'    => 'post_type',
@@ -202,15 +202,15 @@ class Feed_To_Blogroll_CPT {
 							),
 						),
 					),
-					'menu_order'               => 0,
-					'position'                 => 'normal',
-					'style'                    => 'default',
-					'label_placement'          => 'top',
-					'instruction_placement'    => 'label',
-					'hide_on_screen'           => '',
-					'active'                   => true,
-					'description'              => '',
-					'show_in_rest'             => 0,
+					'menu_order'            => 0,
+					'position'              => 'normal',
+					'style'                 => 'default',
+					'label_placement'       => 'top',
+					'instruction_placement' => 'label',
+					'hide_on_screen'        => '',
+					'active'                => true,
+					'description'           => '',
+					'show_in_rest'          => 0,
 				)
 			);
 		}
@@ -229,11 +229,11 @@ class Feed_To_Blogroll_CPT {
 			$new_columns[ $key ] = $value;
 
 			if ( 'title' === $key ) {
-				$new_columns['site_url']     = __( 'Site URL', 'feed-to-blogroll' );
-				$new_columns['rss_url']      = __( 'RSS Feed', 'feed-to-blogroll' );
-				$new_columns['author']       = __( 'Author', 'feed-to-blogroll' );
-				$new_columns['last_sync']    = __( 'Last Sync', 'feed-to-blogroll' );
-				$new_columns['sync_status']  = __( 'Status', 'feed-to-blogroll' );
+				$new_columns['site_url']    = __( 'Site URL', 'feed-to-blogroll' );
+				$new_columns['rss_url']     = __( 'RSS Feed', 'feed-to-blogroll' );
+				$new_columns['author']      = __( 'Author', 'feed-to-blogroll' );
+				$new_columns['last_sync']   = __( 'Last Sync', 'feed-to-blogroll' );
+				$new_columns['sync_status'] = __( 'Status', 'feed-to-blogroll' );
 			}
 		}
 
@@ -287,7 +287,7 @@ class Feed_To_Blogroll_CPT {
 				break;
 
 			case 'sync_status':
-				$sync_status = get_field( 'sync_status', $post_id );
+				$sync_status   = get_field( 'sync_status', $post_id );
 				$status_labels = array(
 					'active'   => __( 'Active', 'feed-to-blogroll' ),
 					'inactive' => __( 'Inactive', 'feed-to-blogroll' ),

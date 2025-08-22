@@ -1,6 +1,6 @@
 # Feed to Blogroll
 
-[![WordPress](https://img.shields.io/badge/WordPress-6.0+-blue)](https://wordpress.org/)
+[![WordPress](https://img.shields.io/badge/WordPress-6.5+-blue)](https://wordpress.org/)
 [![PHP](https://img.shields.io/badge/PHP-8.2+-blue)](https://php.net/)
 [![License](https://img.shields.io/badge/License-GPL%20v2+-green)](https://www.gnu.org/licenses/gpl-2.0.html)
 

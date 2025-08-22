@@ -1,0 +1,36 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "feed-to-blogroll/blogroll",
+	"version": "1.0.0",
+	"title": "Blogroll",
+	"category": "widgets",
+	"icon": "rss",
+	"description": "Display a blogroll of RSS feeds.",
+	"supports": {
+		"html": false,
+		"align": ["wide", "full"]
+	},
+	"textdomain": "feed-to-blogroll",
+	"editorScript": "file:./assets/js/editor.js",
+	"editorStyle": "file:./assets/css/editor.css",
+	"style": "file:./assets/css/frontend.css",
+	"attributes": {
+		"category": {
+			"type": "string",
+			"default": ""
+		},
+		"limit": {
+			"type": "number",
+			"default": -1
+		},
+		"columns": {
+			"type": "number",
+			"default": 3
+		},
+		"showExport": {
+			"type": "boolean",
+			"default": true
+		}
+	}
+}

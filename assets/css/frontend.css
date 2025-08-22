@@ -1,0 +1,297 @@
+/**
+ * Feed to Blogroll - Frontend Styles
+ * Responsive grid layout for blogroll display
+ */
+
+.feed-to-blogroll-container {
+	max-width: 1200px;
+	margin: 0 auto;
+	padding: 2rem 1rem;
+}
+
+/* Export section */
+.blogroll-export {
+	text-align: center;
+	margin-bottom: 2rem;
+	padding: 1rem;
+	background: var(--wp--preset--color--background, #f8f9fa);
+	border-radius: 8px;
+}
+
+.export-opml-button {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	padding: 0.75rem 1.5rem;
+	background: var(--wp--preset--color--primary, #007cba);
+	color: white;
+	text-decoration: none;
+	border-radius: 6px;
+	font-weight: 500;
+	transition: all 0.2s ease;
+}
+
+.export-opml-button:hover {
+	background: var(--wp--preset--color--primary-darker, #005a87);
+	color: white;
+	text-decoration: none;
+	transform: translateY(-1px);
+	box-shadow: 0 4px 12px rgba(0, 124, 186, 0.3);
+}
+
+/* Grid layout */
+.blogroll-grid {
+	display: grid;
+	gap: 1.5rem;
+	grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.blogroll-grid.columns-1 {
+	grid-template-columns: 1fr;
+}
+
+.blogroll-grid.columns-2 {
+	grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+}
+
+.blogroll-grid.columns-3 {
+	grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+}
+
+.blogroll-grid.columns-4 {
+	grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.blogroll-grid.columns-5 {
+	grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+.blogroll-grid.columns-6 {
+	grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+/* Blog cards */
+.blog-card {
+	background: var(--wp--preset--color--background, #ffffff);
+	border: 1px solid var(--wp--preset--color--border, #e1e5e9);
+	border-radius: 12px;
+	overflow: hidden;
+	transition: all 0.3s ease;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.blog-card:hover {
+	transform: translateY(-4px);
+	box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+	border-color: var(--wp--preset--color--primary, #007cba);
+}
+
+.blog-card-content {
+	padding: 1.5rem;
+}
+
+/* Category badge */
+.blog-category {
+	display: inline-block;
+	padding: 0.25rem 0.75rem;
+	background: var(--wp--preset--color--secondary, #6c757d);
+	color: white;
+	font-size: 0.75rem;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+	border-radius: 20px;
+	margin-bottom: 1rem;
+}
+
+/* Blog title */
+.blog-title {
+	margin: 0 0 1rem 0;
+	font-size: 1.25rem;
+	line-height: 1.3;
+	font-weight: 600;
+}
+
+.blog-title a {
+	color: var(--wp--preset--color--foreground, #1a1a1a);
+	text-decoration: none;
+	transition: color 0.2s ease;
+}
+
+.blog-title a:hover {
+	color: var(--wp--preset--color--primary, #007cba);
+}
+
+/* Blog description */
+.blog-description {
+	color: var(--wp--preset--color--foreground-light, #666666);
+	font-size: 0.9rem;
+	line-height: 1.5;
+	margin-bottom: 1rem;
+}
+
+/* Blog author */
+.blog-author {
+	font-size: 0.85rem;
+	color: var(--wp--preset--color--foreground-light, #888888);
+	margin-bottom: 1.5rem;
+	font-style: italic;
+}
+
+/* Action buttons */
+.blog-actions {
+	display: flex;
+	gap: 0.75rem;
+	flex-wrap: wrap;
+}
+
+.blog-actions .button {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	padding: 0.5rem 1rem;
+	font-size: 0.85rem;
+	text-decoration: none;
+	border-radius: 6px;
+	transition: all 0.2s ease;
+	border: none;
+	cursor: pointer;
+}
+
+.blog-actions .button-secondary {
+	background: var(--wp--preset--color--secondary, #6c757d);
+	color: white;
+}
+
+.blog-actions .button-secondary:hover {
+	background: var(--wp--preset--color--secondary-darker, #5a6268);
+	color: white;
+}
+
+.blog-actions .button-primary {
+	background: var(--wp--preset--color--primary, #007cba);
+	color: white;
+}
+
+.blog-actions .button-primary:hover {
+	background: var(--wp--preset--color--primary-darker, #005a87);
+	color: white;
+}
+
+/* RSS icon */
+.rss-icon {
+	width: 14px;
+	height: 14px;
+}
+
+/* Blogroll meta (for single blog posts) */
+.blogroll-meta {
+	background: var(--wp--preset--color--background-light, #f8f9fa);
+	padding: 1.5rem;
+	border-radius: 8px;
+	margin-bottom: 2rem;
+	border-left: 4px solid var(--wp--preset--color--primary, #007cba);
+}
+
+.blogroll-meta p {
+	margin: 0.5rem 0;
+	font-size: 0.9rem;
+}
+
+.blogroll-meta strong {
+	color: var(--wp--preset--color--foreground, #1a1a1a);
+}
+
+.blogroll-meta a {
+	color: var(--wp--preset--color--primary, #007cba);
+	text-decoration: none;
+}
+
+.blogroll-meta a:hover {
+	text-decoration: underline;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+	.feed-to-blogroll-container {
+		padding: 1rem 0.5rem;
+	}
+	
+	.blogroll-grid {
+		gap: 1rem;
+		grid-template-columns: 1fr;
+	}
+	
+	.blogroll-grid.columns-2,
+	.blogroll-grid.columns-3,
+	.blogroll-grid.columns-4,
+	.blogroll-grid.columns-5,
+	.blogroll-grid.columns-6 {
+		grid-template-columns: 1fr;
+	}
+	
+	.blog-card-content {
+		padding: 1rem;
+	}
+	
+	.blog-actions {
+		flex-direction: column;
+	}
+	
+	.blog-actions .button {
+		justify-content: center;
+	}
+}
+
+@media (max-width: 480px) {
+	.blog-title {
+		font-size: 1.1rem;
+	}
+	
+	.blog-description {
+		font-size: 0.85rem;
+	}
+	
+	.blog-actions .button {
+		font-size: 0.8rem;
+		padding: 0.4rem 0.8rem;
+	}
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+	.blog-card {
+		background: var(--wp--preset--color--background-dark, #2d3748);
+		border-color: var(--wp--preset--color--border-dark, #4a5568);
+	}
+	
+	.blog-title a {
+		color: var(--wp--preset--color--foreground-dark, #e2e8f0);
+	}
+	
+	.blog-description {
+		color: var(--wp--preset--color--foreground-light-dark, #a0aec0);
+	}
+	
+	.blog-author {
+		color: var(--wp--preset--color--foreground-light-dark, #718096);
+	}
+	
+	.blogroll-meta {
+		background: var(--wp--preset--color--background-light-dark, #4a5568);
+	}
+}
+
+/* Print styles */
+@media print {
+	.blog-actions,
+	.blogroll-export {
+		display: none;
+	}
+	
+	.blog-card {
+		break-inside: avoid;
+		box-shadow: none;
+		border: 1px solid #ccc;
+	}
+}

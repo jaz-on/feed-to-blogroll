@@ -1,0 +1,201 @@
+{
+	"name": "feed-to-blogroll",
+	"version": "1.0.0",
+	"description": "Automatic blogroll synchronization with Feedbin API, integrated with Distributed theme",
+	"author": "Jason Rouet",
+	"authorUrl": "https://jasonrouet.local",
+	"license": "GPL-2.0-or-later",
+	"licenseUrl": "https://www.gnu.org/licenses/gpl-2.0.html",
+	"textDomain": "feed-to-blogroll",
+	"domainPath": "/languages",
+	"requires": {
+		"wordpress": "6.0",
+		"php": "8.2",
+		"plugins": [
+			"advanced-custom-fields-pro"
+		]
+	},
+	"tested": {
+		"wordpress": "6.5",
+		"php": "8.4"
+	},
+	"features": [
+		"feedbin-api",
+		"automatic-sync",
+		"custom-post-type",
+		"acf-integration",
+		"responsive-grid",
+		"opml-export",
+		"shortcodes",
+		"rest-api",
+		"admin-dashboard",
+		"cron-jobs"
+	],
+	"shortcodes": [
+		{
+			"name": "blogroll",
+			"description": "Main blogroll shortcode with full functionality",
+			"attributes": {
+				"category": {
+					"type": "string",
+					"description": "Filter by category slug",
+					"default": ""
+				},
+				"limit": {
+					"type": "integer",
+					"description": "Maximum number of blogs to display",
+					"default": -1
+				},
+				"columns": {
+					"type": "integer",
+					"description": "Number of columns (1-6)",
+					"default": 4
+				},
+				"show_export": {
+					"type": "boolean",
+					"description": "Show OPML export button",
+					"default": true
+				}
+			}
+		},
+		{
+			"name": "blogroll_grid",
+			"description": "Grid-specific shortcode for focused display",
+			"attributes": {
+				"category": {
+					"type": "string",
+					"description": "Filter by category slug",
+					"default": ""
+				},
+				"limit": {
+					"type": "integer",
+					"description": "Maximum number of blogs to display",
+					"default": 12
+				},
+				"columns": {
+					"type": "integer",
+					"description": "Number of columns (1-6)",
+					"default": 4
+				}
+			}
+		]
+	},
+	"restApi": {
+		"namespace": "feed-to-blogroll/v1",
+		"endpoints": [
+			{
+				"route": "/blogroll",
+				"methods": ["GET"],
+				"description": "Get blogroll data",
+				"parameters": {
+					"category": {
+						"type": "string",
+						"description": "Filter by category slug"
+					},
+					"limit": {
+						"type": "integer",
+						"description": "Maximum number of blogs to return",
+						"default": 12
+					}
+				}
+			}
+		]
+	},
+	"hooks": {
+		"actions": [
+			"feed_to_blogroll_sync_cron",
+			"feed_to_blogroll_manual_sync"
+		],
+		"filters": [
+			"feed_to_blogroll_sync_result",
+			"feed_to_blogroll_blog_data"
+		]
+	},
+	"cronJobs": [
+		{
+			"hook": "feed_to_blogroll_sync_cron",
+			"schedule": "daily",
+			"description": "Daily synchronization with Feedbin API"
+		}
+	],
+	"options": [
+		"feed_to_blogroll_options"
+	],
+	"postTypes": [
+		"blogroll"
+	],
+	"taxonomies": [
+		"blogroll_category"
+	],
+	"capabilities": [
+		"manage_options"
+	],
+	"assets": {
+		"css": [
+			"assets/css/frontend.css",
+			"assets/css/admin.css"
+		],
+		"js": [
+			"assets/js/frontend.js",
+			"assets/js/admin.js"
+		]
+	},
+	"dependencies": {
+		"php": [
+			"curl",
+			"json",
+			"mbstring"
+		],
+		"wordpress": [
+			"wp_remote_request",
+			"wp_schedule_event",
+			"wp_insert_post",
+			"wp_update_post"
+		]
+	},
+	"security": {
+		"nonces": [
+			"feed_to_blogroll_sync",
+			"feed_to_blogroll_admin",
+			"feed_to_blogroll_frontend",
+			"feed_to_blogroll_export"
+		],
+		"capabilities": [
+			"manage_options"
+		],
+		"sanitization": [
+			"sanitize_email",
+			"sanitize_text_field",
+			"esc_url_raw",
+			"wp_kses_post"
+		]
+	},
+	"performance": {
+		"caching": "wordpress-hooks",
+		"lazyLoading": true,
+		"minification": "production-only",
+		"optimization": "database-queries"
+	},
+	"accessibility": {
+		"wcag": "2.1-AA",
+		"features": [
+			"keyboard-navigation",
+			"screen-reader-support",
+			"aria-labels",
+			"focus-indicators"
+		]
+	},
+	"compatibility": {
+		"themes": [
+			"distributed",
+			"twentytwentyfive",
+			"twentytwentyfour"
+		],
+		"browsers": [
+			"chrome-latest",
+			"firefox-latest",
+			"safari-latest",
+			"edge-latest"
+		]
+	}
+}

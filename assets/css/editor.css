@@ -1,0 +1,163 @@
+/**
+ * Feed to Blogroll - Editor Styles
+ * Styles for the WordPress block editor
+ */
+
+/* Editor container styles */
+.editor-styles-wrapper .feed-to-blogroll-container {
+	max-width: 1200px;
+	margin: 0 auto;
+	padding: 2rem 1rem;
+}
+
+/* Block editor preview styles */
+.feed-to-blogroll-editor-preview {
+	background: #f8f9fa;
+	border: 2px dashed #dee2e6;
+	border-radius: 8px;
+	padding: 2rem;
+	text-align: center;
+	margin: 1rem 0;
+}
+
+.feed-to-blogroll-editor-header h3 {
+	margin: 0 0 1rem 0;
+	color: #495057;
+	font-size: 1.25rem;
+}
+
+.feed-to-blogroll-editor-content p {
+	margin: 0 0 1rem 0;
+	color: #6c757d;
+	font-style: italic;
+}
+
+.feed-to-blogroll-editor-settings p {
+	margin: 0;
+	font-size: 0.9rem;
+	color: #495057;
+	background: #e9ecef;
+	padding: 0.5rem;
+	border-radius: 4px;
+}
+
+/* Blogroll header in editor */
+.editor-styles-wrapper .wp-block-group.alignwide {
+	margin-bottom: 2rem;
+}
+
+/* Blogroll title styling in editor */
+.editor-styles-wrapper .wp-block-heading {
+	margin-bottom: 0.5rem;
+	color: var(--wp--preset--color--text, #1a1a1a);
+}
+
+/* Blogroll description in editor */
+.editor-styles-wrapper .wp-block-paragraph {
+	margin-bottom: 0;
+	color: var(--wp--preset--color--muted, #666666);
+}
+
+/* Export button in editor */
+.editor-styles-wrapper .wp-block-button__link {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	padding: 0.75rem 1.5rem;
+	background: var(--wp--preset--color--primary, #007cba);
+	color: white;
+	text-decoration: none;
+	border-radius: 6px;
+	font-weight: 500;
+	transition: all 0.2s ease;
+}
+
+.editor-styles-wrapper .wp-block-button__link:hover {
+	background: var(--wp--preset--color--primary-darker, #005a87);
+	color: white;
+	text-decoration: none;
+	transform: translateY(-1px);
+	box-shadow: 0 4px 12px rgba(0, 124, 186, 0.3);
+}
+
+/* Shortcode placeholder in editor */
+.editor-styles-wrapper .wp-block-shortcode {
+	background: var(--wp--preset--color--background-light, #f8f9fa);
+	border: 2px dashed var(--wp--preset--color--border, #e1e5e9);
+	border-radius: 8px;
+	padding: 2rem;
+	text-align: center;
+	color: var(--wp--preset--color--foreground-light, #666666);
+}
+
+.editor-styles-wrapper .wp-block-shortcode::before {
+	content: "📋";
+	font-size: 2rem;
+	display: block;
+	margin-bottom: 1rem;
+}
+
+/* Block style previews in editor */
+.editor-styles-wrapper .is-style-blogroll-card {
+	background: var(--wp--preset--color--background, #ffffff);
+	border: 1px solid var(--wp--preset--color--border, #e1e5e9);
+	border-radius: 12px;
+	padding: 1.5rem;
+	transition: all 0.3s ease;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.editor-styles-wrapper .is-style-blogroll-card:hover {
+	transform: translateY(-4px);
+	box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+	border-color: var(--wp--preset--color--primary, #007cba);
+}
+
+.editor-styles-wrapper .is-style-blogroll-grid {
+	display: grid;
+	gap: 1.5rem;
+	grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+/* Responsive behavior in editor */
+@media (max-width: 768px) {
+	.editor-styles-wrapper .is-style-blogroll-grid {
+		grid-template-columns: 1fr;
+	}
+	
+	.editor-styles-wrapper .feed-to-blogroll-container {
+		padding: 1rem 0.5rem;
+	}
+}
+
+/* Editor-specific improvements */
+.editor-styles-wrapper .wp-block-group {
+	position: relative;
+}
+
+/* Focus indicators for editor */
+.editor-styles-wrapper .wp-block-group:focus-within {
+	outline: 2px solid var(--wp--preset--color--primary, #007cba);
+	outline-offset: 2px;
+}
+
+/* Block inserter compatibility */
+.editor-styles-wrapper .block-editor-block-list__layout {
+	position: relative;
+}
+
+/* Typography/color are inherited from the theme/editor; avoid global overrides here. */
+
+/* Dark mode support in editor */
+@media (prefers-color-scheme: dark) {
+	.editor-styles-wrapper .is-style-blogroll-card {
+		background: var(--wp--preset--color--background-dark, #2d3748);
+		border-color: var(--wp--preset--color--border-dark, #4a5568);
+	}
+	
+	.editor-styles-wrapper .wp-block-shortcode {
+		background: var(--wp--preset--color--background-light-dark, #4a5568);
+		border-color: var(--wp--preset--color--border-dark, #4a5568);
+		color: var(--wp--preset--color--foreground-light-dark, #a0aec0);
+	}
+}

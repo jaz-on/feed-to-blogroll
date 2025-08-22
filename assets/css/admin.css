@@ -1,0 +1,182 @@
+/**
+ * Feed to Blogroll - Admin Styles
+ * Minimal styling following WordPress Admin CSS standards
+ * Uses native WordPress admin classes and minimal custom CSS
+ */
+
+/* Status indicators - using WordPress admin colors */
+.status-success {
+	color: #00a32a;
+	font-weight: 600;
+}
+
+.status-error {
+	color: #d63638;
+	font-weight: 600;
+}
+
+.status-running {
+	color: #dba617;
+	font-weight: 600;
+}
+
+.status-completed {
+	color: #72aee6;
+	font-weight: 600;
+}
+
+.status-idle {
+	color: #646970;
+	font-weight: 600;
+}
+
+.status-unknown {
+	color: #646970;
+	font-weight: 600;
+}
+
+/* Messages container - minimal styling */
+#feed-to-blogroll-messages {
+	margin-top: 2rem;
+}
+
+/* Custom columns in blogroll list - minimal styling */
+.column-site_url,
+.column-rss_url,
+.column-author,
+.column-last_sync,
+.column-sync_status {
+	width: 12%;
+}
+
+.column-sync_status .sync-status {
+	display: inline-block;
+	padding: 0.25rem 0.75rem;
+	border-radius: 20px;
+	font-size: 0.75rem;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+}
+
+.sync-status.status-active {
+	background: #d1e7dd;
+	color: #0f5132;
+}
+
+.sync-status.status-inactive {
+	background: #f8d7da;
+	color: #721c24;
+}
+
+.sync-status.status-error {
+	background: #f8d7da;
+	color: #721c24;
+}
+
+/* Button icon alignment - following WordPress admin standards */
+.button .dashicons {
+	vertical-align: middle;
+	margin-right: 0.5rem;
+	font-size: 16px;
+	width: 16px;
+	height: 16px;
+	line-height: 1;
+}
+
+/* Nav tab icon alignment */
+.nav-tab .dashicons {
+	vertical-align: middle;
+	margin-right: 0.5rem;
+	font-size: 16px;
+	width: 16px;
+	height: 16px;
+	line-height: 1;
+}
+
+/* Postbox header icon alignment */
+.hndle .dashicons {
+	vertical-align: middle;
+	margin-right: 0.5rem;
+	font-size: 16px;
+	width: 16px;
+	height: 16px;
+	line-height: 1;
+}
+
+/* Loading states - minimal styling */
+.button.loading {
+	opacity: 0.7;
+	pointer-events: none;
+}
+
+.button.loading::after {
+	content: '';
+	display: inline-block;
+	width: 16px;
+	height: 16px;
+	border: 2px solid transparent;
+	border-top: 2px solid currentColor;
+	border-radius: 50%;
+	animation: spin 1s linear infinite;
+	margin-left: 0.5rem;
+}
+
+@keyframes spin {
+	0% { transform: rotate(0deg); }
+	100% { transform: rotate(360deg); }
+}
+
+/* Setup instructions styling - minimal custom CSS */
+.feed-to-blogroll-setup-instructions {
+	margin-bottom: 2rem;
+}
+
+.feed-to-blogroll-setup-instructions h3 {
+	margin-top: 0;
+}
+
+.feed-to-blogroll-setup-instructions ol {
+	margin-left: 1.5rem;
+}
+
+.feed-to-blogroll-setup-instructions li {
+	margin-bottom: 0.5rem;
+}
+
+/* Help links styling - minimal custom CSS */
+.feed-to-blogroll-help-links p {
+	margin-bottom: 0.5rem;
+}
+
+.feed-to-blogroll-help-links strong {
+	color: #1d2327;
+}
+
+/* Sync progress indicator */
+#sync-progress {
+	margin-top: 1rem;
+}
+
+/* Responsive adjustments for mobile */
+@media screen and (max-width: 782px) {
+	.column-site_url,
+	.column-rss_url,
+	.column-author,
+	.column-last_sync,
+	.column-sync_status {
+		width: auto;
+	}
+	
+	.feed-to-blogroll-setup-instructions ol {
+		margin-left: 1rem;
+	}
+	
+	/* Mobile button adjustments */
+	.button .dashicons {
+		margin-right: 0.25rem;
+		font-size: 14px;
+		width: 14px;
+		height: 14px;
+	}
+}

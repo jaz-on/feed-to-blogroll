@@ -1,0 +1,501 @@
+# Copyright (C) 2025 Jason Rouet
+# This file is distributed under the GPL v2 or later.
+msgid ""
+msgstr ""
+"Project-Id-Version: Feed to Blogroll 1.0.0\n"
+"Report-Msgid-Bugs-To: https://github.com/jasonrouet/feed-to-blogroll/issues\n"
+"POT-Creation-Date: 2025-01-27 12:00+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2025-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+
+#: feed-to-blogroll.php:123
+msgid "Blogroll Card"
+msgstr ""
+
+#: feed-to-blogroll.php:135
+msgid "Blogroll Grid"
+msgstr ""
+
+#: includes/class-blogroll-admin.php:42
+msgid "Feed to Blogroll"
+msgstr ""
+
+#: includes/class-blogroll-admin.php:43
+msgid "Blogroll"
+msgstr ""
+
+#: includes/class-blogroll-admin.php:52
+msgid "Settings"
+msgstr ""
+
+#: includes/class-blogroll-admin.php:75
+msgid "Feedbin API Configuration"
+msgstr ""
+
+#: includes/class-blogroll-admin.php:76
+msgid "Configure your Feedbin API credentials to enable automatic synchronization."
+msgstr ""
+
+#: includes/class-blogroll-admin.php:82
+msgid "Feedbin Username"
+msgstr ""
+
+#: includes/class-blogroll-admin.php:89
+msgid "Your Feedbin account email address"
+msgstr ""
+
+#: includes/class-blogroll-admin.php:95
+msgid "Feedbin Password"
+msgstr ""
+
+#: includes/class-blogroll-admin.php:102
+msgid "Your Feedbin account password"
+msgstr ""
+
+#: includes/class-blogroll-admin.php:108
+msgid "Synchronization Settings"
+msgstr ""
+
+#: includes/class-blogroll-admin.php:109
+msgid "Configure how often the plugin should synchronize with Feedbin."
+msgstr ""
+
+#: includes/class-blogroll-admin.php:115
+msgid "Automatic Synchronization"
+msgstr ""
+
+#: includes/class-blogroll-admin.php:122
+msgid "Enable automatic synchronization"
+msgstr ""
+
+#: includes/class-blogroll-admin.php:128
+msgid "Sync Frequency"
+msgstr ""
+
+#: includes/class-blogroll-admin.php:140
+msgid "Hourly"
+msgstr ""
+
+#: includes/class-blogroll-admin.php:141
+msgid "Daily"
+msgstr ""
+
+#: includes/class-blogroll-admin.php:142
+msgid "Weekly"
+msgstr ""
+
+#: includes/class-blogroll-admin.php:200
+msgid "Statistics"
+msgstr ""
+
+#: includes/class-blogroll-admin.php:205
+msgid "Active Blogs"
+msgstr ""
+
+#: includes/class-blogroll-admin.php:209
+msgid "Inactive Blogs"
+msgstr ""
+
+#: includes/class-blogroll-admin.php:213
+msgid "Last Sync"
+msgstr ""
+
+#: includes/class-blogroll-admin.php:220
+msgid "Actions"
+msgstr ""
+
+#: includes/class-blogroll-admin.php:225
+msgid "Test Connection"
+msgstr ""
+
+#: includes/class-blogroll-admin.php:228
+msgid "Manual Sync"
+msgstr ""
+
+#: includes/class-blogroll-admin.php:231
+msgid "Export OPML"
+msgstr ""
+
+#: includes/class-blogroll-admin.php:238
+msgid "Status"
+msgstr ""
+
+#: includes/class-blogroll-admin.php:243
+msgid "API Connection:"
+msgstr ""
+
+#: includes/class-blogroll-admin.php:248
+msgid "Sync Status:"
+msgstr ""
+
+#: includes/class-blogroll-admin.php:258
+msgid "Feed to Blogroll Settings"
+msgstr ""
+
+#: includes/class-blogroll-admin.php:275
+msgid "Security check failed"
+msgstr ""
+
+#: includes/class-blogroll-admin.php:280
+msgid "Insufficient permissions"
+msgstr ""
+
+#: includes/class-blogroll-admin.php:295
+msgid "Success"
+msgstr ""
+
+#: includes/class-blogroll-admin.php:296
+msgid "Error"
+msgstr ""
+
+#: includes/class-blogroll-admin.php:297
+msgid "Running"
+msgstr ""
+
+#: includes/class-blogroll-admin.php:298
+msgid "Completed"
+msgstr ""
+
+#: includes/class-blogroll-admin.php:299
+msgid "Idle"
+msgstr ""
+
+#: includes/class-blogroll-admin.php:300
+msgid "Unknown"
+msgstr ""
+
+#: includes/class-blogroll-admin.php:320
+msgid "Testing connection..."
+msgstr ""
+
+#: includes/class-blogroll-admin.php:321
+msgid "Synchronizing..."
+msgstr ""
+
+#: includes/class-blogroll-admin.php:322
+msgid "Exporting..."
+msgstr ""
+
+#: includes/class-blogroll-admin.php:323
+msgid "An error occurred"
+msgstr ""
+
+#: includes/class-blogroll-cpt.php:42
+msgid "Blogroll"
+msgstr ""
+
+#: includes/class-blogroll-cpt.php:43
+msgid "Blog"
+msgstr ""
+
+#: includes/class-blogroll-cpt.php:44
+msgid "Blogroll"
+msgstr ""
+
+#: includes/class-blogroll-cpt.php:45
+msgid "Blog"
+msgstr ""
+
+#: includes/class-blogroll-cpt.php:46
+msgid "Add Blog"
+msgstr ""
+
+#: includes/class-blogroll-cpt.php:47
+msgid "Add New Blog"
+msgstr ""
+
+#: includes/class-blogroll-cpt.php:48
+msgid "New Blog"
+msgstr ""
+
+#: includes/class-blogroll-cpt.php:49
+msgid "Edit Blog"
+msgstr ""
+
+#: includes/class-blogroll-cpt.php:50
+msgid "View Blog"
+msgstr ""
+
+#: includes/class-blogroll-cpt.php:51
+msgid "All Blogs"
+msgstr ""
+
+#: includes/class-blogroll-cpt.php:52
+msgid "Search Blogs"
+msgstr ""
+
+#: includes/class-blogroll-cpt.php:53
+msgid "Parent Blogs:"
+msgstr ""
+
+#: includes/class-blogroll-cpt.php:54
+msgid "No blogs found."
+msgstr ""
+
+#: includes/class-blogroll-cpt.php:55
+msgid "No blogs found in Trash."
+msgstr ""
+
+#: includes/class-blogroll-cpt.php:56
+msgid "Blog Image"
+msgstr ""
+
+#: includes/class-blogroll-cpt.php:57
+msgid "Set blog image"
+msgstr ""
+
+#: includes/class-blogroll-cpt.php:58
+msgid "Remove blog image"
+msgstr ""
+
+#: includes/class-blogroll-cpt.php:59
+msgid "Use as blog image"
+msgstr ""
+
+#: includes/class-blogroll-cpt.php:60
+msgid "Blog archives"
+msgstr ""
+
+#: includes/class-blogroll-cpt.php:61
+msgid "Insert into blog"
+msgstr ""
+
+#: includes/class-blogroll-cpt.php:62
+msgid "Uploaded to this blog"
+msgstr ""
+
+#: includes/class-blogroll-cpt.php:63
+msgid "Filter blogs list"
+msgstr ""
+
+#: includes/class-blogroll-cpt.php:64
+msgid "Blogs list navigation"
+msgstr ""
+
+#: includes/class-blogroll-cpt.php:65
+msgid "Blogs list"
+msgstr ""
+
+#: includes/class-blogroll-cpt.php:78
+msgid "Blog Categories"
+msgstr ""
+
+#: includes/class-blogroll-cpt.php:79
+msgid "Blog Category"
+msgstr ""
+
+#: includes/class-blogroll-cpt.php:80
+msgid "Search Categories"
+msgstr ""
+
+#: includes/class-blogroll-cpt.php:81
+msgid "All Categories"
+msgstr ""
+
+#: includes/class-blogroll-cpt.php:82
+msgid "Parent Category"
+msgstr ""
+
+#: includes/class-blogroll-cpt.php:83
+msgid "Parent Category:"
+msgstr ""
+
+#: includes/class-blogroll-cpt.php:84
+msgid "Edit Category"
+msgstr ""
+
+#: includes/class-blogroll-cpt.php:85
+msgid "Update Category"
+msgstr ""
+
+#: includes/class-blogroll-cpt.php:86
+msgid "Add New Category"
+msgstr ""
+
+#: includes/class-blogroll-cpt.php:87
+msgid "New Category Name"
+msgstr ""
+
+#: includes/class-blogroll-cpt.php:88
+msgid "Categories"
+msgstr ""
+
+#: includes/class-blogroll-cpt.php:95
+msgid "Blog Information"
+msgstr ""
+
+#: includes/class-blogroll-cpt.php:100
+msgid "Site URL"
+msgstr ""
+
+#: includes/class-blogroll-cpt.php:101
+msgid "The main URL of the blog"
+msgstr ""
+
+#: includes/class-blogroll-cpt.php:110
+msgid "RSS Feed URL"
+msgstr ""
+
+#: includes/class-blogroll-cpt.php:111
+msgid "The RSS feed URL of the blog"
+msgstr ""
+
+#: includes/class-blogroll-cpt.php:120
+msgid "Author"
+msgstr ""
+
+#: includes/class-blogroll-cpt.php:121
+msgid "The main author of the blog"
+msgstr ""
+
+#: includes/class-blogroll-cpt.php:122
+msgid "Author name"
+msgstr ""
+
+#: includes/class-blogroll-cpt.php:130
+msgid "Feedbin ID"
+msgstr ""
+
+#: includes/class-blogroll-cpt.php:131
+msgid "The unique identifier in Feedbin"
+msgstr ""
+
+#: includes/class-blogroll-cpt.php:138
+msgid "Last Synchronization"
+msgstr ""
+
+#: includes/class-blogroll-cpt.php:139
+msgid "Date and time of the last synchronization"
+msgstr ""
+
+#: includes/class-blogroll-cpt.php:147
+msgid "Sync Status"
+msgstr ""
+
+#: includes/class-blogroll-cpt.php:148
+msgid "Synchronization status with Feedbin"
+msgstr ""
+
+#: includes/class-blogroll-cpt.php:150
+msgid "Active"
+msgstr ""
+
+#: includes/class-blogroll-cpt.php:151
+msgid "Inactive"
+msgstr ""
+
+#: includes/class-blogroll-cpt.php:152
+msgid "Error"
+msgstr ""
+
+#: includes/class-blogroll-cpt.php:175
+msgid "Site URL"
+msgstr ""
+
+#: includes/class-blogroll-cpt.php:185
+msgid "RSS Feed"
+msgstr ""
+
+#: includes/class-blogroll-cpt.php:195
+msgid "Author"
+msgstr ""
+
+#: includes/class-blogroll-cpt.php:205
+msgid "Last Sync"
+msgstr ""
+
+#: includes/class-blogroll-cpt.php:207
+msgid "Never"
+msgstr ""
+
+#: includes/class-blogroll-cpt.php:215
+msgid "Status"
+msgstr ""
+
+#: includes/class-blogroll-cpt.php:220
+msgid "Active"
+msgstr ""
+
+#: includes/class-blogroll-cpt.php:221
+msgid "Inactive"
+msgstr ""
+
+#: includes/class-blogroll-cpt.php:222
+msgid "Error"
+msgstr ""
+
+#: includes/class-blogroll-sync.php:67
+msgid "Security check failed"
+msgstr ""
+
+#: includes/class-blogroll-sync.php:72
+msgid "Insufficient permissions"
+msgstr ""
+
+#: includes/class-blogroll-sync.php:108
+msgid "Synchronization completed: %1$d added, %2$d updated, %3$d deactivated"
+msgstr ""
+
+#: includes/class-blogroll-template.php:67
+msgid "No blogs found."
+msgstr ""
+
+#: includes/class-blogroll-template.php:75
+msgid "Export OPML"
+msgstr ""
+
+#: includes/class-blogroll-template.php:120
+msgid "Visit Site"
+msgstr ""
+
+#: includes/class-blogroll-template.php:127
+msgid "Subscribe to RSS feed for %s"
+msgstr ""
+
+#: includes/class-blogroll-template.php:130
+msgid "RSS"
+msgstr ""
+
+#: includes/class-blogroll-template.php:155
+msgid "Website"
+msgstr ""
+
+#: includes/class-blogroll-template.php:162
+msgid "RSS Feed"
+msgstr ""
+
+#: includes/class-blogroll-template.php:163
+msgid "Subscribe to RSS"
+msgstr ""
+
+#: includes/class-blogroll-template.php:170
+msgid "Author"
+msgstr ""
+
+#: includes/class-blogroll-template.php:200
+msgid "Category slug to filter blogs"
+msgstr ""
+
+#: includes/class-blogroll-template.php:205
+msgid "Maximum number of blogs to return"
+msgstr ""
+
+#: includes/class-feedbin-api.php:67
+msgid "Feedbin credentials not configured"
+msgstr ""
+
+#: includes/class-feedbin-api.php:95
+msgid "Feedbin API error (HTTP %1$s): %2$s"
+msgstr ""
+
+#: includes/class-feedbin-api.php:140
+msgid "Feedbin API connection successful"
+msgstr ""
+
+#: feed-to-blogroll.php:295
+msgid "Feed to Blogroll requires %s to be installed and activated."
+msgstr ""

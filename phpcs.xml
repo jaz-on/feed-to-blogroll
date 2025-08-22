@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<ruleset name="Feed to Blogroll Plugin">
+	<description>PHP CodeSniffer ruleset for Feed to Blogroll plugin</description>
+
+	<!-- Include WordPress Coding Standards -->
+	<rule ref="WordPress-Extra"/>
+	<rule ref="WordPress-Docs"/>
+
+	<!-- Exclude some rules that are too strict for this project -->
+	<rule ref="WordPress-Extra">
+		<exclude name="WordPress.Files.FileName.InvalidClassFileName"/>
+		<exclude name="WordPress.Files.FileName.NotHyphenatedLowercase"/>
+	</rule>
+
+	<!-- Custom rules for this plugin -->
+	<rule ref="WordPress-Extra">
+		<!-- Allow short array syntax -->
+		<exclude name="Generic.Arrays.DisallowShortArraySyntax"/>
+		<!-- Allow alternative control structure syntax -->
+		<exclude name="Generic.ControlStructures.InlineControlStructure"/>
+	</rule>
+
+	<!-- File paths to check -->
+	<file>.</file>
+
+	<!-- Exclude vendor and build directories -->
+	<exclude-pattern>vendor/</exclude-pattern>
+	<exclude-pattern>node_modules/</exclude-pattern>
+	<exclude-pattern>assets/</exclude-pattern>
+	<exclude-pattern>languages/</exclude-pattern>
+
+	<!-- Exclude specific files -->
+	<exclude-pattern>*.min.js</exclude-pattern>
+	<exclude-pattern>*.min.css</exclude-pattern>
+
+	<!-- Show progress -->
+	<arg value="p"/>
+	<arg name="colors"/>
+
+	<!-- Show sniff codes in all reports -->
+	<arg value="s"/>
+
+	<!-- Show source codes in all reports -->
+	<arg value="n"/>
+</ruleset>

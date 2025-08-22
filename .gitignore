@@ -1,0 +1,48 @@
+# WordPress Plugin Development
+# Ignore development and temporary files
+
+# IDE and Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Log files
+*.log
+debug.log
+error.log
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.backup
+
+# Development files (if any are created)
+dev-*.php
+test-*.php
+debug-*.php
+
+# Sensitive data
+wp-config.php
+.env
+
+# Build files
+node_modules/
+vendor/
+composer.lock
+package-lock.json
+
+# Documentation drafts
+docs/drafts/
+*.md.bak

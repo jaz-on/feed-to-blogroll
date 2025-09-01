@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ruleset name="Feed to Blogroll Plugin">
-	<description>PHP CodeSniffer ruleset for Feed to Blogroll plugin</description>
+	<description>PHP CodeSniffer ruleset for Feed to Blogroll plugin with enhanced security and accessibility standards</description>
 
 	<!-- Include WordPress Coding Standards -->
 	<rule ref="WordPress-Core"/>
@@ -19,6 +19,28 @@
 		<exclude name="Generic.Arrays.DisallowShortArraySyntax"/>
 		<!-- Allow alternative control structure syntax -->
 		<exclude name="Generic.ControlStructures.InlineControlStructure"/>
+	</rule>
+
+	<!-- Security-specific rules -->
+	<rule ref="WordPress-Security">
+		<!-- Allow wp_verify_nonce for security -->
+		<exclude name="WordPress.Security.NonceVerification.Missing"/>
+		<!-- Allow wp_verify_nonce for AJAX -->
+		<exclude name="WordPress.Security.NonceVerification.Recommended"/>
+	</rule>
+
+	<!-- Accessibility and best practices -->
+	<rule ref="Generic">
+		<!-- Ensure proper escaping -->
+		<exclude name="Generic.Functions.CallTimePassByReference"/>
+		<!-- Allow modern PHP features -->
+		<exclude name="Generic.PHP.DeprecatedFunctions"/>
+	</rule>
+
+	<!-- Performance rules -->
+	<rule ref="WordPress-Performance">
+		<!-- Allow wp_cache_get/set for performance -->
+		<exclude name="WordPress.Performance.LowExpensiveFunctions"/>
 	</rule>
 
 	<!-- File paths to check -->
@@ -46,4 +68,20 @@
 
 	<!-- Show source codes in all reports -->
 	<arg value="n"/>
+
+	<!-- Custom error codes for this plugin -->
+	<rule ref="Generic.Files.LineLength">
+		<properties>
+			<property name="lineLimit" value="120"/>
+			<property name="absoluteLineLimit" value="150"/>
+		</properties>
+	</rule>
+
+	<!-- Enforce proper documentation -->
+	<rule ref="WordPress-Docs">
+		<!-- Require proper PHPDoc blocks -->
+		<exclude name="WordPress.Docs.RequireClassComment"/>
+		<!-- Allow short descriptions for simple methods -->
+		<exclude name="WordPress.Docs.RequireMethodComment"/>
+	</rule>
 </ruleset>

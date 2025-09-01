@@ -27,10 +27,11 @@ class Feed_To_Blogroll_Repair {
 	 * Add repair menu
 	 */
 	public function add_repair_menu() {
-		// Add as a standalone page for easier access
-		add_management_page(
+		// Add as a submenu under the main Feed to Blogroll menu instead of Tools
+		add_submenu_page(
+			'feed-to-blogroll',
 			__( 'Repair Feed to Blogroll CPT', 'feed-to-blogroll' ),
-			__( 'Repair Blogroll CPT', 'feed-to-blogroll' ),
+			__( 'Repair CPT', 'feed-to-blogroll' ),
 			'manage_options',
 			'feed-to-blogroll-repair',
 			array( $this, 'repair_page' )
@@ -86,8 +87,8 @@ class Feed_To_Blogroll_Repair {
 	 * Force CPT registration
 	 */
 	private function force_cpt_registration() {
-		// Load the CPT class
-		require_once FEED_TO_BLOGROLL_PLUGIN_DIR . 'includes/class-blogroll-cpt.php';
+		// Load the CPT class (correct filename)
+		require_once FEED_TO_BLOGROLL_PLUGIN_DIR . 'includes/class-feed-to-blogroll-cpt.php';
 
 		// Create new instance and force registration
 		$cpt = new Feed_To_Blogroll_CPT();

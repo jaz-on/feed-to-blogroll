@@ -58,17 +58,34 @@ class Feed_To_Blogroll_Sync {
 	}
 
 	/**
-	 * Perform manual synchronization via AJAX
+	 * Perform manual synchronization via AJAX with improved security
 	 */
 	public function manual_sync() {
-		// Check nonce
-		if ( ! wp_verify_nonce( $_POST['nonce'], 'feed_to_blogroll_admin' ) ) {
-			wp_send_json_error( __( 'Security check failed', 'feed-to-blogroll' ) );
+		// Vérifier la méthode HTTP
+		if ( 'POST' !== $_SERVER['REQUEST_METHOD'] ) {
+			wp_send_json_error( array(
+				'message' => esc_html__( 'Invalid request method', 'feed-to-blogroll' ),
+				'code'    => 'invalid_method',
+				'context' => 'http_validation'
+			) );
 		}
 
-		// Check user capabilities
+		// Vérifier la présence du nonce AVANT toute utilisation
+		if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'feed_to_blogroll_admin' ) ) {
+			wp_send_json_error( array(
+				'message' => esc_html__( 'Security check failed. Please refresh the page and try again.', 'feed-to-blogroll' ),
+				'code'    => 'nonce_failed',
+				'context' => 'security_validation'
+			) );
+		}
+
+		// Vérifier les capacités utilisateur
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( __( 'Insufficient permissions', 'feed-to-blogroll' ) );
+			wp_send_json_error( array(
+				'message' => esc_html__( 'Insufficient permissions to perform this action.', 'feed-to-blogroll' ),
+				'code'    => 'insufficient_permissions',
+				'context' => 'capability_check'
+			) );
 		}
 
 		$result = $this->sync_blogroll();
@@ -78,7 +95,11 @@ class Feed_To_Blogroll_Sync {
 			wp_cache_delete( 'feed_to_blogroll_opml', 'feed_to_blogroll' );
 			wp_send_json_success( $result );
 		} else {
-			wp_send_json_error( $result['message'] );
+			wp_send_json_error( array(
+				'message' => $result['message'],
+				'code'    => 'sync_failed',
+				'context' => 'manual_sync'
+			) );
 		}
 	}
 
@@ -89,7 +110,7 @@ class Feed_To_Blogroll_Sync {
 	 */
 	public function sync_blogroll() {
 		$start_time = microtime( true );
-		$result     = array(
+		$result = array(
 			'success'           => false,
 			'message'           => '',
 			'blogs_added'       => 0,
@@ -100,263 +121,295 @@ class Feed_To_Blogroll_Sync {
 		);
 
 		try {
-			// Update sync status
-			$this->update_sync_status( 'running' );
-
-			// Get subscriptions from Feedbin
-			$subscriptions = $this->api->get_subscriptions_with_feeds();
-			if ( is_wp_error( $subscriptions ) ) {
-				throw new Exception( $subscriptions->get_error_message() );
+			// Check if API credentials are configured
+			if ( ! $this->api->has_credentials() ) {
+				$result['message'] = __( 'Feedbin API credentials not configured', 'feed-to-blogroll' );
+				return $result;
 			}
 
-			// Get existing blogs
-			$existing_blogs = $this->get_existing_blogs();
-
-			// Process each subscription
-			foreach ( $subscriptions as $subscription ) {
-				$this->process_subscription( $subscription, $existing_blogs, $result );
+			// Get feeds from Feedbin
+			$feeds = $this->api->get_feeds();
+			if ( is_wp_error( $feeds ) ) {
+				$result['message'] = $feeds->get_error_message();
+				$result['errors'][] = $feeds->get_error_message();
+				return $result;
 			}
 
-			// Deactivate blogs no longer in Feedbin
-			$this->deactivate_removed_blogs( $subscriptions, $existing_blogs, $result );
+			// Process each feed
+			foreach ( $feeds as $feed ) {
+				$feed_result = $this->process_feed( $feed );
+				if ( $feed_result['success'] ) {
+					if ( $feed_result['action'] === 'added' ) {
+						$result['blogs_added']++;
+					} elseif ( $feed_result['action'] === 'updated' ) {
+						$result['blogs_updated']++;
+					}
+				} else {
+					$result['errors'][] = $feed_result['error'];
+				}
+			}
+
+			// Deactivate blogs that are no longer in Feedbin
+			$deactivated_count = $this->deactivate_removed_blogs( $feeds );
+			$result['blogs_deactivated'] = $deactivated_count;
 
 			// Update sync status
-			$this->update_sync_status( 'completed' );
-			$this->update_last_sync();
+			$options = get_option( 'feed_to_blogroll_options', array() );
+			$options['last_sync'] = current_time( 'mysql' );
+			$options['sync_status'] = 'success';
+			update_option( 'feed_to_blogroll_options', $options );
 
 			$result['success'] = true;
 			$result['message'] = sprintf(
-				/* translators: %1$d: blogs added, %2$d: blogs updated, %3$d: blogs deactivated */
-				__( 'Synchronization completed: %1$d added, %2$d updated, %3$d deactivated', 'feed-to-blogroll' ),
+				/* translators: 1: blogs added, 2: blogs updated, 3: blogs deactivated */
+				__( 'Synchronization completed successfully. %1$d blogs added, %2$d updated, %3$d deactivated.', 'feed-to-blogroll' ),
 				$result['blogs_added'],
 				$result['blogs_updated'],
 				$result['blogs_deactivated']
 			);
 
 		} catch ( Exception $e ) {
-			$result['message']  = $e->getMessage();
+			$result['message'] = $e->getMessage();
 			$result['errors'][] = $e->getMessage();
-			$this->update_sync_status( 'error' );
+			
+			// Update sync status to error
+			$options = get_option( 'feed_to_blogroll_options', array() );
+			$options['sync_status'] = 'error';
+			update_option( 'feed_to_blogroll_options', $options );
 		}
 
-		$result['duration'] = round( ( microtime( true ) - $start_time ) * 1000, 2 );
+		$result['duration'] = microtime( true ) - $start_time;
+		return $result;
+	}
 
-		// Log the result
-		$this->log_sync_result( $result );
+	/**
+	 * Process individual feed
+	 *
+	 * @param array $feed Feed data from API
+	 * @return array Processing result
+	 */
+	private function process_feed( $feed ) {
+		$result = array(
+			'success' => false,
+			'action'  => '',
+			'error'   => '',
+		);
+
+		try {
+			// Check if blog already exists
+			$existing_blog = $this->find_existing_blog( $feed['feed_url'] );
+
+			if ( $existing_blog ) {
+				// Update existing blog
+				$updated = $this->update_blog( $existing_blog->ID, $feed );
+				if ( $updated ) {
+					$result['success'] = true;
+					$result['action'] = 'updated';
+				} else {
+					$result['error'] = sprintf( __( 'Failed to update blog: %s', 'feed-to-blogroll' ), $feed['title'] );
+				}
+			} else {
+				// Create new blog
+				$blog_id = $this->create_blog( $feed );
+				if ( $blog_id ) {
+					$result['success'] = true;
+					$result['action'] = 'added';
+				} else {
+					$result['error'] = sprintf( __( 'Failed to create blog: %s', 'feed-to-blogroll' ), $feed['title'] );
+				}
+			}
+		} catch ( Exception $e ) {
+			$result['error'] = $e->getMessage();
+		}
 
 		return $result;
 	}
 
 	/**
-	 * Process a single subscription
+	 * Find existing blog by RSS URL
 	 *
-	 * @param array $subscription Subscription data.
-	 * @param array $existing_blogs Existing blogs.
-	 * @param array $result Sync result reference.
+	 * @param string $rss_url RSS URL to search for
+	 * @return WP_Post|false Blog post or false if not found
 	 */
-	private function process_subscription( $subscription, $existing_blogs, &$result ) {
-		$feed_id = $subscription['feed_id'];
+	private function find_existing_blog( $rss_url ) {
+		$args = array(
+			'post_type'      => 'blogroll',
+			'meta_query'     => array(
+				array(
+					'key'     => 'rss_url',
+					'value'   => $rss_url,
+					'compare' => '=',
+				),
+			),
+			'posts_per_page' => 1,
+			'post_status'    => array( 'publish', 'draft' ),
+		);
 
-		if ( isset( $existing_blogs[ $feed_id ] ) ) {
-			// Update existing blog
-			$this->update_blog( $existing_blogs[ $feed_id ], $subscription );
-			++$result['blogs_updated'];
-		} else {
-			// Create new blog
-			$this->create_blog( $subscription );
-			++$result['blogs_added'];
-		}
+		$query = new WP_Query( $args );
+		return $query->posts ? $query->posts[0] : false;
 	}
 
 	/**
-	 * Create a new blog post
+	 * Create new blog post
 	 *
-	 * @param array $subscription Subscription data.
-	 * @return int|WP_Error Post ID or error.
+	 * @param array $feed Feed data
+	 * @return int|false Blog post ID or false on failure
 	 */
-	private function create_blog( $subscription ) {
+	private function create_blog( $feed ) {
 		$post_data = array(
-			'post_title'   => sanitize_text_field( $subscription['title'] ),
-			'post_content' => wp_kses_post( $subscription['description'] ?? '' ),
-			'post_excerpt' => sanitize_textarea_field( $subscription['description'] ?? '' ),
+			'post_title'   => sanitize_text_field( $feed['title'] ),
+			'post_content' => wp_kses_post( $feed['description'] ?? '' ),
 			'post_status'  => 'publish',
 			'post_type'    => 'blogroll',
 		);
 
-		$post_id = wp_insert_post( $post_data );
+		$blog_id = wp_insert_post( $post_data );
 
-		if ( ! is_wp_error( $post_id ) ) {
+		if ( $blog_id && ! is_wp_error( $blog_id ) ) {
 			// Set ACF fields
-			update_field( 'site_url', esc_url_raw( $subscription['site_url'] ?? '' ), $post_id );
-			update_field( 'rss_url', esc_url_raw( $subscription['feed_url'] ?? '' ), $post_id );
-			update_field( 'author', sanitize_text_field( $subscription['author'] ?? '' ), $post_id );
-			update_field( 'feedbin_id', intval( $subscription['feed_id'] ), $post_id );
-			update_field( 'last_sync', current_time( 'mysql' ), $post_id );
-			update_field( 'sync_status', 'active', $post_id );
+			update_field( 'rss_url', esc_url_raw( $feed['feed_url'] ), $blog_id );
+			update_field( 'site_url', esc_url_raw( $feed['site_url'] ?? '' ), $blog_id );
+			update_field( 'feed_id', absint( $feed['id'] ), $blog_id );
 
-			// Set category if available
-			if ( ! empty( $subscription['category'] ) ) {
-				wp_set_object_terms( $post_id, $subscription['category'], 'blogroll_category' );
+			// Set categories if available
+			if ( ! empty( $feed['tags'] ) ) {
+				$this->set_blog_categories( $blog_id, $feed['tags'] );
 			}
+
+			return $blog_id;
 		}
 
-		return $post_id;
+		return false;
 	}
 
 	/**
-	 * Update an existing blog post
+	 * Update existing blog post
 	 *
-	 * @param array $existing_blog Existing blog data.
-	 * @param array $subscription Subscription data.
-	 * @return int|WP_Error Post ID or error.
+	 * @param int   $blog_id Blog post ID
+	 * @param array $feed    Feed data
+	 * @return bool Success status
 	 */
-	private function update_blog( $existing_blog, $subscription ) {
+	private function update_blog( $blog_id, $feed ) {
 		$post_data = array(
-			'ID'           => $existing_blog['ID'],
-			'post_title'   => sanitize_text_field( $subscription['title'] ),
-			'post_content' => wp_kses_post( $subscription['description'] ?? '' ),
-			'post_excerpt' => sanitize_textarea_field( $subscription['description'] ?? '' ),
+			'ID'           => $blog_id,
+			'post_title'   => sanitize_text_field( $feed['title'] ),
+			'post_content' => wp_kses_post( $feed['description'] ?? '' ),
 		);
 
-		$post_id = wp_update_post( $post_data );
+		$updated = wp_update_post( $post_data );
 
-		if ( ! is_wp_error( $post_id ) ) {
+		if ( $updated && ! is_wp_error( $updated ) ) {
 			// Update ACF fields
-			update_field( 'site_url', esc_url_raw( $subscription['site_url'] ?? '' ), $post_id );
-			update_field( 'rss_url', esc_url_raw( $subscription['feed_url'] ?? '' ), $post_id );
-			update_field( 'author', sanitize_text_field( $subscription['author'] ?? '' ), $post_id );
-			update_field( 'last_sync', current_time( 'mysql' ), $post_id );
-			update_field( 'sync_status', 'active', $post_id );
+			update_field( 'site_url', esc_url_raw( $feed['site_url'] ?? '' ), $blog_id );
+			update_field( 'feed_id', absint( $feed['id'] ), $blog_id );
 
-			// Update category if available
-			if ( ! empty( $subscription['category'] ) ) {
-				wp_set_object_terms( $post_id, $subscription['category'], 'blogroll_category' );
+			// Update categories if available
+			if ( ! empty( $feed['tags'] ) ) {
+				$this->set_blog_categories( $blog_id, $feed['tags'] );
 			}
+
+			return true;
 		}
 
-		return $post_id;
+		return false;
 	}
 
 	/**
-	 * Deactivate blogs no longer in Feedbin
+	 * Set blog categories from tags
 	 *
-	 * @param array $subscriptions Current subscriptions.
-	 * @param array $existing_blogs Existing blogs.
-	 * @param array $result Sync result reference.
+	 * @param int   $blog_id Blog post ID
+	 * @param array $tags    Tags from feed
 	 */
-	private function deactivate_removed_blogs( $subscriptions, $existing_blogs, &$result ) {
-		$current_feed_ids = array_column( $subscriptions, 'feed_id' );
+	private function set_blog_categories( $blog_id, $tags ) {
+		$category_ids = array();
 
-		foreach ( $existing_blogs as $feed_id => $blog ) {
-			if ( ! in_array( $feed_id, $current_feed_ids, true ) ) {
-				// Deactivate blog (set to draft instead of deleting)
-				wp_update_post(
-					array(
-						'ID'          => $blog['ID'],
-						'post_status' => 'draft',
-					)
-				);
+		foreach ( $tags as $tag ) {
+			$tag_name = sanitize_text_field( $tag );
+			$term = term_exists( $tag_name, 'blogroll_category' );
 
-				update_field( 'sync_status', 'inactive', $blog['ID'] );
-				++$result['blogs_deactivated'];
+			if ( ! $term ) {
+				$term = wp_insert_term( $tag_name, 'blogroll_category' );
 			}
+
+			if ( ! is_wp_error( $term ) ) {
+				$category_ids[] = $term['term_id'];
+			}
+		}
+
+		if ( ! empty( $category_ids ) ) {
+			wp_set_object_terms( $blog_id, $category_ids, 'blogroll_category' );
 		}
 	}
 
 	/**
-	 * Get existing blogs indexed by Feedbin ID
+	 * Deactivate blogs that are no longer in Feedbin
 	 *
-	 * @return array Existing blogs.
+	 * @param array $feeds Current feeds from API
+	 * @return int Number of deactivated blogs
 	 */
-	private function get_existing_blogs() {
-		$blogs = get_posts(
-			array(
-				'post_type'      => 'blogroll',
-				'post_status'    => 'any',
-				'posts_per_page' => -1,
-				'meta_query'     => array(
-					array(
-						'key'     => 'feedbin_id',
-						'compare' => 'EXISTS',
-					),
+	private function deactivate_removed_blogs( $feeds ) {
+		$feed_urls = array_column( $feeds, 'feed_url' );
+		$deactivated_count = 0;
+
+		$args = array(
+			'post_type'      => 'blogroll',
+			'post_status'    => 'publish',
+			'posts_per_page' => -1,
+			'meta_query'     => array(
+				array(
+					'key'     => 'rss_url',
+					'compare' => 'EXISTS',
 				),
-			)
+			),
 		);
 
-		$indexed_blogs = array();
+		$blogs = get_posts( $args );
+
 		foreach ( $blogs as $blog ) {
-			$feedbin_id = get_field( 'feedbin_id', $blog->ID );
-			if ( $feedbin_id ) {
-				$indexed_blogs[ $feedbin_id ] = array(
-					'ID'    => $blog->ID,
-					'title' => $blog->post_title,
-				);
+			$rss_url = get_field( 'rss_url', $blog->ID );
+			if ( $rss_url && ! in_array( $rss_url, $feed_urls, true ) ) {
+				// Deactivate blog by setting status to draft
+				wp_update_post( array(
+					'ID'          => $blog->ID,
+					'post_status' => 'draft',
+				) );
+				$deactivated_count++;
 			}
 		}
 
-		return $indexed_blogs;
-	}
-
-	/**
-	 * Update synchronization status
-	 *
-	 * @param string $status Status to set.
-	 */
-	private function update_sync_status( $status ) {
-		$options                = get_option( 'feed_to_blogroll_options', array() );
-		$options['sync_status'] = $status;
-		update_option( 'feed_to_blogroll_options', $options );
-	}
-
-	/**
-	 * Update last synchronization time
-	 */
-	private function update_last_sync() {
-		$options              = get_option( 'feed_to_blogroll_options', array() );
-		$options['last_sync'] = current_time( 'mysql' );
-		update_option( 'feed_to_blogroll_options', $options );
-	}
-
-	/**
-	 * Log synchronization result
-	 *
-	 * @param array $result Sync result.
-	 */
-	private function log_sync_result( $result ) {
-		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-			$log_entry = sprintf(
-				'[%s] Blogroll sync: %s (Duration: %sms, Added: %d, Updated: %d, Deactivated: %d)',
-				current_time( 'Y-m-d H:i:s' ),
-				$result['success'] ? 'SUCCESS' : 'FAILED',
-				$result['duration'],
-				$result['blogs_added'],
-				$result['blogs_updated'],
-				$result['blogs_deactivated']
-			);
-
-			if ( ! empty( $result['errors'] ) ) {
-				$log_entry .= ' - Errors: ' . implode( ', ', $result['errors'] );
-			}
-
-			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-			error_log( 'Feed to Blogroll: ' . $log_entry );
-		}
+		return $deactivated_count;
 	}
 
 	/**
 	 * Get synchronization statistics
 	 *
-	 * @return array Statistics.
+	 * @return array Sync statistics
 	 */
 	public function get_sync_stats() {
-		$options = get_option( 'feed_to_blogroll_options', array() );
+		$stats = array();
 
-		$stats = array(
-			'last_sync'      => isset( $options['last_sync'] ) ? $options['last_sync'] : '',
-			'sync_status'    => isset( $options['sync_status'] ) ? $options['sync_status'] : 'idle',
-			'total_blogs'    => wp_count_posts( 'blogroll' )->publish,
-			'inactive_blogs' => wp_count_posts( 'blogroll' )->draft,
-		);
+		// Count published blogs
+		$published_blogs = get_posts( array(
+			'post_type'      => 'blogroll',
+			'post_status'    => 'publish',
+			'posts_per_page' => -1,
+			'no_found_rows'  => true,
+		) );
+		$stats['total_published'] = count( $published_blogs );
+
+		// Count draft blogs (deactivated)
+		$draft_blogs = get_posts( array(
+			'post_type'      => 'blogroll',
+			'post_status'    => 'draft',
+			'posts_per_page' => -1,
+			'no_found_rows'  => true,
+		) );
+		$stats['total_draft'] = count( $draft_blogs );
+
+		// Get last sync info
+		$options = get_option( 'feed_to_blogroll_options', array() );
+		$stats['last_sync'] = isset( $options['last_sync'] ) ? $options['last_sync'] : '';
+		$stats['sync_status'] = isset( $options['sync_status'] ) ? $options['sync_status'] : 'idle';
 
 		return $stats;
 	}

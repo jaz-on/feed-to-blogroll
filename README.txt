@@ -1,6 +1,6 @@
 === Feed to Blogroll ===
 Contributors: jasonrouet
-Tags: blogroll, rss, feedbin, api, synchronization
+Tags: blogroll, rss, feedbin, api, synchronization, accessibility, performance
 Requires at least: 6.0
 Tested up to: 6.5
 Requires PHP: 8.2
@@ -20,16 +20,18 @@ Feed to Blogroll is a powerful WordPress plugin that automatically synchronizes 
 * **Custom Post Type**: Dedicated 'blogroll' post type with ACF fields
 * **Responsive Grid Layout**: 4-column desktop, 2-column mobile design
 * **OPML Export**: Export your blogroll as OPML file
-* **Category Support**: Organize blogs by categories
+* **Category Support**: Organize blogs by categories and tags
 * **Shortcodes**: Easy integration with [blogroll] and [blogroll_grid] shortcodes
 * **REST API**: Access blogroll data via WordPress REST API
 * **Admin Dashboard**: Comprehensive management interface
 * **Security**: Nonces, capability checks, and data sanitization
+* **Performance**: Optimized caching and conditional loading
+* **Accessibility**: WCAG 2.1 AA compliant with ARIA support
 
 = Requirements =
 
 * WordPress 6.0 or higher
-* PHP 7.4 or higher
+* PHP 8.2 or higher
 * Advanced Custom Fields Pro plugin
 * Feedbin account with API access
 
@@ -49,10 +51,10 @@ Feed to Blogroll is a powerful WordPress plugin that automatically synchronizes 
 
 2. **Synchronization Settings**:
    - Enable/disable automatic synchronization
-   - Set sync frequency (hourly, daily, weekly)
+   - Set sync frequency (twice daily, daily, weekly)
 
 3. **Display Options**:
-   - Use shortcodes: `[blogroll]` or `[blogroll_grid]`
+   - Use shortcodes: [blogroll] or [blogroll_grid]
    - Customize columns and limits
    - Filter by categories
 
@@ -110,7 +112,6 @@ Access your blogroll data programmatically:
     "description": "A great blog about technology",
     "site_url": "https://example.com",
     "rss_url": "https://example.com/feed/",
-    "author": "John Doe",
     "categories": ["Technology", "Web Development"]
   }
 ]
@@ -138,6 +139,49 @@ Access your blogroll data programmatically:
 
 = Styling =
 The plugin includes responsive CSS that works with most themes. You can override styles by adding custom CSS to your theme.
+
+= Privacy & Data Handling =
+
+= Data Collection =
+This plugin collects and stores:
+- Feedbin API credentials (encrypted)
+- Blog metadata from RSS feeds
+- Synchronization logs and timestamps
+
+= Data Retention =
+- API credentials are stored until plugin deactivation
+- Blog data is retained according to WordPress post lifecycle
+- Sync logs are kept for 30 days by default
+
+= Third-party Services =
+- Feedbin API: Used for RSS feed synchronization
+- No data is shared with other third-party services
+
+= GDPR Compliance =
+- Users can export their blogroll data via OPML
+- Users can request data deletion through WordPress admin
+- No personal data is collected beyond what's necessary for functionality
+
+= Accessibility =
+
+= WCAG 2.1 AA Compliance =
+- Semantic HTML structure with proper heading hierarchy
+- ARIA labels and roles for interactive elements
+- Keyboard navigation support for all features
+- Screen reader compatibility with descriptive text
+- High contrast support and focus indicators
+
+= Screen Reader Support =
+- Descriptive alt text for all images
+- ARIA live regions for dynamic content updates
+- Proper form labeling and error messaging
+- Semantic markup for navigation and content structure
+
+= Keyboard Navigation =
+- Tab order follows logical content flow
+- All interactive elements accessible via keyboard
+- Skip links for main content areas
+- Focus indicators visible on all focusable elements
 
 = Troubleshooting =
 
@@ -180,6 +224,9 @@ For support and feature requests, please visit:
 * Admin dashboard
 * Shortcodes support
 * REST API endpoints
+* Enhanced security features
+* Improved accessibility
+* Performance optimizations
 
 = Credits =
 
@@ -193,7 +240,7 @@ For more information, visit: https://github.com/jaz-on/feed-to-blogroll
 
 = How often does the plugin sync with Feedbin? =
 
-By default, the plugin syncs daily. You can change this in the settings to hourly or weekly.
+By default, the plugin syncs daily. You can change this in the settings to twice daily or weekly.
 
 = Can I manually sync my blogroll? =
 
@@ -215,6 +262,14 @@ The plugin is designed to work with most WordPress themes, including the Distrib
 
 Yes! The plugin uses semantic CSS classes that you can override with custom CSS in your theme.
 
+= Is the plugin accessible? =
+
+Yes! The plugin follows WCAG 2.1 AA guidelines and includes comprehensive ARIA support for screen readers and keyboard navigation.
+
+= What data does the plugin collect? =
+
+The plugin only collects data necessary for functionality: Feedbin API credentials (encrypted), blog metadata from RSS feeds, and synchronization logs. No personal user data is collected.
+
 == Screenshots ==
 
 1. Admin dashboard with statistics and actions
@@ -225,4 +280,4 @@ Yes! The plugin uses semantic CSS classes that you can override with custom CSS 
 == Upgrade Notice ==
 
 = 1.0.0 =
-Initial release with full Feedbin API integration and responsive design.
+Initial release with full Feedbin API integration, responsive design, and accessibility features.

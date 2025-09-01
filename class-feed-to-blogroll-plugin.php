@@ -1,19 +1,6 @@
 <?php
 /**
- * Plugin Name: Feed to Blogroll
- * Plugin URI: https://github.com/jaz-on/feed-to-blogroll
- * Description: Automatic blogroll synchronization with Feedbin API, integrated with Distributed theme.
- * Version: 1.0.0
- * Requires at least: 6.0
- * Tested up to: 6.5
- * Requires PHP: 8.2
- * Author: Jason Rouet
- * Author URI: https://jasonrouet.local
- * License: GPL v2 or later
- * License URI: https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain: feed-to-blogroll
- * Domain Path: /languages
- * Network: false
+ * Main Plugin Class
  *
  * @package FeedToBlogroll
  * @since 1.0.0
@@ -23,12 +10,6 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
-
-// Define plugin constants
-define( 'FEED_TO_BLOGROLL_VERSION', '1.0.0' );
-define( 'FEED_TO_BLOGROLL_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
-define( 'FEED_TO_BLOGROLL_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
-define( 'FEED_TO_BLOGROLL_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
 
 /**
  * Main plugin class
@@ -102,16 +83,25 @@ class Feed_To_Blogroll_Plugin {
 	}
 
 	/**
-	 * Load plugin dependencies
+	 * Load plugin dependencies with conditional loading for performance
 	 */
 	private function load_dependencies() {
+		// Core classes always needed
 		require_once FEED_TO_BLOGROLL_PLUGIN_DIR . 'includes/class-feed-to-blogroll-feedbin-api.php';
 		require_once FEED_TO_BLOGROLL_PLUGIN_DIR . 'includes/class-feed-to-blogroll-sync.php';
 		require_once FEED_TO_BLOGROLL_PLUGIN_DIR . 'includes/class-feed-to-blogroll-cpt.php';
-		require_once FEED_TO_BLOGROLL_PLUGIN_DIR . 'includes/class-feed-to-blogroll-admin.php';
-		require_once FEED_TO_BLOGROLL_PLUGIN_DIR . 'includes/class-feed-to-blogroll-template.php';
 
-		// Load repair script in debug mode
+		// Admin classes only when needed
+		if ( is_admin() ) {
+			require_once FEED_TO_BLOGROLL_PLUGIN_DIR . 'includes/class-feed-to-blogroll-admin.php';
+		}
+
+		// Frontend classes only when needed
+		if ( ! is_admin() || wp_doing_ajax() ) {
+			require_once FEED_TO_BLOGROLL_PLUGIN_DIR . 'includes/class-feed-to-blogroll-template.php';
+		}
+
+		// Load repair script only in debug mode
 		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
 			require_once FEED_TO_BLOGROLL_PLUGIN_DIR . 'class-feed-to-blogroll-repair.php';
 		}
@@ -135,13 +125,15 @@ class Feed_To_Blogroll_Plugin {
 		// Initialize synchronization
 		new Feed_To_Blogroll_Sync();
 
-		// Initialize admin interface
+		// Initialize admin interface only when needed
 		if ( is_admin() ) {
 			new Feed_To_Blogroll_Admin();
 		}
 
-		// Initialize template integration
-		new Feed_To_Blogroll_Template();
+		// Initialize template integration only when needed
+		if ( ! is_admin() || wp_doing_ajax() ) {
+			new Feed_To_Blogroll_Template();
+		}
 
 		// Initialize block support
 		$this->init_block_support();
@@ -249,10 +241,14 @@ class Feed_To_Blogroll_Plugin {
 	 * Render callback for the blogroll block
 	 */
 	public function render_blogroll_block( $attributes ) {
-		$category    = isset( $attributes['category'] ) ? $attributes['category'] : '';
-		$limit       = isset( $attributes['limit'] ) ? $attributes['limit'] : -1;
-		$columns     = isset( $attributes['columns'] ) ? $attributes['columns'] : 3;
-		$show_export = isset( $attributes['showExport'] ) ? $attributes['showExport'] : true;
+		// Sanitize and validate attributes
+		$category    = isset( $attributes['category'] ) ? sanitize_text_field( $attributes['category'] ) : '';
+		$limit       = isset( $attributes['limit'] ) ? absint( $attributes['limit'] ) : -1;
+		$columns     = isset( $attributes['columns'] ) ? absint( $attributes['columns'] ) : 3;
+		$show_export = isset( $attributes['showExport'] ) ? (bool) $attributes['showExport'] : true;
+
+		// Validate columns range
+		$columns = max( 1, min( 6, $columns ) );
 
 		// Use the existing shortcode logic
 		ob_start();
@@ -277,7 +273,7 @@ class Feed_To_Blogroll_Plugin {
 
 		// Check if classes are available
 		if ( ! class_exists( 'Feed_To_Blogroll_CPT' ) ) {
-			wp_die( 'Feed to Blogroll: Required classes not found during activation.' );
+			wp_die( esc_html__( 'Feed to Blogroll: Required classes not found during activation.', 'feed-to-blogroll' ) );
 		}
 
 		// Create Custom Post Type
@@ -317,6 +313,7 @@ class Feed_To_Blogroll_Plugin {
 		$default_options = array(
 			'feedbin_username' => '',
 			'feedbin_password' => '',
+			'feedbin_api_key'  => '', // Alternative plus sécurisée
 			'sync_frequency'   => 'daily',
 			'auto_sync'        => true,
 			'last_sync'        => '',

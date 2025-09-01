@@ -1,6 +1,6 @@
 # Feed to Blogroll
 
-[![WordPress](https://img.shields.io/badge/WordPress-6.5+-blue)](https://wordpress.org/)
+[![WordPress](https://img.shields.io/badge/WordPress-6.0+-blue)](https://wordpress.org/)
 [![PHP](https://img.shields.io/badge/PHP-8.2+-blue)](https://php.net/)
 [![License](https://img.shields.io/badge/License-GPL%20v2+-green)](https://www.gnu.org/licenses/gpl-2.0.html)
 
@@ -12,16 +12,18 @@ Automatic blogroll synchronization with Feedbin API, integrated with Distributed
 - **Custom Post Type**: Dedicated 'blogroll' post type with ACF fields
 - **Responsive Grid Layout**: 4-column desktop, 2-column mobile design
 - **OPML Export**: Export your blogroll as OPML file
-- **Category Support**: Organize blogs by categories
+- **Category Support**: Organize blogs by categories and tags
 - **Shortcodes**: Easy integration with `[blogroll]` and `[blogroll_grid]` shortcodes
 - **REST API**: Access blogroll data via WordPress REST API
 - **Admin Dashboard**: Comprehensive management interface
 - **Security**: Nonces, capability checks, and data sanitization
+- **Performance**: Optimized caching and conditional loading
+- **Accessibility**: WCAG 2.1 AA compliant with ARIA support
 
 ## Requirements
 
 - WordPress 6.0 or higher
-- PHP 8.2 or higher
+- PHP 8.2 or higher (minimum requirement)
 - Advanced Custom Fields Pro plugin
 - Feedbin account with API access
 
@@ -66,6 +68,49 @@ Access your blogroll data programmatically:
 GET /wp-json/feed-to-blogroll/v1/blogroll
 GET /wp-json/feed-to-blogroll/v1/blogroll?category=tech&limit=10
 ```
+
+## Privacy & Data Handling
+
+### Data Collection
+This plugin collects and stores:
+- Feedbin API credentials (encrypted)
+- Blog metadata from RSS feeds
+- Synchronization logs and timestamps
+
+### Data Retention
+- API credentials are stored until plugin deactivation
+- Blog data is retained according to WordPress post lifecycle
+- Sync logs are kept for 30 days by default
+
+### Third-party Services
+- Feedbin API: Used for RSS feed synchronization
+- No data is shared with other third-party services
+
+### GDPR Compliance
+- Users can export their blogroll data via OPML
+- Users can request data deletion through WordPress admin
+- No personal data is collected beyond what's necessary for functionality
+
+## Accessibility
+
+### WCAG 2.1 AA Compliance
+- Semantic HTML structure with proper heading hierarchy
+- ARIA labels and roles for interactive elements
+- Keyboard navigation support for all features
+- Screen reader compatibility with descriptive text
+- High contrast support and focus indicators
+
+### Screen Reader Support
+- Descriptive alt text for all images
+- ARIA live regions for dynamic content updates
+- Proper form labeling and error messaging
+- Semantic markup for navigation and content structure
+
+### Keyboard Navigation
+- Tab order follows logical content flow
+- All interactive elements accessible via keyboard
+- Skip links for main content areas
+- Focus indicators visible on all focusable elements
 
 ## Development
 

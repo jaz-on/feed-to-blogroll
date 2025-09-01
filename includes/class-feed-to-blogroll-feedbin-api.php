@@ -43,7 +43,7 @@ class Feed_To_Blogroll_Feedbin_API {
 	 * Load API credentials from options
 	 */
 	private function load_credentials() {
-		$options           = get_option( 'feed_to_blogroll_options', array() );
+		$options = get_option( 'feed_to_blogroll_options', array() );
 		$this->credentials = array(
 			'username' => isset( $options['feedbin_username'] ) ? $options['feedbin_username'] : '',
 			'password' => isset( $options['feedbin_password'] ) ? $options['feedbin_password'] : '',
@@ -60,19 +60,19 @@ class Feed_To_Blogroll_Feedbin_API {
 	}
 
 	/**
-	 * Make authenticated API request
+	 * Make authenticated API request with improved error handling
 	 *
-	 * @param string $endpoint API endpoint.
-	 * @param string $method HTTP method.
-	 * @param array  $data Request data.
-	 * @return array|WP_Error Response data or error.
+	 * @param string $endpoint API endpoint
+	 * @param string $method HTTP method
+	 * @param array  $data Request data
+	 * @return array|WP_Error Response data or error
 	 */
 	private function make_request( $endpoint, $method = 'GET', $data = array() ) {
 		if ( ! $this->has_credentials() ) {
 			return new WP_Error( 'no_credentials', __( 'Feedbin credentials not configured', 'feed-to-blogroll' ) );
 		}
 
-		$url  = $this->api_base . $endpoint;
+		$url = $this->api_base . $endpoint;
 		$args = array(
 			'method'  => $method,
 			'headers' => array(
@@ -94,230 +94,293 @@ class Feed_To_Blogroll_Feedbin_API {
 			return $response;
 		}
 
+		return $this->handle_api_response( $response, $endpoint );
+	}
+
+	/**
+	 * Handle API response with improved error handling
+	 *
+	 * @param array  $response WordPress HTTP response
+	 * @param string $endpoint API endpoint that was called
+	 * @return array|WP_Error Processed response or error
+	 */
+	private function handle_api_response( $response, $endpoint ) {
 		$response_code = wp_remote_retrieve_response_code( $response );
 		$response_body = wp_remote_retrieve_body( $response );
 
 		// Log API response for debugging
-		$this->log_api_response( $endpoint, $method, $response_code, $response_body );
-
-		if ( $response_code >= 200 && $response_code < 300 ) {
-			$decoded = json_decode( $response_body, true );
-			return is_array( $decoded ) ? $decoded : array();
-		} else {
-			return new WP_Error(
-				'api_error',
-				sprintf(
-					/* translators: %1$s: HTTP status code, %2$s: Response body */
-					__( 'Feedbin API error (HTTP %1$s): %2$s', 'feed-to-blogroll' ),
-					$response_code,
-					$response_body
-				)
-			);
+		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+			error_log( sprintf( 'Feedbin API %s: %d - %s', $endpoint, $response_code, $response_body ) );
 		}
-	}
 
-	/**
-	 * Get user subscriptions
-	 *
-	 * @return array|WP_Error Subscriptions or error.
-	 */
-	public function get_subscriptions() {
-		return $this->make_request( 'subscriptions.json' );
-	}
+		// Handle different response codes
+		switch ( $response_code ) {
+			case 200:
+				$decoded = json_decode( $response_body, true );
+				if ( json_last_error() !== JSON_ERROR_NONE ) {
+					return new WP_Error( 
+						'json_decode_error', 
+						sprintf( __( 'Failed to decode JSON response from %s', 'feed-to-blogroll' ), $endpoint ),
+						array( 'endpoint' => $endpoint, 'response' => $response_body )
+					);
+				}
+				return $decoded;
 
-	/**
-	 * Get feed details
-	 *
-	 * @param int $feed_id Feed ID.
-	 * @return array|WP_Error Feed details or error.
-	 */
-	public function get_feed( $feed_id ) {
-		return $this->make_request( 'feeds/' . intval( $feed_id ) . '.json' );
-	}
+			case 401:
+				return new WP_Error( 
+					'auth_failed', 
+					__( 'Feedbin authentication failed. Please check your username and password.', 'feed-to-blogroll' ),
+					array( 'endpoint' => $endpoint, 'code' => $response_code )
+				);
 
-	/**
-	 * Get all feeds
-	 *
-	 * @return array|WP_Error Feeds or error.
-	 */
-	public function get_feeds() {
-		return $this->make_request( 'feeds.json' );
-	}
+			case 403:
+				return new WP_Error( 
+					'forbidden', 
+					__( 'Access forbidden. Please check your Feedbin account permissions.', 'feed-to-blogroll' ),
+					array( 'endpoint' => $endpoint, 'code' => $response_code )
+				);
 
-	/**
-	 * Get starred entries
-	 *
-	 * @param int $page Page number.
-	 * @return array|WP_Error Starred entries or error.
-	 */
-	public function get_starred_entries( $page = 1 ) {
-		return $this->make_request( 'starred_entries.json?page=' . intval( $page ) );
+			case 404:
+				return new WP_Error( 
+					'not_found', 
+					sprintf( __( 'API endpoint %s not found', 'feed-to-blogroll' ), $endpoint ),
+					array( 'endpoint' => $endpoint, 'code' => $response_code )
+				);
+
+			case 429:
+				return new WP_Error( 
+					'rate_limited', 
+					__( 'API rate limit exceeded. Please try again later.', 'feed-to-blogroll' ),
+					array( 'endpoint' => $endpoint, 'code' => $response_code )
+				);
+
+			case 500:
+			case 502:
+			case 503:
+			case 504:
+				return new WP_Error( 
+					'server_error', 
+					sprintf( __( 'Feedbin server error (HTTP %d). Please try again later.', 'feed-to-blogroll' ), $response_code ),
+					array( 'endpoint' => $endpoint, 'code' => $response_code )
+				);
+
+			default:
+				return new WP_Error( 
+					'api_error', 
+					sprintf( __( 'Unexpected API response: HTTP %d from %s', 'feed-to-blogroll' ), $response_code, $endpoint ),
+					array( 'endpoint' => $endpoint, 'code' => $response_code, 'response' => $response_body )
+				);
+		}
 	}
 
 	/**
 	 * Test API connection
 	 *
-	 * @return array|WP_Error Test result or error.
+	 * @return string|WP_Error Success message or error
 	 */
 	public function test_connection() {
-		// First test with a simple endpoint
-		$result = $this->make_request( 'subscriptions.json' );
-
-		if ( is_wp_error( $result ) ) {
-			// Log detailed error for debugging
-			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-				error_log( 'Feedbin API Test Error: ' . $result->get_error_message() );
-			}
-			return $result;
+		$response = $this->make_request( 'subscriptions.json' );
+		
+		if ( is_wp_error( $response ) ) {
+			return $response;
 		}
 
-		return array(
-			'success' => true,
-			'message' => __( 'Feedbin API connection successful', 'feed-to-blogroll' ),
-			'count'   => count( $result ),
-		);
+		if ( is_array( $response ) ) {
+			return sprintf( __( 'Connection successful! Found %d subscriptions.', 'feed-to-blogroll' ), count( $response ) );
+		}
+
+		return __( 'Connection successful but unexpected response format.', 'feed-to-blogroll' );
 	}
 
 	/**
-	 * Get subscription with feed details
+	 * Get all feeds from Feedbin
 	 *
-	 * @return array|WP_Error Enhanced subscriptions or error.
+	 * @return array|WP_Error Array of feeds or error
 	 */
-	public function get_subscriptions_with_feeds() {
-		$subscriptions = $this->get_subscriptions();
-		if ( is_wp_error( $subscriptions ) ) {
-			return $subscriptions;
+	public function get_feeds() {
+		$response = $this->make_request( 'subscriptions.json' );
+		
+		if ( is_wp_error( $response ) ) {
+			return $response;
 		}
 
-		$feeds = $this->get_feeds();
-		if ( is_wp_error( $feeds ) ) {
-			return $feeds;
-		}
-
-		// Create feeds lookup
-		$feeds_lookup = array();
-		foreach ( $feeds as $feed ) {
-			if ( isset( $feed['id'] ) ) {
-				$feeds_lookup[ $feed['id'] ] = $feed;
-			}
-		}
-
-		// Enhance subscriptions with feed details
-		$enhanced_subscriptions = array();
-		foreach ( $subscriptions as $subscription ) {
-			if ( isset( $subscription['feed_id'] ) && isset( $feeds_lookup[ $subscription['feed_id'] ] ) ) {
-				$enhanced_subscriptions[] = array_merge(
-					$subscription,
-					$feeds_lookup[ $subscription['feed_id'] ]
-				);
-			}
-		}
-
-		return $enhanced_subscriptions;
-	}
-
-	/**
-	 * Log API responses for debugging
-	 *
-	 * @param string $endpoint API endpoint.
-	 * @param string $method HTTP method.
-	 * @param int    $response_code HTTP response code.
-	 * @param string $response_body Response body.
-	 */
-	private function log_api_response( $endpoint, $method, $response_code, $response_body ) {
-		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-			$log_entry = sprintf(
-				'[%s] %s %s - HTTP %d - %s',
-				current_time( 'Y-m-d H:i:s' ),
-				$method,
-				$endpoint,
-				$response_code,
-				substr( $response_body, 0, 200 ) . ( strlen( $response_body ) > 200 ? '...' : '' )
+		// Transform subscriptions to feed format
+		$feeds = array();
+		foreach ( $response as $subscription ) {
+			$feed = array(
+				'id'          => absint( $subscription['feed_id'] ),
+				'title'       => sanitize_text_field( $subscription['title'] ?? '' ),
+				'feed_url'    => esc_url_raw( $subscription['feed_url'] ?? '' ),
+				'site_url'    => esc_url_raw( $subscription['site_url'] ?? '' ),
+				'description' => wp_kses_post( $subscription['description'] ?? '' ),
+				'tags'        => array(),
 			);
 
-			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-			error_log( 'Feedbin API: ' . $log_entry );
+			// Get tags for this subscription
+			$tags = $this->get_subscription_tags( $subscription['feed_id'] );
+			if ( ! is_wp_error( $tags ) ) {
+				$feed['tags'] = array_map( 'sanitize_text_field', $tags );
+			}
+
+			$feeds[] = $feed;
 		}
+
+		return $feeds;
 	}
 
 	/**
-	 * Get API rate limit information
+	 * Get tags for a specific subscription
 	 *
-	 * @return array Rate limit info.
+	 * @param int $feed_id Feed ID
+	 * @return array|WP_Error Array of tags or error
 	 */
-	public function get_rate_limit_info() {
-		$response = wp_remote_head(
-			$this->api_base . 'subscriptions.json',
-			array(
-				'headers' => array(
-					// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
-					'Authorization' => 'Basic ' . base64_encode( $this->credentials['username'] . ':' . $this->credentials['password'] ),
-				),
-			)
-		);
-
-		if ( is_wp_error( $response ) ) {
+	private function get_subscription_tags( $feed_id ) {
+		$feed_id = absint( $feed_id );
+		if ( ! $feed_id ) {
 			return array();
 		}
 
-		$headers         = wp_remote_retrieve_headers( $response );
-		$rate_limit_info = array();
-
-		if ( isset( $headers['X-RateLimit-Limit'] ) ) {
-			$rate_limit_info['limit'] = intval( $headers['X-RateLimit-Limit'] );
+		$response = $this->make_request( "subscriptions/{$feed_id}/tags.json" );
+		
+		if ( is_wp_error( $response ) ) {
+			// If tags endpoint fails, return empty array instead of error
+			return array();
 		}
 
-		if ( isset( $headers['X-RateLimit-Remaining'] ) ) {
-			$rate_limit_info['remaining'] = intval( $headers['X-RateLimit-Remaining'] );
+		if ( is_array( $response ) ) {
+			return array_column( $response, 'name' );
 		}
 
-		if ( isset( $headers['X-RateLimit-Reset'] ) ) {
-			$rate_limit_info['reset'] = intval( $headers['X-RateLimit-Reset'] );
-		}
-
-		return $rate_limit_info;
+		return array();
 	}
 
 	/**
-	 * Check if we're approaching rate limits
+	 * Get API status information
 	 *
-	 * @return bool True if approaching limits.
-	 */
-	public function is_approaching_rate_limit() {
-		$rate_limit_info = $this->get_rate_limit_info();
-
-		if ( empty( $rate_limit_info ) || ! isset( $rate_limit_info['remaining'] ) || ! isset( $rate_limit_info['limit'] ) ) {
-			return false;
-		}
-
-		$threshold = 0.1; // 10% remaining
-		return ( $rate_limit_info['remaining'] / $rate_limit_info['limit'] ) <= $threshold;
-	}
-
-	/**
-	 * Get API status summary
-	 *
-	 * @return array API status information.
+	 * @return array API status
 	 */
 	public function get_api_status() {
 		$status = array(
-			'has_credentials' => $this->has_credentials(),
-			'connection_test' => null,
-			'rate_limit'      => null,
-			'last_check'      => current_time( 'mysql' ),
+			'configured' => $this->has_credentials(),
+			'connected'  => false,
+			'last_test' => get_option( 'feed_to_blogroll_api_last_test', '' ),
+			'error'      => '',
 		);
 
-		if ( $this->has_credentials() ) {
-			$connection_test           = $this->test_connection();
-			$status['connection_test'] = is_wp_error( $connection_test ) ? 'error' : 'success';
+		if ( ! $status['configured'] ) {
+			$status['error'] = __( 'API credentials not configured', 'feed-to-blogroll' );
+			return $status;
+		}
 
-			$rate_limit = $this->get_rate_limit_info();
-			if ( ! empty( $rate_limit ) ) {
-				$status['rate_limit'] = $rate_limit;
+		// Test connection if not tested recently
+		$last_test = strtotime( $status['last_test'] );
+		if ( ! $last_test || ( time() - $last_test ) > 3600 ) { // Test every hour
+			$test_result = $this->test_connection();
+			
+			if ( is_wp_error( $test_result ) ) {
+				$status['error'] = $test_result->get_error_message();
+				$status['connected'] = false;
+			} else {
+				$status['connected'] = true;
+				$status['error'] = '';
 			}
+
+			update_option( 'feed_to_blogroll_api_last_test', current_time( 'mysql' ) );
+		} else {
+			// Use cached status
+			$status['connected'] = get_option( 'feed_to_blogroll_api_connected', false );
+			$status['error'] = get_option( 'feed_to_blogroll_api_last_error', '' );
 		}
 
 		return $status;
+	}
+
+	/**
+	 * Get subscription count
+	 *
+	 * @return int|WP_Error Number of subscriptions or error
+	 */
+	public function get_subscription_count() {
+		$response = $this->make_request( 'subscriptions.json' );
+		
+		if ( is_wp_error( $response ) ) {
+			return $response;
+		}
+
+		return is_array( $response ) ? count( $response ) : 0;
+	}
+
+	/**
+	 * Validate feed URL
+	 *
+	 * @param string $url Feed URL to validate
+	 * @return bool|WP_Error True if valid, error if invalid
+	 */
+	public function validate_feed_url( $url ) {
+		$url = esc_url_raw( $url );
+		if ( ! $url ) {
+			return new WP_Error( 'invalid_url', __( 'Invalid URL format', 'feed-to-blogroll' ) );
+		}
+
+		// Test if URL is accessible
+		$response = wp_remote_head( $url, array( 'timeout' => 10 ) );
+		
+		if ( is_wp_error( $response ) ) {
+			return new WP_Error( 'url_unreachable', __( 'URL is not accessible', 'feed-to-blogroll' ) );
+		}
+
+		$response_code = wp_remote_retrieve_response_code( $response );
+		if ( $response_code !== 200 ) {
+			return new WP_Error( 'url_error', sprintf( __( 'URL returned HTTP %d', 'feed-to-blogroll' ), $response_code ) );
+		}
+
+		// Check if response looks like a feed
+		$content_type = wp_remote_retrieve_header( $response, 'content-type' );
+		if ( $content_type && strpos( $content_type, 'xml' ) === false && strpos( $content_type, 'rss' ) === false ) {
+			return new WP_Error( 'not_feed', __( 'URL does not appear to be a valid RSS feed', 'feed-to-blogroll' ) );
+		}
+
+		return true;
+	}
+
+	/**
+	 * Add new subscription to Feedbin
+	 *
+	 * @param string $feed_url Feed URL to add
+	 * @return array|WP_Error Subscription data or error
+	 */
+	public function add_subscription( $feed_url ) {
+		// Validate feed URL first
+		$validation = $this->validate_feed_url( $feed_url );
+		if ( is_wp_error( $validation ) ) {
+			return $validation;
+		}
+
+		$data = array(
+			'feed_url' => esc_url_raw( $feed_url ),
+		);
+
+		return $this->make_request( 'subscriptions.json', 'POST', $data );
+	}
+
+	/**
+	 * Remove subscription from Feedbin
+	 *
+	 * @param int $subscription_id Subscription ID to remove
+	 * @return bool|WP_Error Success status or error
+	 */
+	public function remove_subscription( $subscription_id ) {
+		$subscription_id = absint( $subscription_id );
+		if ( ! $subscription_id ) {
+			return new WP_Error( 'invalid_id', __( 'Invalid subscription ID', 'feed-to-blogroll' ) );
+		}
+
+		$response = $this->make_request( "subscriptions/{$subscription_id}.json", 'DELETE' );
+		
+		if ( is_wp_error( $response ) ) {
+			return $response;
+		}
+
+		return true;
 	}
 }

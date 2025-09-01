@@ -24,5 +24,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+// Define plugin constants
+define( 'FEED_TO_BLOGROLL_VERSION', '1.0.0' );
+define( 'FEED_TO_BLOGROLL_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
+define( 'FEED_TO_BLOGROLL_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
+define( 'FEED_TO_BLOGROLL_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
+
 // Load the main plugin class
-require_once plugin_dir_path( __FILE__ ) . 'class-feed-to-blogroll-plugin.php';
+require_once FEED_TO_BLOGROLL_PLUGIN_DIR . 'class-feed-to-blogroll-plugin.php';

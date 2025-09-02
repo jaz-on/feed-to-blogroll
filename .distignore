@@ -1,0 +1,65 @@
+# Feed to Blogroll Plugin - Distribution Ignore File
+# Exclude development and build files from plugin distribution
+
+# Development files
+.git/
+.gitignore
+.gitattributes
+composer.json
+composer.lock
+phpcs.xml
+phpunit.xml
+.distignore
+.editorconfig
+.eslintrc
+.prettierrc
+
+# Build and dependency directories
+vendor/
+node_modules/
+build/
+dist/
+tests/
+
+# Development assets
+*.scss
+*.sass
+*.less
+*.map
+*.min.js
+*.min.css
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+*.log
+*.cache
+
+# Documentation (keep README files)
+CHANGELOG.md
+CONTRIBUTING.md
+DEVELOPMENT.md
+
+# Keep essential files
+!README.md
+!README.txt
+!LICENSE
+!languages/*.pot
+!languages/*.po
+!languages/*.mo

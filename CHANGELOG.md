@@ -2,6 +2,18 @@
 
 Tous les changements notables de ce projet seront documentés dans ce fichier.
 
+## [1.0.2] - 2025-01-27
+
+### Ajouté
+- Fichier `.distignore` pour optimiser le packaging du plugin
+- Exclusion des fichiers de développement lors de la distribution
+
+## [1.0.1] - 2025-01-27
+
+### Ajouté
+- Documentation complète des changements dans le CHANGELOG.md
+- Historique détaillé des fonctionnalités et améliorations
+
 ## [1.0.0] - 2025-01-27
 
 ### Ajouté

@@ -42,9 +42,12 @@ class Feed_To_Blogroll_Repair {
 	 * Repair page
 	 */
 	public function repair_page() {
-		if ( isset( $_POST['repair_cpt'] ) && wp_verify_nonce( $_POST['_wpnonce'], 'repair_cpt' ) ) {
-			$this->force_cpt_registration();
-			echo '<div class="notice notice-success"><p>Custom Post Type registration repaired successfully!</p></div>';
+		if ( isset( $_POST['repair_cpt'], $_POST['_wpnonce'] ) ) {
+			$nonce = sanitize_text_field( wp_unslash( $_POST['_wpnonce'] ) );
+			if ( wp_verify_nonce( $nonce, 'repair_cpt' ) ) {
+				$this->force_cpt_registration();
+				echo '<div class="notice notice-success"><p>Custom Post Type registration repaired successfully!</p></div>';
+			}
 		}
 
 		?>
@@ -76,6 +79,9 @@ class Feed_To_Blogroll_Repair {
 	 * Show current status
 	 */
 	private function show_current_status() {
+		if ( ! function_exists( 'is_plugin_active' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		}
 		echo '<table class="form-table">';
 		echo '<tr><th>Blogroll CPT Registered:</th><td>' . ( post_type_exists( 'blogroll' ) ? '✅ Yes' : '❌ No' ) . '</td></tr>';
 		echo '<tr><th>Blogroll Category Taxonomy:</th><td>' . ( taxonomy_exists( 'blogroll_category' ) ? '✅ Yes' : '❌ No' ) . '</td></tr>';

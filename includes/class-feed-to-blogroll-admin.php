@@ -31,6 +31,9 @@ class Feed_To_Blogroll_Admin {
 
 		// Check CPT registration on admin pages
 		add_action( 'admin_notices', array( $this, 'check_cpt_registration' ) );
+
+		// Informative notice when credentials are driven by wp-config constants
+		add_action( 'admin_notices', array( $this, 'show_constants_notice' ) );
 	}
 
 	/**
@@ -193,10 +196,10 @@ class Feed_To_Blogroll_Admin {
 		if ( isset( $input['feedbin_username'] ) ) {
 			$email = sanitize_email( $input['feedbin_username'] );
 			if ( ! is_email( $email ) ) {
-				add_settings_error( 
-					'feed_to_blogroll_options', 
-					'invalid_email', 
-					__( 'Please enter a valid email address for Feedbin username.', 'feed-to-blogroll' ) 
+				add_settings_error(
+					'feed_to_blogroll_options',
+					'invalid_email',
+					__( 'Please enter a valid email address for Feedbin username.', 'feed-to-blogroll' )
 				);
 			} else {
 				$sanitized['feedbin_username'] = $email;
@@ -213,8 +216,8 @@ class Feed_To_Blogroll_Admin {
 
 		if ( isset( $input['sync_frequency'] ) ) {
 			$allowed_frequencies = array( 'twice_daily', 'daily', 'weekly' );
-			$sanitized['sync_frequency'] = in_array( $input['sync_frequency'], $allowed_frequencies, true ) 
-				? $input['sync_frequency'] 
+			$sanitized['sync_frequency'] = in_array( $input['sync_frequency'], $allowed_frequencies, true )
+				? $input['sync_frequency']
 				: 'daily';
 		}
 
@@ -234,12 +237,18 @@ class Feed_To_Blogroll_Admin {
 	public function username_field_callback() {
 		$options  = get_option( 'feed_to_blogroll_options', array() );
 		$username = isset( $options['feedbin_username'] ) ? $options['feedbin_username'] : '';
+		$constant_defined = defined( 'FEED_TO_BLOGROLL_USERNAME' );
 
+		$attr_disabled = $constant_defined ? 'disabled' : '';
 		printf(
-			'<input type="email" id="feedbin_username" name="feed_to_blogroll_options[feedbin_username]" value="%s" class="regular-text" required aria-describedby="username-description" />',
-			esc_attr( $username )
+			'<input type="email" id="feedbin_username" name="feed_to_blogroll_options[feedbin_username]" value="%s" class="regular-text" %s aria-describedby="username-description" />',
+			esc_attr( $username ),
+			esc_attr( $attr_disabled )
 		);
 		echo '<p id="username-description" class="description">' . esc_html__( 'Your Feedbin account email address', 'feed-to-blogroll' ) . '</p>';
+		if ( $constant_defined ) {
+			echo '<p class="description"><em>' . esc_html__( 'This field is locked because FEED_TO_BLOGROLL_USERNAME is defined in wp-config.php.', 'feed-to-blogroll' ) . '</em></p>';
+		}
 	}
 
 	/**
@@ -248,12 +257,18 @@ class Feed_To_Blogroll_Admin {
 	public function password_field_callback() {
 		$options  = get_option( 'feed_to_blogroll_options', array() );
 		$password = isset( $options['feedbin_password'] ) ? $options['feedbin_password'] : '';
+		$constant_defined = defined( 'FEED_TO_BLOGROLL_PASSWORD' );
 
+		$attr_disabled = $constant_defined ? 'disabled' : '';
 		printf(
-			'<input type="password" id="feedbin_password" name="feed_to_blogroll_options[feedbin_password]" value="%s" class="regular-text" required aria-describedby="password-description" />',
-			esc_attr( $password )
+			'<input type="password" id="feedbin_password" name="feed_to_blogroll_options[feedbin_password]" value="%s" class="regular-text" %s aria-describedby="password-description" />',
+			esc_attr( $password ),
+			esc_attr( $attr_disabled )
 		);
 		echo '<p id="password-description" class="description">' . esc_html__( 'Your Feedbin account password', 'feed-to-blogroll' ) . '</p>';
+		if ( $constant_defined ) {
+			echo '<p class="description"><em>' . esc_html__( 'This field is locked because FEED_TO_BLOGROLL_PASSWORD is defined in wp-config.php.', 'feed-to-blogroll' ) . '</em></p>';
+		}
 	}
 
 	/**
@@ -382,7 +397,7 @@ class Feed_To_Blogroll_Admin {
 		// Get current tab with validation
 		$allowed_tabs = array( 'dashboard', 'blogs', 'export', 'settings' );
 		$current_tab  = 'dashboard';
-		
+
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		if ( isset( $_GET['tab'] ) ) {
 			// phpcs:ignore WordPress.Security.NonceVerification.Recommended
@@ -545,48 +560,59 @@ class Feed_To_Blogroll_Admin {
 	 */
 	public function test_connection() {
 		// Vérifier la méthode HTTP
-		if ( 'POST' !== $_SERVER['REQUEST_METHOD'] ) {
-			wp_send_json_error( array(
-				'message' => esc_html__( 'Invalid request method', 'feed-to-blogroll' ),
-				'code'    => 'invalid_method',
-				'context' => 'http_validation'
-			) );
+		if ( ! isset( $_SERVER['REQUEST_METHOD'] ) || 'POST' !== $_SERVER['REQUEST_METHOD'] ) {
+			wp_send_json_error(
+				array(
+					'message' => esc_html__( 'Invalid request method', 'feed-to-blogroll' ),
+					'code'    => 'invalid_method',
+					'context' => 'http_validation',
+				)
+			);
 		}
 
 		// Vérifier le nonce
-		if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'feed_to_blogroll_admin' ) ) {
-			wp_send_json_error( array(
-				'message' => esc_html__( 'Security check failed. Please refresh the page and try again.', 'feed-to-blogroll' ),
-				'code'    => 'nonce_failed',
-				'context' => 'security_validation'
-			) );
+		$nonce = isset( $_POST['nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['nonce'] ) ) : '';
+		if ( empty( $nonce ) || ! wp_verify_nonce( $nonce, 'feed_to_blogroll_admin' ) ) {
+			wp_send_json_error(
+				array(
+					'message' => esc_html__( 'Security check failed. Please refresh the page and try again.', 'feed-to-blogroll' ),
+					'code'    => 'nonce_failed',
+					'context' => 'security_validation',
+				)
+			);
 		}
 
 		// Vérifier les capacités utilisateur
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array(
-				'message' => esc_html__( 'Insufficient permissions to perform this action.', 'feed-to-blogroll' ),
-				'code'    => 'insufficient_permissions',
-				'context' => 'capability_check'
-			) );
+			wp_send_json_error(
+				array(
+					'message' => esc_html__( 'Insufficient permissions to perform this action.', 'feed-to-blogroll' ),
+					'code'    => 'insufficient_permissions',
+					'context' => 'capability_check',
+				)
+			);
 		}
 
 		$api = new Feed_To_Blogroll_Feedbin_API();
 		$result = $api->test_connection();
 
 		if ( is_wp_error( $result ) ) {
-			wp_send_json_error( array(
-				'message' => esc_html( $result->get_error_message() ),
-				'code'    => 'api_error',
-				'context' => 'connection_test'
-			) );
+			wp_send_json_error(
+				array(
+					'message' => esc_html( $result->get_error_message() ),
+					'code'    => 'api_error',
+					'context' => 'connection_test',
+				)
+			);
 		}
 
-		wp_send_json_success( array(
-			'message' => esc_html( $result ),
-			'code'    => 'success',
-			'context' => 'connection_test'
-		) );
+		wp_send_json_success(
+			array(
+				'message' => esc_html( $result ),
+				'code'    => 'success',
+				'context' => 'connection_test',
+			)
+		);
 	}
 
 	/**
@@ -594,30 +620,43 @@ class Feed_To_Blogroll_Admin {
 	 */
 	public function export_opml() {
 		// Vérifier la méthode HTTP
-		if ( 'POST' !== $_SERVER['REQUEST_METHOD'] ) {
-			wp_send_json_error( array(
-				'message' => esc_html__( 'Invalid request method', 'feed-to-blogroll' ),
-				'code'    => 'invalid_method',
-				'context' => 'http_validation'
-			) );
+		if ( ! isset( $_SERVER['REQUEST_METHOD'] ) || 'POST' !== $_SERVER['REQUEST_METHOD'] ) {
+			wp_send_json_error(
+				array(
+					'message' => esc_html__( 'Invalid request method', 'feed-to-blogroll' ),
+					'code'    => 'invalid_method',
+					'context' => 'http_validation',
+				)
+			);
 		}
 
 		// Vérifier le nonce
-		if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'feed_to_blogroll_admin' ) ) {
-			wp_send_json_error( array(
-				'message' => esc_html__( 'Security check failed. Please refresh the page and try again.', 'feed-to-blogroll' ),
-				'code'    => 'nonce_failed',
-				'context' => 'security_validation'
-			) );
+		$nonce = isset( $_POST['nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['nonce'] ) ) : '';
+		if ( empty( $nonce ) || ! wp_verify_nonce( $nonce, 'feed_to_blogroll_admin' ) ) {
+			wp_send_json_error(
+				array(
+					'message' => esc_html__( 'Security check failed. Please refresh the page and try again.', 'feed-to-blogroll' ),
+					'code'    => 'nonce_failed',
+					'context' => 'security_validation',
+				)
+			);
 		}
 
 		// Vérifier les capacités utilisateur
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array(
-				'message' => esc_html__( 'Insufficient permissions to perform this action.', 'feed-to-blogroll' ),
-				'code'    => 'insufficient_permissions',
-				'context' => 'capability_check'
-			) );
+			wp_send_json_error(
+				array(
+					'message' => esc_html__( 'Insufficient permissions to perform this action.', 'feed-to-blogroll' ),
+					'code'    => 'insufficient_permissions',
+					'context' => 'capability_check',
+				)
+			);
+		}
+
+		// Try cached OPML first
+		$cached = get_transient( 'feed_to_blogroll_opml' );
+		if ( false !== $cached && is_array( $cached ) && isset( $cached['opml'], $cached['filename'] ) ) {
+			wp_send_json_success( $cached );
 		}
 
 		$blogs = get_posts(
@@ -651,12 +690,15 @@ class Feed_To_Blogroll_Admin {
 		$opml .= '  </body>' . "\n";
 		$opml .= '</opml>';
 
-		wp_send_json_success(
-			array(
-				'opml'     => $opml,
-				'filename' => 'blogroll-' . gmdate( 'Y-m-d' ) . '.opml',
-			)
+		$response = array(
+			'opml'     => $opml,
+			'filename' => 'blogroll-' . gmdate( 'Y-m-d' ) . '.opml',
 		);
+
+		// Cache OPML for 1 hour
+		set_transient( 'feed_to_blogroll_opml', $response, HOUR_IN_SECONDS );
+
+		wp_send_json_success( $response );
 	}
 
 	/**
@@ -731,6 +773,41 @@ class Feed_To_Blogroll_Admin {
 			echo '<p>' . esc_html__( 'Feed to Blogroll: Custom Post Type not registered. Please deactivate and reactivate the plugin.', 'feed-to-blogroll' ) . '</p>';
 			echo '</div>';
 		}
+	}
+
+	/**
+	 * Show admin notice when credentials constants are defined in wp-config.php
+	 */
+	public function show_constants_notice() {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
+		if ( ! defined( 'FEED_TO_BLOGROLL_USERNAME' ) && ! defined( 'FEED_TO_BLOGROLL_PASSWORD' ) ) {
+			return;
+		}
+
+		// Limit notice to our plugin screens if possible
+		$screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+		if ( $screen && strpos( (string) $screen->id, 'feed-to-blogroll' ) === false ) {
+			return;
+		}
+
+		$parts = array();
+		if ( defined( 'FEED_TO_BLOGROLL_USERNAME' ) ) {
+			$parts[] = 'FEED_TO_BLOGROLL_USERNAME';
+		}
+		if ( defined( 'FEED_TO_BLOGROLL_PASSWORD' ) ) {
+			$parts[] = 'FEED_TO_BLOGROLL_PASSWORD';
+		}
+
+		$message = sprintf(
+			/* translators: %s: list of constants */
+			esc_html__( 'Credentials are controlled by %s in wp-config.php. Related settings fields are read-only.', 'feed-to-blogroll' ),
+			esc_html( implode( ', ', $parts ) )
+		);
+
+		echo '<div class="notice notice-info"><p>' . esc_html( $message ) . '</p></div>';
 	}
 
 	/**

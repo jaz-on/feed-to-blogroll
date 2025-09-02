@@ -13,7 +13,6 @@
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: feed-to-blogroll
  * Domain Path: /languages
- * Network: false
  *
  * @package FeedToBlogroll
  * @since 1.0.0
@@ -32,3 +31,18 @@ define( 'FEED_TO_BLOGROLL_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
 
 // Load the main plugin class
 require_once FEED_TO_BLOGROLL_PLUGIN_DIR . 'class-feed-to-blogroll-plugin.php';
+
+// Register activation/deactivation hooks from main plugin file
+register_activation_hook(
+	__FILE__,
+	function () {
+		Feed_To_Blogroll_Plugin::get_instance()->activate();
+	}
+);
+
+register_deactivation_hook(
+	__FILE__,
+	function () {
+		Feed_To_Blogroll_Plugin::get_instance()->deactivate();
+	}
+);

@@ -60,7 +60,7 @@
 		 * Initialize smooth scrolling for anchor links
 		 */
 		initSmoothScrolling: function() {
-			$(document).on('click', 'a[href^="#"]', function(e) {
+			$('.feed-to-blogroll-container').on('click', 'a[href^="#"]', function(e) {
 				e.preventDefault();
 				
 				const target = $(this.getAttribute('href'));
@@ -79,10 +79,11 @@
 			e.preventDefault();
 			
 			const $button = $(e.target);
-			const nonce = $button.data('nonce');
+			const nonce = $button.data('nonce') || (window.feedToBlogrollFrontend ? feedToBlogrollFrontend.nonce : '');
 			
 			// Show loading state
-			$button.addClass('loading').text('Exporting...');
+			var exportingText = (window.feedToBlogrollFrontend && feedToBlogrollFrontend.strings && feedToBlogrollFrontend.strings.exporting) ? feedToBlogrollFrontend.strings.exporting : 'Exporting...';
+			$button.addClass('loading').text(exportingText);
 			
 			// Make AJAX request to get OPML data
 			$.ajax({
@@ -93,7 +94,7 @@
 					nonce: nonce
 				},
 				success: function(response) {
-					if (response.success) {
+					if (response && response.success === true && response.data && response.data.opml && response.data.filename) {
 						// Create and download OPML file
 						FeedToBlogrollFrontend.downloadOPML(
 							response.data.opml,
@@ -101,17 +102,21 @@
 						);
 						
 						// Show success message
-						FeedToBlogrollFrontend.showMessage('OPML file exported successfully!', 'success');
+						var exportedMsg = (window.feedToBlogrollFrontend && feedToBlogrollFrontend.strings && feedToBlogrollFrontend.strings.exported) ? feedToBlogrollFrontend.strings.exported : 'OPML file exported successfully!';
+						FeedToBlogrollFrontend.showMessage(exportedMsg, 'success');
 					} else {
-						FeedToBlogrollFrontend.showMessage('Export failed: ' + response.data, 'error');
+						var errMsg = (window.feedToBlogrollFrontend && feedToBlogrollFrontend.strings && feedToBlogrollFrontend.strings.error) ? feedToBlogrollFrontend.strings.error : 'Export failed. Please try again.';
+						FeedToBlogrollFrontend.showMessage(errMsg, 'error');
 					}
 				},
 				error: function() {
-					FeedToBlogrollFrontend.showMessage('Network error occurred during export', 'error');
+					var errMsg = (window.feedToBlogrollFrontend && feedToBlogrollFrontend.strings && feedToBlogrollFrontend.strings.error) ? feedToBlogrollFrontend.strings.error : 'Export failed. Please try again.';
+					FeedToBlogrollFrontend.showMessage(errMsg, 'error');
 				},
 				complete: function() {
 					// Reset button state
-					$button.removeClass('loading').text('Export OPML');
+					var label = (window.feedToBlogrollFrontend && feedToBlogrollFrontend.strings && feedToBlogrollFrontend.strings.exportLabel) ? feedToBlogrollFrontend.strings.exportLabel : 'Export OPML';
+					$button.removeClass('loading').text(label);
 				}
 			});
 		},
@@ -127,7 +132,7 @@
 			
 			// Find the site URL link and open it
 			const $card = $(e.currentTarget);
-			const $siteLink = $card.find('.blog-actions .button-secondary');
+			const $siteLink = $card.find('.blog-actions .blog-link');
 			
 			if ($siteLink.length && $siteLink.attr('href')) {
 				window.open($siteLink.attr('href'), '_blank', 'noopener,noreferrer');
@@ -138,12 +143,7 @@
 		 * Handle external link clicks
 		 */
 		handleExternalLink: function(e) {
-			// Add analytics tracking if needed
-			const url = $(e.currentTarget).attr('href');
-			const title = $(e.currentTarget).closest('.blog-card').find('.blog-title').text();
-			
-			// Log external link clicks (could be replaced with analytics)
-			console.log('External link clicked:', { url, title, timestamp: new Date().toISOString() });
+			// Optional hook for analytics (no console output in production)
 		},
 
 		/**

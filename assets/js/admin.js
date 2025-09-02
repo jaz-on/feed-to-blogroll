@@ -228,34 +228,31 @@
 		showMessage: function(message, type) {
 			const $messagesContainer = $('#feed-to-blogroll-messages');
 			const noticeClass = 'notice notice-' + type + ' is-dismissible';
-			
-			const $message = $('<div class="' + noticeClass + '"><p>' + message + '</p></div>');
-			
+
+			const $message = $('<div/>', { 'class': noticeClass });
+			const $btn = $('<button/>', { type: 'button', 'class': 'notice-dismiss' })
+				.append($('<span/>', { 'class': 'screen-reader-text', text: 'Dismiss this notice.' }));
+			const $p = $('<p/>').text(String(message));
+			$message.append($btn).append($p);
 			$messagesContainer.append($message);
-			
-			// Make dismissible
-			$message.find('p').before('<button type="button" class="notice-dismiss"><span class="screen-reader-text">Dismiss this notice.</span></button>');
-			
-			// Handle dismiss
+
+			// Dismiss handler
 			$message.find('.notice-dismiss').on('click', function() {
-				$message.fadeOut(300, function() {
-					$(this).remove();
-				});
+				$message.fadeOut(300, function() { $(this).remove(); });
 			});
-			
-			// Auto-remove message after 8 seconds
+
+			// Auto-remove after 8s
 			setTimeout(function() {
 				if ($message.is(':visible')) {
-					$message.fadeOut(300, function() {
-						$(this).remove();
-					});
+					$message.fadeOut(300, function() { $(this).remove(); });
 				}
 			}, 8000);
-			
+
 			// Scroll to message
-			$('html, body').animate({
-				scrollTop: $message.offset().top - 100
-			}, 300);
+			$('html, body').animate({ scrollTop: $message.offset().top - 100 }, 300);
+
+			// Announce for screen readers
+			try { if (window.wp && wp.a11y && typeof wp.a11y.speak === 'function') { wp.a11y.speak(String(message), 'polite'); } } catch (e) {}
 		},
 
 		/**

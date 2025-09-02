@@ -30,8 +30,6 @@ class Feed_To_Blogroll_CPT {
 		add_action( 'manage_blogroll_posts_custom_column', array( $this, 'custom_column_content' ), 10, 2 );
 		add_filter( 'manage_edit-blogroll_sortable_columns', array( $this, 'set_sortable_columns' ) );
 		
-		// Add custom capabilities
-		add_action( 'admin_init', array( $this, 'add_custom_capabilities' ) );
 		
 		// Add meta box for additional information
 		add_action( 'add_meta_boxes', array( $this, 'add_meta_boxes' ) );
@@ -64,9 +62,12 @@ class Feed_To_Blogroll_CPT {
 			'archives'              => _x( 'Blog archives', 'The post type archive label', 'feed-to-blogroll' ),
 			'insert_into_item'      => _x( 'Insert into blog', 'Overrides the "Insert into post" phrase', 'feed-to-blogroll' ),
 			'uploaded_to_this_item' => _x( 'Uploaded to this blog', 'Overrides the "Uploaded to this post" phrase', 'feed-to-blogroll' ),
-			'filter_items_list'     => __( 'Filter blogs list', 'Screen reader text for the filter links', 'feed-to-blogroll' ),
-			'items_list_navigation' => __( 'Blogs list navigation', 'Screen reader text for the pagination', 'feed-to-blogroll' ),
-			'items_list'            => __( 'Blogs list', 'Screen reader text for the items list', 'feed-to-blogroll' ),
+			/* translators: screen reader text for the filter links */
+			'filter_items_list'     => __( 'Filter blogs list', 'feed-to-blogroll' ),
+			/* translators: screen reader text for the pagination */
+			'items_list_navigation' => __( 'Blogs list navigation', 'feed-to-blogroll' ),
+			/* translators: screen reader text for the items list */
+			'items_list'            => __( 'Blogs list', 'feed-to-blogroll' ),
 		);
 
 		$args = array(
@@ -328,7 +329,8 @@ class Feed_To_Blogroll_CPT {
 				break;
 
 			case 'sync_status':
-				$sync_status = get_field( 'sync_status', $post_id ) ?: 'active';
+				$sync_status = get_field( 'sync_status', $post_id );
+				$sync_status = ! empty( $sync_status ) ? $sync_status : 'active';
 				$status_labels = array(
 					'active'   => __( 'Active', 'feed-to-blogroll' ),
 					'inactive' => __( 'Inactive', 'feed-to-blogroll' ),
@@ -423,7 +425,8 @@ class Feed_To_Blogroll_CPT {
 
 		$feed_id = get_field( 'feed_id', $post->ID );
 		$last_sync = get_field( 'last_sync', $post->ID );
-		$sync_status = get_field( 'sync_status', $post->ID ) ?: 'active';
+		$sync_status = get_field( 'sync_status', $post->ID );
+		$sync_status = ! empty( $sync_status ) ? $sync_status : 'active';
 
 		?>
 		<div class="blogroll-meta-box">
@@ -440,9 +443,15 @@ class Feed_To_Blogroll_CPT {
 			<p>
 				<label for="sync_status"><?php esc_html_e( 'Sync Status:', 'feed-to-blogroll' ); ?></label>
 				<select id="sync_status" name="sync_status">
-					<option value="active" <?php selected( $sync_status, 'active' ); ?>><?php esc_html_e( 'Active', 'feed-to-blogroll' ); ?></option>
-					<option value="inactive" <?php selected( $sync_status, 'inactive' ); ?>><?php esc_html_e( 'Inactive', 'feed-to-blogroll' ); ?></option>
-					<option value="error" <?php selected( $sync_status, 'error' ); ?>><?php esc_html_e( 'Error', 'feed-to-blogroll' ); ?></option>
+					<option value="active" <?php selected( $sync_status, 'active' ); ?>>
+						<?php esc_html_e( 'Active', 'feed-to-blogroll' ); ?>
+					</option>
+					<option value="inactive" <?php selected( $sync_status, 'inactive' ); ?>>
+						<?php esc_html_e( 'Inactive', 'feed-to-blogroll' ); ?>
+					</option>
+					<option value="error" <?php selected( $sync_status, 'error' ); ?>>
+						<?php esc_html_e( 'Error', 'feed-to-blogroll' ); ?>
+					</option>
 				</select>
 			</p>
 		</div>
@@ -456,7 +465,8 @@ class Feed_To_Blogroll_CPT {
 	 */
 	public function save_meta_box_data( $post_id ) {
 		// Check if nonce is valid
-		if ( ! isset( $_POST['blogroll_meta_box_nonce'] ) || ! wp_verify_nonce( $_POST['blogroll_meta_box_nonce'], 'blogroll_meta_box' ) ) {
+		$nonce = isset( $_POST['blogroll_meta_box_nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['blogroll_meta_box_nonce'] ) ) : '';
+		if ( empty( $nonce ) || ! wp_verify_nonce( $nonce, 'blogroll_meta_box' ) ) {
 			return;
 		}
 
@@ -472,7 +482,7 @@ class Feed_To_Blogroll_CPT {
 
 		// Save sync status if changed
 		if ( isset( $_POST['sync_status'] ) ) {
-			$sync_status = sanitize_text_field( $_POST['sync_status'] );
+			$sync_status = sanitize_text_field( wp_unslash( $_POST['sync_status'] ) );
 			$allowed_statuses = array( 'active', 'inactive', 'error' );
 			if ( in_array( $sync_status, $allowed_statuses, true ) ) {
 				update_field( 'sync_status', $sync_status, $post_id );

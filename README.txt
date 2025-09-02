@@ -1,8 +1,8 @@
 === Feed to Blogroll ===
 Contributors: jasonrouet
-Tags: blogroll, rss, feedbin, api, synchronization, accessibility, performance
+Tags: blogroll, rss, feedbin, api, synchronization
 Requires at least: 6.0
-Tested up to: 6.5
+Tested up to: 6.9
 Requires PHP: 8.2
 Stable tag: 1.0.0
 License: GPLv2 or later
@@ -13,6 +13,8 @@ Automatic blogroll synchronization with Feedbin API, integrated with Distributed
 == Description ==
 
 Feed to Blogroll is a powerful WordPress plugin that automatically synchronizes your blogroll with your Feedbin RSS reader subscriptions. It creates a beautiful, responsive grid layout of blogs with automatic updates and OPML export functionality.
+
+> Requires Advanced Custom Fields Pro for the admin UI and field definitions.
 
 = Features =
 
@@ -41,6 +43,20 @@ Feed to Blogroll is a powerful WordPress plugin that automatically synchronizes 
 2. Activate the plugin through the 'Plugins' screen in WordPress
 3. Go to 'Blogroll > Settings' to configure your Feedbin API credentials
 4. Use the [blogroll] shortcode to display your blogroll on any page
+
+= Security (optional) =
+You can define `FEED_TO_BLOGROLL_FETCH_TAGS` in wp-config.php to disable fetching Feedbin tags (reduces API calls):
+```
+define( 'FEED_TO_BLOGROLL_FETCH_TAGS', false );
+```
+When defined, the plugin will skip per-feed tag requests and use only core subscription data.
+
+You can also define credentials in wp-config.php to avoid storing them in the database:
+```
+define( 'FEED_TO_BLOGROLL_USERNAME', 'your-email@example.com' );
+define( 'FEED_TO_BLOGROLL_PASSWORD', 'your-secure-password' );
+```
+When defined, the corresponding fields in Settings are locked (read-only).
 
 = Configuration =
 
@@ -99,6 +115,18 @@ Access your blogroll data programmatically:
 
 **Endpoint:** `/wp-json/feed-to-blogroll/v1/blogroll`
 
+= Blocks =
+
+Block: Blogroll (`feed-to-blogroll/blogroll`)
+
+Attributes:
+- `category` (string): Filter by category slug (default: all)
+- `limit` (number): Number of blogs to display (-1 for all)
+- `columns` (number): 1–6 (default: 4)
+- `showExport` (boolean): Show OPML export button (default: true)
+
+Insert the “Blogroll” block via the inserter and configure options in the sidebar. Assets (CSS/JS) are loaded automatically when the block/shortcode is present.
+
 **Parameters:**
 * `category` - Filter by category slug
 * `limit` - Maximum number of blogs
@@ -144,12 +172,12 @@ The plugin includes responsive CSS that works with most themes. You can override
 
 = Data Collection =
 This plugin collects and stores:
-- Feedbin API credentials (encrypted)
+- Feedbin API credentials (stored in WordPress options)
 - Blog metadata from RSS feeds
 - Synchronization logs and timestamps
 
 = Data Retention =
-- API credentials are stored until plugin deactivation
+- API credentials are stored until removed in settings or plugin uninstallation
 - Blog data is retained according to WordPress post lifecycle
 - Sync logs are kept for 30 days by default
 
@@ -162,6 +190,13 @@ This plugin collects and stores:
 - Users can request data deletion through WordPress admin
 - No personal data is collected beyond what's necessary for functionality
 
+= Uninstall =
+
+When deleting the plugin from WordPress Admin, all plugin data is removed:
+- Options: `feed_to_blogroll_options`
+- Custom post type entries (`blogroll`) and related taxonomies
+- Scheduled events and transients
+
 = Accessibility =
 
 = WCAG 2.1 AA Compliance =
@@ -170,6 +205,7 @@ This plugin collects and stores:
 - Keyboard navigation support for all features
 - Screen reader compatibility with descriptive text
 - High contrast support and focus indicators
+- ARIA-compliant structure (list/listitem) and keyboard navigation for cards
 
 = Screen Reader Support =
 - Descriptive alt text for all images
@@ -191,6 +227,7 @@ This plugin collects and stores:
 2. **API Connection Failed**: Verify your Feedbin credentials and check your internet connection
 3. **No Blogs Displayed**: Check if blogs are published and have the correct post status
 4. **Styling Issues**: Ensure your theme CSS doesn't conflict with plugin styles
+5. **HTTP 429 (rate limited)**: Reduce sync frequency or set `FEED_TO_BLOGROLL_FETCH_TAGS` to `false` to lower API calls
 
 = Diagnostics =
 Use the built-in diagnostics page (Blogroll > Diagnostics) to:

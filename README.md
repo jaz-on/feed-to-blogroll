@@ -6,6 +6,8 @@
 
 Automatic blogroll synchronization with Feedbin API, integrated with Distributed theme.
 
+> Requirement: Advanced Custom Fields Pro is required for the admin UI and field definitions.
+
 ## Features
 
 - **Automatic Synchronization**: Daily sync with Feedbin API
@@ -24,7 +26,7 @@ Automatic blogroll synchronization with Feedbin API, integrated with Distributed
 
 - WordPress 6.0 or higher
 - PHP 8.2 or higher (minimum requirement)
-- Advanced Custom Fields Pro plugin
+- Advanced Custom Fields Pro plugin (mandatory)
 - Feedbin account with API access
 
 ## Installation
@@ -33,6 +35,20 @@ Automatic blogroll synchronization with Feedbin API, integrated with Distributed
 2. Activate the plugin through the 'Plugins' screen in WordPress
 3. Go to 'Blogroll > Settings' to configure your Feedbin API credentials
 4. Use the `[blogroll]` shortcode to display your blogroll on any page
+
+### Security (optional)
+- You can define `FEED_TO_BLOGROLL_FETCH_TAGS` in wp-config.php to disable fetching Feedbin tags (reduces API calls):
+```php
+define( 'FEED_TO_BLOGROLL_FETCH_TAGS', false );
+```
+When defined, the plugin will skip per-feed tag requests and use only core subscription data.
+
+- You can also define credentials in wp-config.php to avoid storing them in the database:
+```php
+define( 'FEED_TO_BLOGROLL_USERNAME', 'your-email@example.com' );
+define( 'FEED_TO_BLOGROLL_PASSWORD', 'your-secure-password' );
+```
+When defined, the corresponding fields in Settings are locked (read-only).
 
 ## Usage
 
@@ -67,18 +83,29 @@ Access your blogroll data programmatically:
 ```bash
 GET /wp-json/feed-to-blogroll/v1/blogroll
 GET /wp-json/feed-to-blogroll/v1/blogroll?category=tech&limit=10
+### Blocks
+
+- Block: Blogroll (`feed-to-blogroll/blogroll`)
+- Attributes:
+  - `category` (string): filter by category slug (default: all)
+  - `limit` (number): number of blogs to display (-1 for all)
+  - `columns` (number): 1–6 (default: 4)
+  - `showExport` (boolean): show OPML export button (default: true)
+
+Insert the “Blogroll” block from the inserter and configure these options in the sidebar. Assets (CSS/JS) load automatically when the block/shortcode is present.
+
 ```
 
 ## Privacy & Data Handling
 
 ### Data Collection
 This plugin collects and stores:
-- Feedbin API credentials (encrypted)
+- Feedbin API credentials (stored in WordPress options)
 - Blog metadata from RSS feeds
 - Synchronization logs and timestamps
 
 ### Data Retention
-- API credentials are stored until plugin deactivation
+- API credentials are stored until removed in settings or plugin uninstallation
 - Blog data is retained according to WordPress post lifecycle
 - Sync logs are kept for 30 days by default
 
@@ -91,6 +118,13 @@ This plugin collects and stores:
 - Users can request data deletion through WordPress admin
 - No personal data is collected beyond what's necessary for functionality
 
+### Uninstall
+
+When deleting the plugin from WordPress Admin, all plugin data is removed:
+- Options: `feed_to_blogroll_options`
+- Custom post type entries (`blogroll`) and related taxonomies
+- Scheduled events and transients
+
 ## Accessibility
 
 ### WCAG 2.1 AA Compliance
@@ -99,6 +133,7 @@ This plugin collects and stores:
 - Keyboard navigation support for all features
 - Screen reader compatibility with descriptive text
 - High contrast support and focus indicators
+- ARIA-compliant structure for lists and items; keyboard navigation on cards
 
 ### Screen Reader Support
 - Descriptive alt text for all images

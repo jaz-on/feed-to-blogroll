@@ -44,9 +44,20 @@ class Feed_To_Blogroll_Feedbin_API {
 	 */
 	private function load_credentials() {
 		$options = get_option( 'feed_to_blogroll_options', array() );
+
+		$username = isset( $options['feedbin_username'] ) ? $options['feedbin_username'] : '';
+		$password = isset( $options['feedbin_password'] ) ? $options['feedbin_password'] : '';
+
+		if ( defined( 'FEED_TO_BLOGROLL_USERNAME' ) ) {
+			$username = (string) constant( 'FEED_TO_BLOGROLL_USERNAME' );
+		}
+		if ( defined( 'FEED_TO_BLOGROLL_PASSWORD' ) ) {
+			$password = (string) constant( 'FEED_TO_BLOGROLL_PASSWORD' );
+		}
+
 		$this->credentials = array(
-			'username' => isset( $options['feedbin_username'] ) ? $options['feedbin_username'] : '',
-			'password' => isset( $options['feedbin_password'] ) ? $options['feedbin_password'] : '',
+			'username' => $username,
+			'password' => $password,
 		);
 	}
 
@@ -108,67 +119,92 @@ class Feed_To_Blogroll_Feedbin_API {
 		$response_code = wp_remote_retrieve_response_code( $response );
 		$response_body = wp_remote_retrieve_body( $response );
 
-		// Log API response for debugging
-		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-			error_log( sprintf( 'Feedbin API %s: %d - %s', $endpoint, $response_code, $response_body ) );
-		}
+		// Debug logging removed for production safety
 
 		// Handle different response codes
 		switch ( $response_code ) {
 			case 200:
 				$decoded = json_decode( $response_body, true );
 				if ( json_last_error() !== JSON_ERROR_NONE ) {
-					return new WP_Error( 
-						'json_decode_error', 
+					return new WP_Error(
+						'json_decode_error',
+						/* translators: %s: API endpoint path */
 						sprintf( __( 'Failed to decode JSON response from %s', 'feed-to-blogroll' ), $endpoint ),
-						array( 'endpoint' => $endpoint, 'response' => $response_body )
+						array(
+							'endpoint' => $endpoint,
+							'response' => $response_body,
+						)
 					);
 				}
 				return $decoded;
 
 			case 401:
-				return new WP_Error( 
-					'auth_failed', 
+				return new WP_Error(
+					'auth_failed',
+					/* translators: no placeholder */
 					__( 'Feedbin authentication failed. Please check your username and password.', 'feed-to-blogroll' ),
-					array( 'endpoint' => $endpoint, 'code' => $response_code )
+					array(
+						'endpoint' => $endpoint,
+						'code' => $response_code,
+					)
 				);
 
 			case 403:
-				return new WP_Error( 
-					'forbidden', 
+				return new WP_Error(
+					'forbidden',
+					/* translators: no placeholder */
 					__( 'Access forbidden. Please check your Feedbin account permissions.', 'feed-to-blogroll' ),
-					array( 'endpoint' => $endpoint, 'code' => $response_code )
+					array(
+						'endpoint' => $endpoint,
+						'code' => $response_code,
+					)
 				);
 
 			case 404:
-				return new WP_Error( 
-					'not_found', 
+				return new WP_Error(
+					'not_found',
+					/* translators: %s: endpoint path */
 					sprintf( __( 'API endpoint %s not found', 'feed-to-blogroll' ), $endpoint ),
-					array( 'endpoint' => $endpoint, 'code' => $response_code )
+					array(
+						'endpoint' => $endpoint,
+						'code' => $response_code,
+					)
 				);
 
 			case 429:
-				return new WP_Error( 
-					'rate_limited', 
+				return new WP_Error(
+					'rate_limited',
 					__( 'API rate limit exceeded. Please try again later.', 'feed-to-blogroll' ),
-					array( 'endpoint' => $endpoint, 'code' => $response_code )
+					array(
+						'endpoint' => $endpoint,
+						'code' => $response_code,
+					)
 				);
 
 			case 500:
 			case 502:
 			case 503:
 			case 504:
-				return new WP_Error( 
-					'server_error', 
+				return new WP_Error(
+					'server_error',
+					/* translators: %d: HTTP response code */
 					sprintf( __( 'Feedbin server error (HTTP %d). Please try again later.', 'feed-to-blogroll' ), $response_code ),
-					array( 'endpoint' => $endpoint, 'code' => $response_code )
+					array(
+						'endpoint' => $endpoint,
+						'code' => $response_code,
+					)
 				);
 
 			default:
-				return new WP_Error( 
-					'api_error', 
-					sprintf( __( 'Unexpected API response: HTTP %d from %s', 'feed-to-blogroll' ), $response_code, $endpoint ),
-					array( 'endpoint' => $endpoint, 'code' => $response_code, 'response' => $response_body )
+				return new WP_Error(
+					'api_error',
+					/* translators: 1: HTTP response code, 2: endpoint path */
+					sprintf( __( 'Unexpected API response: HTTP %1$d from %2$s', 'feed-to-blogroll' ), $response_code, $endpoint ),
+					array(
+						'endpoint' => $endpoint,
+						'code' => $response_code,
+						'response' => $response_body,
+					)
 				);
 		}
 	}
@@ -180,12 +216,13 @@ class Feed_To_Blogroll_Feedbin_API {
 	 */
 	public function test_connection() {
 		$response = $this->make_request( 'subscriptions.json' );
-		
+
 		if ( is_wp_error( $response ) ) {
 			return $response;
 		}
 
 		if ( is_array( $response ) ) {
+			/* translators: %d: number of subscriptions */
 			return sprintf( __( 'Connection successful! Found %d subscriptions.', 'feed-to-blogroll' ), count( $response ) );
 		}
 
@@ -199,10 +236,22 @@ class Feed_To_Blogroll_Feedbin_API {
 	 */
 	public function get_feeds() {
 		$response = $this->make_request( 'subscriptions.json' );
-		
+
 		if ( is_wp_error( $response ) ) {
 			return $response;
 		}
+
+		// Allow disabling tag fetching via constant or filter (performance)
+		$fetch_tags = true;
+		if ( defined( 'FEED_TO_BLOGROLL_FETCH_TAGS' ) ) {
+			$fetch_tags = (bool) constant( 'FEED_TO_BLOGROLL_FETCH_TAGS' );
+		}
+		/**
+		 * Filter whether to fetch tags for subscriptions.
+		 *
+		 * @param bool $fetch_tags Default true.
+		 */
+		$fetch_tags = (bool) apply_filters( 'feed_to_blogroll_fetch_tags', $fetch_tags );
 
 		// Transform subscriptions to feed format
 		$feeds = array();
@@ -216,10 +265,12 @@ class Feed_To_Blogroll_Feedbin_API {
 				'tags'        => array(),
 			);
 
-			// Get tags for this subscription
-			$tags = $this->get_subscription_tags( $subscription['feed_id'] );
-			if ( ! is_wp_error( $tags ) ) {
-				$feed['tags'] = array_map( 'sanitize_text_field', $tags );
+			// Get tags for this subscription (conditionally, cached)
+			if ( $fetch_tags ) {
+				$tags = $this->get_subscription_tags( $subscription['feed_id'] );
+				if ( ! is_wp_error( $tags ) ) {
+					$feed['tags'] = array_map( 'sanitize_text_field', $tags );
+				}
 			}
 
 			$feeds[] = $feed;
@@ -240,15 +291,24 @@ class Feed_To_Blogroll_Feedbin_API {
 			return array();
 		}
 
+		// Transient cache to avoid per-feed API overhead
+		$cache_key = 'ftb_tags_' . $feed_id;
+		$cached = get_transient( $cache_key );
+		if ( false !== $cached ) {
+			return (array) $cached;
+		}
+
 		$response = $this->make_request( "subscriptions/{$feed_id}/tags.json" );
-		
+
 		if ( is_wp_error( $response ) ) {
 			// If tags endpoint fails, return empty array instead of error
 			return array();
 		}
 
 		if ( is_array( $response ) ) {
-			return array_column( $response, 'name' );
+			$tags = array_column( $response, 'name' );
+			set_transient( $cache_key, $tags, DAY_IN_SECONDS );
+			return $tags;
 		}
 
 		return array();
@@ -274,9 +334,9 @@ class Feed_To_Blogroll_Feedbin_API {
 
 		// Test connection if not tested recently
 		$last_test = strtotime( $status['last_test'] );
-		if ( ! $last_test || ( time() - $last_test ) > 3600 ) { // Test every hour
+		if ( ( ! $last_test ) || ( time() - $last_test ) > 3600 ) { // Test every hour
 			$test_result = $this->test_connection();
-			
+
 			if ( is_wp_error( $test_result ) ) {
 				$status['error'] = $test_result->get_error_message();
 				$status['connected'] = false;
@@ -302,7 +362,7 @@ class Feed_To_Blogroll_Feedbin_API {
 	 */
 	public function get_subscription_count() {
 		$response = $this->make_request( 'subscriptions.json' );
-		
+
 		if ( is_wp_error( $response ) ) {
 			return $response;
 		}
@@ -324,13 +384,14 @@ class Feed_To_Blogroll_Feedbin_API {
 
 		// Test if URL is accessible
 		$response = wp_remote_head( $url, array( 'timeout' => 10 ) );
-		
+
 		if ( is_wp_error( $response ) ) {
 			return new WP_Error( 'url_unreachable', __( 'URL is not accessible', 'feed-to-blogroll' ) );
 		}
 
 		$response_code = wp_remote_retrieve_response_code( $response );
-		if ( $response_code !== 200 ) {
+		if ( 200 !== $response_code ) {
+			/* translators: %d: HTTP response code */
 			return new WP_Error( 'url_error', sprintf( __( 'URL returned HTTP %d', 'feed-to-blogroll' ), $response_code ) );
 		}
 
@@ -376,7 +437,7 @@ class Feed_To_Blogroll_Feedbin_API {
 		}
 
 		$response = $this->make_request( "subscriptions/{$subscription_id}.json", 'DELETE' );
-		
+
 		if ( is_wp_error( $response ) ) {
 			return $response;
 		}

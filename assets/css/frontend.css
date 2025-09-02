@@ -39,6 +39,37 @@
 	box-shadow: 0 4px 12px rgba(0, 124, 186, 0.3);
 }
 
+/* Export button loading state */
+.export-opml-button.loading .wp-block-button__link,
+.export-opml-button .wp-block-button__link.loading,
+.export-opml-button.loading,
+.feed-to-blogroll-container .export-opml-button.loading {
+	position: relative;
+	opacity: 0.8;
+	pointer-events: none;
+}
+
+.export-opml-button.loading .wp-block-button__link::after,
+.export-opml-button .wp-block-button__link.loading::after,
+.export-opml-button.loading::after,
+.feed-to-blogroll-container .export-opml-button.loading::after {
+	content: '';
+	display: inline-block;
+	width: 16px;
+	height: 16px;
+	border: 2px solid transparent;
+	border-top: 2px solid currentColor;
+	border-radius: 50%;
+	animation: spin 1s linear infinite;
+	margin-left: 0.5rem;
+	vertical-align: middle;
+}
+
+@keyframes spin {
+	0% { transform: rotate(0deg); }
+	100% { transform: rotate(360deg); }
+}
+
 /* Grid layout */
 .blogroll-grid {
 	display: grid;

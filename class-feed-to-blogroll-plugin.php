@@ -48,22 +48,12 @@ class Feed_To_Blogroll_Plugin {
 	 * Initialize WordPress hooks
 	 */
 	private function init_hooks() {
-		add_action( 'plugins_loaded', array( $this, 'load_textdomain' ) );
 		add_action( 'init', array( $this, 'init_plugin' ) );
-		register_activation_hook( __FILE__, array( $this, 'activate' ) );
-		register_deactivation_hook( __FILE__, array( $this, 'deactivate' ) );
 	}
 
 	/**
-	 * Load plugin textdomain
+	 * Textdomain is loaded automatically by WordPress.org (WP ≥ 4.6).
 	 */
-	public function load_textdomain() {
-		load_plugin_textdomain(
-			'feed-to-blogroll',
-			false,
-			dirname( FEED_TO_BLOGROLL_PLUGIN_BASENAME ) . '/languages'
-		);
-	}
 
 	/**
 	 * Initialize plugin components
@@ -143,9 +133,6 @@ class Feed_To_Blogroll_Plugin {
 	 * Initialize WordPress block support
 	 */
 	private function init_block_support() {
-		// Add theme support for block styles
-		add_action( 'after_setup_theme', array( $this, 'add_block_support' ) );
-
 		// Register block styles
 		add_action( 'init', array( $this, 'register_block_styles' ) );
 
@@ -154,24 +141,8 @@ class Feed_To_Blogroll_Plugin {
 	}
 
 	/**
-	 * Add theme support for blocks
+	 * (Removed) Theme support declarations do not belong in a plugin.
 	 */
-	public function add_block_support() {
-		// Add support for block styles
-		add_theme_support( 'wp-block-styles' );
-
-		// Add support for editor styles
-		add_theme_support( 'editor-styles' );
-
-		// Add support for responsive embeds
-		add_theme_support( 'responsive-embeds' );
-
-		// Add support for custom line height
-		add_theme_support( 'custom-line-height' );
-
-		// Add support for custom spacing
-		add_theme_support( 'custom-spacing' );
-	}
 
 	/**
 	 * Register custom block styles
@@ -280,6 +251,9 @@ class Feed_To_Blogroll_Plugin {
 		$cpt = new Feed_To_Blogroll_CPT();
 		$cpt->create_post_type();
 
+		// Add custom capabilities to roles once on activation
+		$this->add_custom_capabilities_once();
+
 		// Flush rewrite rules
 		flush_rewrite_rules();
 
@@ -296,6 +270,39 @@ class Feed_To_Blogroll_Plugin {
 	}
 
 	/**
+	 * Add custom capabilities to roles on activation only.
+	 */
+	private function add_custom_capabilities_once() {
+		$admin_role = get_role( 'administrator' );
+		if ( $admin_role ) {
+			$admin_role->add_cap( 'edit_blogrolls' );
+			$admin_role->add_cap( 'edit_others_blogrolls' );
+			$admin_role->add_cap( 'publish_blogrolls' );
+			$admin_role->add_cap( 'read_private_blogrolls' );
+			$admin_role->add_cap( 'delete_blogrolls' );
+			$admin_role->add_cap( 'delete_private_blogrolls' );
+			$admin_role->add_cap( 'delete_published_blogrolls' );
+			$admin_role->add_cap( 'delete_others_blogrolls' );
+			$admin_role->add_cap( 'edit_private_blogrolls' );
+			$admin_role->add_cap( 'edit_published_blogrolls' );
+		}
+
+		$editor_role = get_role( 'editor' );
+		if ( $editor_role ) {
+			$editor_role->add_cap( 'edit_blogrolls' );
+			$editor_role->add_cap( 'edit_others_blogrolls' );
+			$editor_role->add_cap( 'publish_blogrolls' );
+			$editor_role->add_cap( 'read_private_blogrolls' );
+			$editor_role->add_cap( 'delete_blogrolls' );
+			$editor_role->add_cap( 'delete_private_blogrolls' );
+			$editor_role->add_cap( 'delete_published_blogrolls' );
+			$editor_role->add_cap( 'delete_others_blogrolls' );
+			$editor_role->add_cap( 'edit_private_blogrolls' );
+			$editor_role->add_cap( 'edit_published_blogrolls' );
+		}
+	}
+
+	/**
 	 * Plugin deactivation
 	 */
 	public function deactivate() {
@@ -304,6 +311,9 @@ class Feed_To_Blogroll_Plugin {
 
 		// Flush rewrite rules
 		flush_rewrite_rules();
+
+		// Optionally remove capabilities on deactivation
+		$this->remove_custom_capabilities();
 	}
 
 	/**
@@ -321,6 +331,39 @@ class Feed_To_Blogroll_Plugin {
 		);
 
 		update_option( 'feed_to_blogroll_options', $default_options );
+	}
+
+	/**
+	 * Remove custom capabilities on plugin deactivation.
+	 */
+	private function remove_custom_capabilities() {
+		$admin_role = get_role( 'administrator' );
+		if ( $admin_role ) {
+			$admin_role->remove_cap( 'edit_blogrolls' );
+			$admin_role->remove_cap( 'edit_others_blogrolls' );
+			$admin_role->remove_cap( 'publish_blogrolls' );
+			$admin_role->remove_cap( 'read_private_blogrolls' );
+			$admin_role->remove_cap( 'delete_blogrolls' );
+			$admin_role->remove_cap( 'delete_private_blogrolls' );
+			$admin_role->remove_cap( 'delete_published_blogrolls' );
+			$admin_role->remove_cap( 'delete_others_blogrolls' );
+			$admin_role->remove_cap( 'edit_private_blogrolls' );
+			$admin_role->remove_cap( 'edit_published_blogrolls' );
+		}
+
+		$editor_role = get_role( 'editor' );
+		if ( $editor_role ) {
+			$editor_role->remove_cap( 'edit_blogrolls' );
+			$editor_role->remove_cap( 'edit_others_blogrolls' );
+			$editor_role->remove_cap( 'publish_blogrolls' );
+			$editor_role->remove_cap( 'read_private_blogrolls' );
+			$editor_role->remove_cap( 'delete_blogrolls' );
+			$editor_role->remove_cap( 'delete_private_blogrolls' );
+			$editor_role->remove_cap( 'delete_published_blogrolls' );
+			$editor_role->remove_cap( 'delete_others_blogrolls' );
+			$editor_role->remove_cap( 'edit_private_blogrolls' );
+			$editor_role->remove_cap( 'edit_published_blogrolls' );
+		}
 	}
 
 	/**

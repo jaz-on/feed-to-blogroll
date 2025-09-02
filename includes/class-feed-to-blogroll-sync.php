@@ -62,30 +62,37 @@ class Feed_To_Blogroll_Sync {
 	 */
 	public function manual_sync() {
 		// Vérifier la méthode HTTP
-		if ( 'POST' !== $_SERVER['REQUEST_METHOD'] ) {
-			wp_send_json_error( array(
-				'message' => esc_html__( 'Invalid request method', 'feed-to-blogroll' ),
-				'code'    => 'invalid_method',
-				'context' => 'http_validation'
-			) );
+		if ( ! isset( $_SERVER['REQUEST_METHOD'] ) || 'POST' !== $_SERVER['REQUEST_METHOD'] ) {
+			wp_send_json_error(
+				array(
+					'message' => esc_html__( 'Invalid request method', 'feed-to-blogroll' ),
+					'code'    => 'invalid_method',
+					'context' => 'http_validation',
+				)
+			);
 		}
 
 		// Vérifier la présence du nonce AVANT toute utilisation
-		if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'feed_to_blogroll_admin' ) ) {
-			wp_send_json_error( array(
-				'message' => esc_html__( 'Security check failed. Please refresh the page and try again.', 'feed-to-blogroll' ),
-				'code'    => 'nonce_failed',
-				'context' => 'security_validation'
-			) );
+		$nonce = isset( $_POST['nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['nonce'] ) ) : '';
+		if ( empty( $nonce ) || ! wp_verify_nonce( $nonce, 'feed_to_blogroll_admin' ) ) {
+			wp_send_json_error(
+				array(
+					'message' => esc_html__( 'Security check failed. Please refresh the page and try again.', 'feed-to-blogroll' ),
+					'code'    => 'nonce_failed',
+					'context' => 'security_validation',
+				)
+			);
 		}
 
 		// Vérifier les capacités utilisateur
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array(
-				'message' => esc_html__( 'Insufficient permissions to perform this action.', 'feed-to-blogroll' ),
-				'code'    => 'insufficient_permissions',
-				'context' => 'capability_check'
-			) );
+			wp_send_json_error(
+				array(
+					'message' => esc_html__( 'Insufficient permissions to perform this action.', 'feed-to-blogroll' ),
+					'code'    => 'insufficient_permissions',
+					'context' => 'capability_check',
+				)
+			);
 		}
 
 		$result = $this->sync_blogroll();
@@ -95,11 +102,13 @@ class Feed_To_Blogroll_Sync {
 			wp_cache_delete( 'feed_to_blogroll_opml', 'feed_to_blogroll' );
 			wp_send_json_success( $result );
 		} else {
-			wp_send_json_error( array(
-				'message' => $result['message'],
-				'code'    => 'sync_failed',
-				'context' => 'manual_sync'
-			) );
+			wp_send_json_error(
+				array(
+					'message' => $result['message'],
+					'code'    => 'sync_failed',
+					'context' => 'manual_sync',
+				)
+			);
 		}
 	}
 
@@ -139,9 +148,9 @@ class Feed_To_Blogroll_Sync {
 			foreach ( $feeds as $feed ) {
 				$feed_result = $this->process_feed( $feed );
 				if ( $feed_result['success'] ) {
-					if ( $feed_result['action'] === 'added' ) {
+					if ( 'added' === $feed_result['action'] ) { // Yoda
 						$result['blogs_added']++;
-					} elseif ( $feed_result['action'] === 'updated' ) {
+					} elseif ( 'updated' === $feed_result['action'] ) { // Yoda
 						$result['blogs_updated']++;
 					}
 				} else {
@@ -171,7 +180,7 @@ class Feed_To_Blogroll_Sync {
 		} catch ( Exception $e ) {
 			$result['message'] = $e->getMessage();
 			$result['errors'][] = $e->getMessage();
-			
+
 			// Update sync status to error
 			$options = get_option( 'feed_to_blogroll_options', array() );
 			$options['sync_status'] = 'error';
@@ -206,6 +215,7 @@ class Feed_To_Blogroll_Sync {
 					$result['success'] = true;
 					$result['action'] = 'updated';
 				} else {
+					/* translators: %s: blog title */
 					$result['error'] = sprintf( __( 'Failed to update blog: %s', 'feed-to-blogroll' ), $feed['title'] );
 				}
 			} else {
@@ -215,6 +225,7 @@ class Feed_To_Blogroll_Sync {
 					$result['success'] = true;
 					$result['action'] = 'added';
 				} else {
+					/* translators: %s: blog title */
 					$result['error'] = sprintf( __( 'Failed to create blog: %s', 'feed-to-blogroll' ), $feed['title'] );
 				}
 			}
@@ -233,20 +244,34 @@ class Feed_To_Blogroll_Sync {
 	 */
 	private function find_existing_blog( $rss_url ) {
 		$args = array(
-			'post_type'      => 'blogroll',
-			'meta_query'     => array(
-				array(
-					'key'     => 'rss_url',
-					'value'   => $rss_url,
-					'compare' => '=',
-				),
-			),
-			'posts_per_page' => 1,
-			'post_status'    => array( 'publish', 'draft' ),
+			'post_type'              => 'blogroll',
+			'post_status'            => array( 'publish', 'draft' ),
+			'posts_per_page'         => 1,
+			'fields'                 => 'ids',
+			'no_found_rows'          => true,
+			'update_post_meta_cache' => false,
+			'update_post_term_cache' => false,
 		);
 
+		// Pré-résolution plus rapide de l'ID via requête directe sur postmeta
+		global $wpdb;
+		$rss_url_escaped = esc_url_raw( $rss_url );
+		$cache_key = 'ftb_rss_to_postid_' . md5( (string) $rss_url_escaped );
+		$post_id = wp_cache_get( $cache_key, 'feed_to_blogroll' );
+		if ( false === $post_id ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Intentional optimized lookup with object cache layer above
+			$post_id = (int) $wpdb->get_var( $wpdb->prepare( "SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = %s AND meta_value = %s LIMIT 1", 'rss_url', $rss_url_escaped ) );
+			wp_cache_set( $cache_key, $post_id, 'feed_to_blogroll', 600 );
+		}
+		if ( $post_id > 0 ) {
+			$args['p'] = $post_id;
+		}
+
 		$query = new WP_Query( $args );
-		return $query->posts ? $query->posts[0] : false;
+		if ( ! empty( $query->posts ) ) {
+			return get_post( $query->posts[0] );
+		}
+		return false;
 	}
 
 	/**
@@ -351,31 +376,41 @@ class Feed_To_Blogroll_Sync {
 		$feed_urls = array_column( $feeds, 'feed_url' );
 		$deactivated_count = 0;
 
-		$args = array(
-			'post_type'      => 'blogroll',
-			'post_status'    => 'publish',
-			'posts_per_page' => -1,
-			'meta_query'     => array(
+		$paged = 1;
+		do {
+			$batch = get_posts(
 				array(
-					'key'     => 'rss_url',
-					'compare' => 'EXISTS',
-				),
-			),
-		);
+					'post_type'              => 'blogroll',
+					'post_status'            => 'publish',
+					'posts_per_page'         => 500,
+					'paged'                  => $paged,
+					'fields'                 => 'ids',
+					'no_found_rows'          => true,
+					'update_post_meta_cache' => false,
+					'update_post_term_cache' => false,
+				)
+			);
 
-		$blogs = get_posts( $args );
-
-		foreach ( $blogs as $blog ) {
-			$rss_url = get_field( 'rss_url', $blog->ID );
-			if ( $rss_url && ! in_array( $rss_url, $feed_urls, true ) ) {
-				// Deactivate blog by setting status to draft
-				wp_update_post( array(
-					'ID'          => $blog->ID,
-					'post_status' => 'draft',
-				) );
-				$deactivated_count++;
+			if ( empty( $batch ) ) {
+				break;
 			}
-		}
+
+			foreach ( $batch as $post_id ) {
+				$rss_url = get_post_meta( $post_id, 'rss_url', true );
+				if ( $rss_url && ! in_array( $rss_url, $feed_urls, true ) ) {
+					wp_update_post(
+						array(
+							'ID'          => $post_id,
+							'post_status' => 'draft',
+						)
+					);
+					$deactivated_count++;
+				}
+			}
+
+			$paged++;
+			$batch_count = is_array( $batch ) ? count( $batch ) : 0;
+		} while ( 500 === $batch_count ); // Yoda
 
 		return $deactivated_count;
 	}
@@ -386,31 +421,14 @@ class Feed_To_Blogroll_Sync {
 	 * @return array Sync statistics
 	 */
 	public function get_sync_stats() {
-		$stats = array();
-
-		// Count published blogs
-		$published_blogs = get_posts( array(
-			'post_type'      => 'blogroll',
-			'post_status'    => 'publish',
-			'posts_per_page' => -1,
-			'no_found_rows'  => true,
-		) );
-		$stats['total_published'] = count( $published_blogs );
-
-		// Count draft blogs (deactivated)
-		$draft_blogs = get_posts( array(
-			'post_type'      => 'blogroll',
-			'post_status'    => 'draft',
-			'posts_per_page' => -1,
-			'no_found_rows'  => true,
-		) );
-		$stats['total_draft'] = count( $draft_blogs );
-
-		// Get last sync info
+		$counts = wp_count_posts( 'blogroll' );
 		$options = get_option( 'feed_to_blogroll_options', array() );
-		$stats['last_sync'] = isset( $options['last_sync'] ) ? $options['last_sync'] : '';
-		$stats['sync_status'] = isset( $options['sync_status'] ) ? $options['sync_status'] : 'idle';
 
-		return $stats;
+		return array(
+			'total_published' => isset( $counts->publish ) ? (int) $counts->publish : 0,
+			'total_draft'     => isset( $counts->draft ) ? (int) $counts->draft : 0,
+			'last_sync'       => isset( $options['last_sync'] ) ? $options['last_sync'] : '',
+			'sync_status'     => isset( $options['sync_status'] ) ? $options['sync_status'] : 'idle',
+		);
 	}
 }

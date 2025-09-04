@@ -4,14 +4,14 @@
 [![PHP](https://img.shields.io/badge/PHP-8.2+-blue)](https://php.net/)
 [![License](https://img.shields.io/badge/License-GPL%20v2+-green)](https://www.gnu.org/licenses/gpl-2.0.html)
 
-Automatic blogroll synchronization with Feedbin API, integrated with Distributed theme.
+Automatic blogroll synchronization with Feedbin API.
 
-> Requirement: Advanced Custom Fields Pro is required for the admin UI and field definitions.
+> No external dependencies required - uses WordPress native meta fields and admin interface.
 
 ## Features
 
 - **Automatic Synchronization**: Daily sync with Feedbin API
-- **Custom Post Type**: Dedicated 'blogroll' post type with ACF fields
+- **Custom Post Type**: Dedicated 'blogroll' post type with native WordPress meta fields
 - **Responsive Grid Layout**: 4-column desktop, 2-column mobile design
 - **OPML Export**: Export your blogroll as OPML file
 - **Category Support**: Organize blogs by categories and tags
@@ -26,7 +26,6 @@ Automatic blogroll synchronization with Feedbin API, integrated with Distributed
 
 - WordPress 6.0 or higher
 - PHP 8.2 or higher (minimum requirement)
-- Advanced Custom Fields Pro plugin (mandatory)
 - Feedbin account with API access
 
 ## Installation

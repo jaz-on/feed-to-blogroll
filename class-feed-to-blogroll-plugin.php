@@ -59,12 +59,6 @@ class Feed_To_Blogroll_Plugin {
 	 * Initialize plugin components
 	 */
 	public function init_plugin() {
-		// Check if ACF Pro is active
-		if ( ! class_exists( 'ACF' ) ) {
-			add_action( 'admin_notices', array( $this, 'acf_missing_notice' ) );
-			return;
-		}
-
 		// Load required files
 		$this->load_dependencies();
 
@@ -323,7 +317,7 @@ class Feed_To_Blogroll_Plugin {
 		$default_options = array(
 			'feedbin_username' => '',
 			'feedbin_password' => '',
-			'feedbin_api_key'  => '', // Alternative plus sécurisée
+			'feedbin_api_key'  => '', // More secure alternative
 			'sync_frequency'   => 'daily',
 			'auto_sync'        => true,
 			'last_sync'        => '',
@@ -366,24 +360,7 @@ class Feed_To_Blogroll_Plugin {
 		}
 	}
 
-	/**
-	 * Display notice if ACF Pro is missing
-	 */
-	public function acf_missing_notice() {
-		?>
-		<div class="notice notice-error">
-			<p>
-				<?php
-				printf(
-					/* translators: %s: ACF Pro plugin name */
-					esc_html__( 'Feed to Blogroll requires %s to be installed and activated.', 'feed-to-blogroll' ),
-					'<strong>Advanced Custom Fields Pro</strong>'
-				);
-				?>
-			</p>
-		</div>
-		<?php
-	}
+
 }
 
 // Initialize plugin

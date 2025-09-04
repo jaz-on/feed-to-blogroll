@@ -65,16 +65,7 @@ foreach ( $taxonomies as $plugin_taxonomy ) {
 	}
 }
 
-// Clean up ACF field groups (if they exist)
-if ( function_exists( 'acf_get_field_groups' ) ) {
-	$field_groups = acf_get_field_groups();
-
-	foreach ( $field_groups as $field_group ) {
-		if ( strpos( $field_group['key'], 'group_blogroll_fields' ) !== false ) {
-			acf_delete_field_group( $field_group['ID'] );
-		}
-	}
-}
+// Meta fields are automatically removed with posts
 
 // Clean up uploaded files (if any)
 $upload_dir        = wp_upload_dir();

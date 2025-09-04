@@ -6,7 +6,7 @@
 	"title": "Blogroll",
 	"category": "widgets",
 	"icon": "rss",
-	"description": "Display a blogroll of RSS feeds.",
+	"description": "Automatic blogroll synchronization with Feedbin API",
 	"supports": {
 		"html": false,
 		"align": ["wide", "full"]

@@ -61,7 +61,7 @@ class Feed_To_Blogroll_Sync {
 	 * Perform manual synchronization via AJAX with improved security
 	 */
 	public function manual_sync() {
-		// Vérifier la méthode HTTP
+		// Check HTTP method
 		if ( ! isset( $_SERVER['REQUEST_METHOD'] ) || 'POST' !== $_SERVER['REQUEST_METHOD'] ) {
 			wp_send_json_error(
 				array(
@@ -72,7 +72,7 @@ class Feed_To_Blogroll_Sync {
 			);
 		}
 
-		// Vérifier la présence du nonce AVANT toute utilisation
+		// Check nonce presence BEFORE any usage
 		$nonce = isset( $_POST['nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['nonce'] ) ) : '';
 		if ( empty( $nonce ) || ! wp_verify_nonce( $nonce, 'feed_to_blogroll_admin' ) ) {
 			wp_send_json_error(
@@ -84,7 +84,7 @@ class Feed_To_Blogroll_Sync {
 			);
 		}
 
-		// Vérifier les capacités utilisateur
+		// Check user capabilities
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error(
 				array(
@@ -253,7 +253,7 @@ class Feed_To_Blogroll_Sync {
 			'update_post_term_cache' => false,
 		);
 
-		// Pré-résolution plus rapide de l'ID via requête directe sur postmeta
+		// Faster ID pre-resolution via direct postmeta query
 		global $wpdb;
 		$rss_url_escaped = esc_url_raw( $rss_url );
 		$cache_key = 'ftb_rss_to_postid_' . md5( (string) $rss_url_escaped );
@@ -291,10 +291,10 @@ class Feed_To_Blogroll_Sync {
 		$blog_id = wp_insert_post( $post_data );
 
 		if ( $blog_id && ! is_wp_error( $blog_id ) ) {
-			// Set ACF fields
-			update_field( 'rss_url', esc_url_raw( $feed['feed_url'] ), $blog_id );
-			update_field( 'site_url', esc_url_raw( $feed['site_url'] ?? '' ), $blog_id );
-			update_field( 'feed_id', absint( $feed['id'] ), $blog_id );
+			// Set meta fields
+			update_post_meta( $blog_id, 'rss_url', esc_url_raw( $feed['feed_url'] ) );
+			update_post_meta( $blog_id, 'site_url', esc_url_raw( $feed['site_url'] ?? '' ) );
+			update_post_meta( $blog_id, 'feed_id', absint( $feed['id'] ) );
 
 			// Set categories if available
 			if ( ! empty( $feed['tags'] ) ) {
@@ -324,9 +324,9 @@ class Feed_To_Blogroll_Sync {
 		$updated = wp_update_post( $post_data );
 
 		if ( $updated && ! is_wp_error( $updated ) ) {
-			// Update ACF fields
-			update_field( 'site_url', esc_url_raw( $feed['site_url'] ?? '' ), $blog_id );
-			update_field( 'feed_id', absint( $feed['id'] ), $blog_id );
+			// Update meta fields
+			update_post_meta( $blog_id, 'site_url', esc_url_raw( $feed['site_url'] ?? '' ) );
+			update_post_meta( $blog_id, 'feed_id', absint( $feed['id'] ) );
 
 			// Update categories if available
 			if ( ! empty( $feed['tags'] ) ) {

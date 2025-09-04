@@ -1,62 +1,72 @@
 # Changelog
 
-Tous les changements notables de ce projet seront documentés dans ce fichier.
+All notable changes to this project will be documented in this file.
 
-## [1.0.2] - 2025-01-27
+## [Unreleased] (towards 1.0.0)
 
-### Ajouté
-- Fichier `.distignore` pour optimiser le packaging du plugin
-- Exclusion des fichiers de développement lors de la distribution
+### Changed
+- Complete refactorization to remove ACF Pro dependency
+- Migrated to native WordPress meta fields and meta boxes
+- Updated plugin description to reflect no external dependencies
 
-## [1.0.1] - 2025-01-27
+### Added
+- Native WordPress meta field registration with validation
+- Custom meta boxes using WordPress core functionality
+- Comprehensive refactorization documentation
+- Development configuration with Taskmaster integration
 
-### Ajouté
-- Documentation complète des changements dans le CHANGELOG.md
-- Historique détaillé des fonctionnalités et améliorations
+### Removed
+- ACF Pro dependency requirement
+- External plugin dependencies
+- Legacy ACF field definitions
 
-## [1.0.0] - 2025-01-27
+### Added
+- `.distignore` file for optimized plugin packaging
+- Development file exclusion during distribution
 
-### Ajouté
-- Intégration complète avec l'API Feedbin pour la synchronisation automatique des blogrolls
-- Type de post personnalisé 'blogroll' avec champs ACF
-- Interface d'administration complète avec tableau de bord et paramètres
-- Shortcodes `[blogroll]` et `[blogroll_grid]` pour l'affichage
-- Bloc WordPress natif avec support des attributs personnalisables
-- Export OPML pour sauvegarde et partage
-- Support des catégories et tags pour l'organisation
-- API REST pour l'accès programmatique aux données
-- Synchronisation automatique via cron WordPress
-- Interface responsive avec grille adaptative
+### Added
+- Complete change documentation in CHANGELOG.md
+- Detailed feature and improvement history
 
-### Sécurité
-- Vérification des nonces pour toutes les actions AJAX
-- Contrôles de capacités utilisateur
-- Sanitisation et validation des données
-- Support des constantes wp-config.php pour les identifiants
+### Added
+- Complete integration with Feedbin API for automatic blogroll synchronization
+- Custom 'blogroll' post type with native WordPress meta fields
+- Comprehensive admin interface with dashboard and settings
+- `[blogroll]` and `[blogroll_grid]` shortcodes for display
+- Native WordPress block with customizable attributes
+- OPML export for backup and sharing
+- Category and tag support for organization
+- REST API for programmatic data access
+- Automatic synchronization via WordPress cron
+- Responsive interface with adaptive grid
+
+### Security
+- Nonce verification for all AJAX actions
+- User capability checks
+- Data sanitization and validation
+- wp-config.php constant support for credentials
 
 ### Performance
-- Système de cache optimisé pour les requêtes
-- Chargement conditionnel des assets
-- Requêtes de base de données optimisées
-- Support du cache OPML
+- Optimized caching system for queries
+- Conditional asset loading
+- Optimized database queries
+- OPML cache support
 
-### Accessibilité
-- Conformité WCAG 2.1 AA
-- Support des lecteurs d'écran
-- Navigation au clavier
-- Attributs ARIA appropriés
-- Structure sémantique HTML
+### Accessibility
+- WCAG 2.1 AA compliance
+- Screen reader support
+- Keyboard navigation
+- Appropriate ARIA attributes
+- Semantic HTML structure
 
-### Technique
-- Architecture modulaire avec séparation des préoccupations
-- Support PHP 8.2+
-- Standards de codage WordPress
-- Documentation complète
-- Tests et validation automatiques
+### Technical
+- Modular architecture with separation of concerns
+- PHP 8.2+ support
+- WordPress coding standards
+- Complete documentation
+- Automated tests and validation
 
-## [0.1.0] - 2025-01-20
-
-### Ajouté
-- Version initiale du plugin
-- Structure de base et architecture
-- Support des fonctionnalités essentielles
+### Added
+- Initial plugin version
+- Basic structure and architecture
+- Essential functionality support

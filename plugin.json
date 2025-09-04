@@ -1,7 +1,7 @@
 {
 	"name": "feed-to-blogroll",
 	"version": "1.0.0",
-	"description": "Automatic blogroll synchronization with Feedbin API, integrated with Distributed theme",
+	"description": "Automatic blogroll synchronization with Feedbin API",
 	"author": "Jason Rouet",
 	"authorUrl": "https://jasonrouet.local",
 	"license": "GPL-2.0-or-later",
@@ -10,10 +10,7 @@
 	"domainPath": "/languages",
 	"requires": {
 		"wordpress": "6.0",
-		"php": "8.2",
-		"plugins": [
-			"advanced-custom-fields-pro"
-		]
+		"php": "8.2"
 	},
 	"tested": {
 		"wordpress": "6.5",
@@ -23,7 +20,7 @@
 		"feedbin-api",
 		"automatic-sync",
 		"custom-post-type",
-		"acf-integration",
+		"native-meta-fields",
 		"responsive-grid",
 		"opml-export",
 		"shortcodes",

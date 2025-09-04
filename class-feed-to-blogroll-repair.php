@@ -100,10 +100,8 @@ class Feed_To_Blogroll_Repair {
 		$cpt = new Feed_To_Blogroll_CPT();
 		$cpt->force_registration();
 
-		// Also try to re-register ACF fields
-		if ( function_exists( 'acf_add_local_field_group' ) ) {
-			$cpt->create_acf_fields();
-		}
+		// Register meta fields
+		$cpt->register_meta_fields();
 
 		// Log the repair
 		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {

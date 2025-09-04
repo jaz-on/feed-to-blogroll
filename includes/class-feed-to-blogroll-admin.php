@@ -355,7 +355,7 @@ class Feed_To_Blogroll_Admin {
 			true
 		);
 
-		// Activer le système natif WordPress de postboxes
+		// Enable native WordPress postbox system
 		wp_enqueue_script( 'postbox' );
 		wp_add_inline_script(
 			'feed-to-blogroll-admin',
@@ -559,7 +559,7 @@ class Feed_To_Blogroll_Admin {
 	 * Test API connection with improved security
 	 */
 	public function test_connection() {
-		// Vérifier la méthode HTTP
+		// Check HTTP method
 		if ( ! isset( $_SERVER['REQUEST_METHOD'] ) || 'POST' !== $_SERVER['REQUEST_METHOD'] ) {
 			wp_send_json_error(
 				array(
@@ -570,7 +570,7 @@ class Feed_To_Blogroll_Admin {
 			);
 		}
 
-		// Vérifier le nonce
+		// Check nonce
 		$nonce = isset( $_POST['nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['nonce'] ) ) : '';
 		if ( empty( $nonce ) || ! wp_verify_nonce( $nonce, 'feed_to_blogroll_admin' ) ) {
 			wp_send_json_error(
@@ -582,7 +582,7 @@ class Feed_To_Blogroll_Admin {
 			);
 		}
 
-		// Vérifier les capacités utilisateur
+		// Check user capabilities
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error(
 				array(
@@ -604,6 +604,7 @@ class Feed_To_Blogroll_Admin {
 					'context' => 'connection_test',
 				)
 			);
+			return;
 		}
 
 		wp_send_json_success(
@@ -619,7 +620,7 @@ class Feed_To_Blogroll_Admin {
 	 * Export OPML with improved security
 	 */
 	public function export_opml() {
-		// Vérifier la méthode HTTP
+		// Check HTTP method
 		if ( ! isset( $_SERVER['REQUEST_METHOD'] ) || 'POST' !== $_SERVER['REQUEST_METHOD'] ) {
 			wp_send_json_error(
 				array(
@@ -630,7 +631,7 @@ class Feed_To_Blogroll_Admin {
 			);
 		}
 
-		// Vérifier le nonce
+		// Check nonce
 		$nonce = isset( $_POST['nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['nonce'] ) ) : '';
 		if ( empty( $nonce ) || ! wp_verify_nonce( $nonce, 'feed_to_blogroll_admin' ) ) {
 			wp_send_json_error(
@@ -642,7 +643,7 @@ class Feed_To_Blogroll_Admin {
 			);
 		}
 
-		// Vérifier les capacités utilisateur
+		// Check user capabilities
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error(
 				array(
@@ -679,8 +680,8 @@ class Feed_To_Blogroll_Admin {
 		$opml .= '  <body>' . "\n";
 
 		foreach ( $blogs as $blog ) {
-			$rss_url = get_field( 'rss_url', $blog->ID );
-			$site_url = get_field( 'site_url', $blog->ID );
+			$rss_url = get_post_meta( $blog->ID, 'rss_url', true );
+			$site_url = get_post_meta( $blog->ID, 'site_url', true );
 
 			if ( $rss_url ) {
 				$opml .= '    <outline type="rss" text="' . esc_attr( $blog->post_title ) . '" title="' . esc_attr( $blog->post_title ) . '" xmlUrl="' . esc_attr( $rss_url ) . '" htmlUrl="' . esc_attr( $site_url ) . '" />' . "\n";

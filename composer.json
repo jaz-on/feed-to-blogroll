@@ -1,6 +1,6 @@
 {
     "name": "jaz-on/feed-to-blogroll",
-    "description": "Automatic blogroll synchronization with Feedbin API, integrated with Distributed theme",
+    "description": "Automatic blogroll synchronization with Feedbin API",
     "type": "wordpress-plugin",
     "license": "GPL-2.0-or-later",
     "authors": [

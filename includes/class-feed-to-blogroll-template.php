@@ -348,8 +348,8 @@ class Feed_To_Blogroll_Template {
 		// Only add to single blogroll posts
 		if ( is_singular( 'blogroll' ) ) {
 			$blog_id = get_the_ID();
-			$rss_url = get_field( 'rss_url', $blog_id );
-			$site_url = get_field( 'site_url', $blog_id );
+					$rss_url = get_post_meta( $blog_id, 'rss_url', true );
+		$site_url = get_post_meta( $blog_id, 'site_url', true );
 
 			if ( $rss_url || $site_url ) {
 				$content .= '<div class="blogroll-links">';
@@ -474,8 +474,8 @@ class Feed_To_Blogroll_Template {
 		$opml .= '  <body>' . "\n";
 
 		foreach ( $blogs as $blog ) {
-			$rss_url = get_field( 'rss_url', $blog->ID );
-			$site_url = get_field( 'site_url', $blog->ID );
+			$rss_url = get_post_meta( $blog->ID, 'rss_url', true );
+			$site_url = get_post_meta( $blog->ID, 'site_url', true );
 
 			if ( $rss_url ) {
 				$opml .= '    <outline type="rss" text="' . esc_attr( $blog->post_title ) . '" ';

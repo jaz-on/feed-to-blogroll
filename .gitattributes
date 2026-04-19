@@ -1,5 +1,8 @@
 # Files excluded from `git archive` (release ZIPs); mirrors intent of .distignore for dev-only paths.
 composer.json export-ignore
+composer.lock export-ignore
+.github export-ignore
+.gitattributes export-ignore
 phpcs.xml export-ignore
 .distignore export-ignore
 CHANGELOG.md export-ignore

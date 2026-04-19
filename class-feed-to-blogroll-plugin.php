@@ -359,8 +359,6 @@ class Feed_To_Blogroll_Plugin {
 			$editor_role->remove_cap( 'edit_published_blogrolls' );
 		}
 	}
-
-
 }
 
 // Initialize plugin

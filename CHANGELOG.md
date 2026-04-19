@@ -2,71 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
-## [Unreleased] (towards 1.0.0)
+## [Unreleased]
+
+## [1.1.0] - 2026-04-18
+
+### Added
+
+- Plugin headers `GitHub Plugin URI` and `Primary Branch` for [Git Updater](https://github.com/git-updater/git-updater) (track updates from GitHub; `dev` uses the `dev` branch, `main` uses `main` after release).
+- [GitHub Actions](https://github.com/jaz-on/feed-to-blogroll/actions) workflow running `composer phpcs` on pushes and pull requests to `main` and `dev`.
+- [`.gitattributes`](.gitattributes) `export-ignore` rules so `git archive` ZIPs omit Composer, PHPCS, and other development-only paths (aligned with [`.distignore`](.distignore)).
 
 ### Changed
-- Complete refactorization to remove ACF Pro dependency
-- Migrated to native WordPress meta fields and meta boxes
-- Updated plugin description to reflect no external dependencies
 
-### Added
-- Native WordPress meta field registration with validation
-- Custom meta boxes using WordPress core functionality
-- Comprehensive refactorization documentation
-- Development configuration with Taskmaster integration
+- README: branch strategy (`main` stable vs `dev` integration), Git Updater installation, manual verification of updates, and fixed REST API / block documentation formatting.
+- Aligned plugin version to **1.1.0** across the main plugin file, `FEED_TO_BLOGROLL_VERSION`, `block.json`, `plugin.json`, and the POT header.
+- PHPCS: increased `absoluteLineLimit` for long admin HTML/translatable strings; PHPCBF fixes in CPT, template, and main plugin class.
 
-### Removed
-- ACF Pro dependency requirement
-- External plugin dependencies
-- Legacy ACF field definitions
+## [1.0.0] - Initial release
 
-### Added
-- `.distignore` file for optimized plugin packaging
-- Development file exclusion during distribution
-
-### Added
-- Complete change documentation in CHANGELOG.md
-- Detailed feature and improvement history
-
-### Added
-- Complete integration with Feedbin API for automatic blogroll synchronization
-- Custom 'blogroll' post type with native WordPress meta fields
-- Comprehensive admin interface with dashboard and settings
-- `[blogroll]` and `[blogroll_grid]` shortcodes for display
-- Native WordPress block with customizable attributes
-- OPML export for backup and sharing
-- Category and tag support for organization
-- REST API for programmatic data access
-- Automatic synchronization via WordPress cron
-- Responsive interface with adaptive grid
-
-### Security
-- Nonce verification for all AJAX actions
-- User capability checks
-- Data sanitization and validation
-- wp-config.php constant support for credentials
-
-### Performance
-- Optimized caching system for queries
-- Conditional asset loading
-- Optimized database queries
-- OPML cache support
-
-### Accessibility
-- WCAG 2.1 AA compliance
-- Screen reader support
-- Keyboard navigation
-- Appropriate ARIA attributes
-- Semantic HTML structure
-
-### Technical
-- Modular architecture with separation of concerns
-- PHP 8.2+ support
-- WordPress coding standards
-- Complete documentation
-- Automated tests and validation
-
-### Added
-- Initial plugin version
-- Basic structure and architecture
-- Essential functionality support
+- Feedbin API synchronization, `blogroll` custom post type with native meta fields (no ACF dependency).
+- Admin UI, shortcodes `[blogroll]` / `[blogroll_grid]`, block `feed-to-blogroll/blogroll`, REST API, OPML export, categories/tags, cron sync, security hardening, caching, and accessibility-oriented markup.

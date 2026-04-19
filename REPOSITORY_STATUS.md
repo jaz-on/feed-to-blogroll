@@ -1,51 +1,42 @@
 # Repository Status - Feed to Blogroll Plugin
 
 ## État actuel
-- **Dépôt local** : Synchronisé avec `origin/main`
+
 - **Dépôt distant** : GitHub (https://github.com/jaz-on/feed-to-blogroll.git)
-- **Branche principale** : `main`
-- **Dernier commit** : `211fb3b` - Update CHANGELOG.md with versions 1.0.1 and 1.0.2
+- **`main`** : branche stable ; releases versionnées (tags `v*`) ; en-tête plugin `Primary Branch: main` pour Git Updater.
+- **`dev`** : intégration continue ; en-tête plugin `Primary Branch: dev` pour tester les mises à jour pré-release via Git Updater.
+- **Dernier alignement version** : **1.1.0** (header WordPress, constante, `block.json`, `plugin.json`)
 
 ## Tags de version
-- **v1.0.0** : Version initiale stable avec intégration complète Feedbin API
-- **v1.0.1** : Ajout du CHANGELOG.md complet
-- **v1.0.2** : Ajout du fichier .distignore pour l'optimisation du packaging
-- **v1.0.3** : Mise à jour du CHANGELOG.md avec toutes les versions
+
+- **v1.1.0** : Git Updater (branches `main` / `dev`), CI PHPCS, `.gitattributes` pour archives propres, documentation branches.
+- **v1.0.x** (historique) : versions documentées antérieurement dans l’historique Git (CHANGELOG/refactor).
 
 ## Structure du projet
+
 ```
 feed-to-blogroll/
-├── .git/                    # Dépôt Git
-├── .distignore             # Fichiers exclus du packaging
-├── CHANGELOG.md            # Historique des changements
-├── README.md               # Documentation principale
-├── README.txt              # Documentation WordPress.org
-├── LICENSE                 # Licence GPL v2+
-├── feed-to-blogroll.php    # Fichier principal du plugin
-├── class-feed-to-blogroll-plugin.php
-├── class-feed-to-blogroll-repair.php
-├── block.json              # Configuration du bloc WordPress
-├── composer.json           # Dépendances PHP
-├── phpcs.xml              # Configuration PHP_CodeSniffer
-├── includes/               # Classes principales
-├── assets/                 # CSS, JS, images
-├── languages/              # Fichiers de traduction
-└── templates/              # Templates personnalisés
+├── .distignore             # Fichiers exclus du packaging manuel
+├── .gitattributes          # Fichiers exclus de `git archive` (ZIP release)
+├── CHANGELOG.md
+├── README.md
+├── LICENSE
+├── feed-to-blogroll.php
+├── block.json
+├── composer.json
+├── phpcs.xml
+├── includes/
+├── assets/
+├── languages/
+└── templates/
 ```
 
 ## Synchronisation
-- ✅ Dépôt local à jour avec `origin/main`
-- ✅ Tous les tags poussés vers GitHub
-- ✅ Aucune modification en attente
-- ✅ Historique des commits synchronisé
 
-## Prochaines étapes recommandées
-1. Vérifier le plugin sur GitHub.com
-2. Créer une release GitHub avec les assets compilés
-3. Tester l'installation depuis le dépôt
-4. Préparer la soumission à WordPress.org (si applicable)
+- Pousser `dev` et `main` vers `origin` après chaque changement utile aux sites branchés sur GitHub.
+- **Git Updater** : incrémenter le numéro `Version` dans le header du plugin pour qu’une nouvelle version apparaisse dans le tableau de bord WordPress.
 
 ## Dernière vérification
-- **Date** : 2025-01-27
-- **Statut** : ✅ Synchronisé et à jour
-- **Version** : 1.0.3
+
+- **Date** : 2026-04-18
+- **Version catalogue** : 1.1.0

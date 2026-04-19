@@ -5,7 +5,7 @@
  * GitHub Plugin URI: https://github.com/jaz-on/feed-to-blogroll
  * Primary Branch: dev
  * Description: Automatic blogroll synchronization with Feedbin API - No external dependencies required.
- * Version: 1.0.0
+ * Version: 1.1.0
  * Requires at least: 6.0
  * Tested up to: 6.5
  * Requires PHP: 8.2
@@ -17,7 +17,7 @@
  * Domain Path: /languages
  *
  * @package FeedToBlogroll
- * @since 1.0.0
+ * @since 1.1.0
  */
 
 // Prevent direct access
@@ -26,7 +26,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Define plugin constants
-define( 'FEED_TO_BLOGROLL_VERSION', '1.0.0' );
+define( 'FEED_TO_BLOGROLL_VERSION', '1.1.0' );
 define( 'FEED_TO_BLOGROLL_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'FEED_TO_BLOGROLL_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'FEED_TO_BLOGROLL_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );

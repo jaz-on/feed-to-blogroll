@@ -143,7 +143,7 @@ class Feed_To_Blogroll_CPT {
 				'single'            => true,
 				'show_in_rest'      => true,
 				'sanitize_callback' => 'esc_url_raw',
-				'auth_callback'     => function() {
+				'auth_callback'     => function () {
 					return current_user_can( 'edit_posts' );
 				},
 			)
@@ -159,7 +159,7 @@ class Feed_To_Blogroll_CPT {
 				'single'            => true,
 				'show_in_rest'      => true,
 				'sanitize_callback' => 'esc_url_raw',
-				'auth_callback'     => function() {
+				'auth_callback'     => function () {
 					return current_user_can( 'edit_posts' );
 				},
 			)
@@ -175,7 +175,7 @@ class Feed_To_Blogroll_CPT {
 				'single'            => true,
 				'show_in_rest'      => true,
 				'sanitize_callback' => 'absint',
-				'auth_callback'     => function() {
+				'auth_callback'     => function () {
 					return current_user_can( 'edit_posts' );
 				},
 			)
@@ -191,7 +191,7 @@ class Feed_To_Blogroll_CPT {
 				'single'            => true,
 				'show_in_rest'      => true,
 				'sanitize_callback' => array( $this, 'sanitize_sync_status' ),
-				'auth_callback'     => function() {
+				'auth_callback'     => function () {
 					return current_user_can( 'edit_posts' );
 				},
 			)
@@ -207,7 +207,7 @@ class Feed_To_Blogroll_CPT {
 				'single'            => true,
 				'show_in_rest'      => true,
 				'sanitize_callback' => 'sanitize_text_field',
-				'auth_callback'     => function() {
+				'auth_callback'     => function () {
 					return current_user_can( 'edit_posts' );
 				},
 			)
@@ -252,7 +252,7 @@ class Feed_To_Blogroll_CPT {
 		$feed_id = get_post_meta( $post->ID, 'feed_id', true );
 		$sync_status = get_post_meta( $post->ID, 'sync_status', true );
 		$last_sync = get_post_meta( $post->ID, 'last_sync', true );
-		
+
 		if ( empty( $sync_status ) ) {
 			$sync_status = 'active';
 		}
@@ -371,21 +371,21 @@ class Feed_To_Blogroll_CPT {
 	 */
 	public function set_custom_columns( $columns ) {
 		$new_columns = array();
-		
+
 		// Add checkbox and title
 		$new_columns['cb'] = $columns['cb'];
 		$new_columns['title'] = $columns['title'];
-		
+
 		// Add custom columns
 		$new_columns['site_url'] = __( 'Website', 'feed-to-blogroll' );
 		$new_columns['rss_url'] = __( 'RSS Feed', 'feed-to-blogroll' );
 		$new_columns['author'] = __( 'Author', 'feed-to-blogroll' );
 		$new_columns['last_sync'] = __( 'Last Sync', 'feed-to-blogroll' );
 		$new_columns['sync_status'] = __( 'Status', 'feed-to-blogroll' );
-		
+
 		// Add date
 		$new_columns['date'] = $columns['date'];
-		
+
 		return $new_columns;
 	}
 
@@ -433,13 +433,13 @@ class Feed_To_Blogroll_CPT {
 				if ( empty( $sync_status ) ) {
 					$sync_status = 'active';
 				}
-				
+
 				$status_labels = array(
 					'active'   => __( 'Active', 'feed-to-blogroll' ),
 					'inactive' => __( 'Inactive', 'feed-to-blogroll' ),
 					'error'    => __( 'Error', 'feed-to-blogroll' ),
 				);
-				
+
 				$label = isset( $status_labels[ $sync_status ] ) ? $status_labels[ $sync_status ] : $sync_status;
 				echo '<span class="sync-status status-' . esc_attr( $sync_status ) . '">' . esc_html( $label ) . '</span>';
 				break;

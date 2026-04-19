@@ -35,6 +35,23 @@ Automatic blogroll synchronization with Feedbin API.
 3. Go to 'Blogroll > Settings' to configure your Feedbin API credentials
 4. Use the `[blogroll]` shortcode to display your blogroll on any page
 
+This plugin is distributed from GitHub (not currently from the WordPress.org plugin directory).
+
+### Branch strategy
+
+- **`main`**: stable branch. Use tagged releases ([Releases](https://github.com/jaz-on/feed-to-blogroll/releases)) or `main` for production-style sites.
+- **`dev`**: integration branch for upcoming changes. Use only if you want to test pre-release updates.
+
+### Updates via Git Updater
+
+The plugin declares `GitHub Plugin URI` and `Primary Branch` so you can update it from the WordPress dashboard using [Git Updater](https://github.com/git-updater/git-updater) (successor to the earlier GitHub-focused updater).
+
+1. Install and activate **Git Updater** on your site.
+2. Install **Feed to Blogroll** from this repository (ZIP of `main` or `dev`, or clone into `wp-content/plugins/feed-to-blogroll/`).
+3. Git Updater will offer updates when the **Version** header in [`feed-to-blogroll.php`](feed-to-blogroll.php) increases on the branch set by **Primary Branch** (`main` on `main`, `dev` on `dev`).
+
+**Verify manually (recommended once):** after connecting the site to GitHub, open **Dashboard → Settings → Git Updater** (or the plugin’s update UI), confirm the repository is detected, then push a version bump to the tracked branch and confirm an update appears under **Dashboard → Updates**.
+
 ### Security (optional)
 - You can define `FEED_TO_BLOGROLL_FETCH_TAGS` in wp-config.php to disable fetching Feedbin tags (reduces API calls):
 ```php
@@ -82,6 +99,8 @@ Access your blogroll data programmatically:
 ```bash
 GET /wp-json/feed-to-blogroll/v1/blogroll
 GET /wp-json/feed-to-blogroll/v1/blogroll?category=tech&limit=10
+```
+
 ### Blocks
 
 - Block: Blogroll (`feed-to-blogroll/blogroll`)
@@ -92,8 +111,6 @@ GET /wp-json/feed-to-blogroll/v1/blogroll?category=tech&limit=10
   - `showExport` (boolean): show OPML export button (default: true)
 
 Insert the “Blogroll” block from the inserter and configure these options in the sidebar. Assets (CSS/JS) load automatically when the block/shortcode is present.
-
-```
 
 ## Privacy & Data Handling
 
@@ -173,9 +190,19 @@ composer phpcs
 composer phpcbf
 ```
 
+Pull requests and pushes to `main` / `dev` run the same checks in GitHub Actions (`.github/workflows/phpcs.yml`).
+
 ### Testing
 
 The plugin follows WordPress coding standards and includes comprehensive error handling. Test thoroughly in a development environment before deploying to production.
+
+**Release ZIP (matches `git archive` exclusions):** from a clean checkout on the tag or branch you want to ship:
+
+```bash
+git archive --format=zip --prefix=feed-to-blogroll/ -o feed-to-blogroll.zip HEAD
+```
+
+Development-only paths listed in [`.gitattributes`](.gitattributes) are omitted from the archive.
 
 ## Contributing
 

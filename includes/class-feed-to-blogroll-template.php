@@ -349,7 +349,7 @@ class Feed_To_Blogroll_Template {
 		if ( is_singular( 'blogroll' ) ) {
 			$blog_id = get_the_ID();
 					$rss_url = get_post_meta( $blog_id, 'rss_url', true );
-		$site_url = get_post_meta( $blog_id, 'site_url', true );
+			$site_url = get_post_meta( $blog_id, 'site_url', true );
 
 			if ( $rss_url || $site_url ) {
 				$content .= '<div class="blogroll-links">';

@@ -204,6 +204,8 @@ git archive --format=zip --prefix=feed-to-blogroll/ -o feed-to-blogroll.zip HEAD
 
 Development-only paths listed in [`.gitattributes`](.gitattributes) are omitted from the archive.
 
+**Maintainers:** after merging `main` into `dev`, reset the plugin header on `dev` to `Primary Branch: dev` so prerelease testers keep tracking the integration branch (stable `main` should keep `Primary Branch: main`).
+
 ## Contributing
 
 We welcome contributions! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.

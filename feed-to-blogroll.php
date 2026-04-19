@@ -2,6 +2,8 @@
 /**
  * Plugin Name: Feed to Blogroll
  * Plugin URI: https://github.com/jaz-on/feed-to-blogroll
+ * GitHub Plugin URI: https://github.com/jaz-on/feed-to-blogroll
+ * Primary Branch: dev
  * Description: Automatic blogroll synchronization with Feedbin API - No external dependencies required.
  * Version: 1.0.0
  * Requires at least: 6.0

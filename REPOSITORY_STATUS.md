@@ -4,7 +4,7 @@
 
 - **Dépôt distant** : GitHub (https://github.com/jaz-on/feed-to-blogroll.git)
 - **`main`** : branche stable ; releases versionnées (tags `v*`) ; en-tête plugin `Primary Branch: main` pour Git Updater.
-- **`dev`** : intégration continue ; en-tête plugin `Primary Branch: dev` pour tester les mises à jour pré-release via Git Updater.
+- **`dev`** : intégration continue ; pour suivre cette branche avec Git Updater, configurer la branche `dev` dans l’admin WordPress (l’en-tête du plugin reste `Primary Branch: main`).
 - **Dernier alignement version** : **1.1.0** (header WordPress, constante, `block.json`, `plugin.json`)
 
 ## Tags de version

@@ -14,7 +14,7 @@
  * Text Domain: feed-to-blogroll
  * Domain Path: /languages
  * GitHub Plugin URI: https://github.com/jaz-on/feed-to-blogroll
- * Primary Branch: dev
+ * Primary Branch: main
  *
  * @package FeedToBlogroll
  * @since 1.1.0

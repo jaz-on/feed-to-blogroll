@@ -221,6 +221,15 @@ class Feed_To_Blogroll_Admin {
 	 * Sanitize and validate options with improved security
 	 */
 	public function sanitize_options( $input ) {
+		if ( ! is_array( $input ) ) {
+			$input = array();
+		}
+
+		$existing = get_option( 'feed_to_blogroll_options', array() );
+		if ( ! is_array( $existing ) ) {
+			$existing = array();
+		}
+
 		$sanitized = array();
 
 		if ( isset( $input['feedbin_username'] ) ) {
@@ -241,7 +250,7 @@ class Feed_To_Blogroll_Admin {
 		}
 
 		if ( isset( $input['auto_sync'] ) ) {
-			$sanitized['auto_sync'] = (bool) $input['auto_sync'];
+			$sanitized['auto_sync'] = 1 === (int) $input['auto_sync'];
 		}
 
 		if ( isset( $input['sync_frequency'] ) ) {
@@ -251,7 +260,7 @@ class Feed_To_Blogroll_Admin {
 				: 'daily';
 		}
 
-		return $sanitized;
+		return feed_to_blogroll_merge_saved_options( $existing, $sanitized );
 	}
 
 	/**
@@ -313,11 +322,12 @@ class Feed_To_Blogroll_Admin {
 	 */
 	public function auto_sync_field_callback() {
 		$options   = get_option( 'feed_to_blogroll_options', array() );
-		$auto_sync = isset( $options['auto_sync'] ) ? $options['auto_sync'] : true;
+		$auto_sync = ! empty( $options['auto_sync'] );
 
+		echo '<input type="hidden" name="feed_to_blogroll_options[auto_sync]" value="0" />';
 		printf(
 			'<label><input type="checkbox" id="auto_sync" name="feed_to_blogroll_options[auto_sync]" value="1" %s /> %s</label>',
-			checked( 1, $auto_sync, false ),
+			checked( true, $auto_sync, false ),
 			esc_html__( 'Enable automatic synchronization', 'feed-to-blogroll' )
 		);
 		echo '<p class="description">' . esc_html__( 'When enabled, the plugin will automatically sync with Feedbin according to the frequency set below.', 'feed-to-blogroll' ) . '</p>';
@@ -329,7 +339,7 @@ class Feed_To_Blogroll_Admin {
 	public function sync_frequency_field_callback() {
 		$options   = get_option( 'feed_to_blogroll_options', array() );
 		$frequency = isset( $options['sync_frequency'] ) ? $options['sync_frequency'] : 'daily';
-		$auto_sync = isset( $options['auto_sync'] ) ? $options['auto_sync'] : true;
+		$auto_sync = ! empty( $options['auto_sync'] );
 
 		$frequencies = array(
 			'twice_daily' => __( 'Twice a day (morning & evening)', 'feed-to-blogroll' ),
@@ -545,16 +555,22 @@ class Feed_To_Blogroll_Admin {
 			echo '<p><em>' . esc_html__( 'No synchronization has been performed yet.', 'feed-to-blogroll' ) . '</em></p>';
 		}
 
-		// Display sync statistics
-		if ( ! empty( $stats ) ) {
+		// Display sync statistics (last completed run).
+		if ( ! empty( $stats ) && ( isset( $stats['blogs_added'] ) || isset( $stats['blogs_updated'] ) || isset( $stats['blogs_deactivated'] ) ) ) {
 			echo '<div class="sync-stats">';
-			echo '<h3>' . esc_html__( 'Sync Statistics', 'feed-to-blogroll' ) . '</h3>';
+			echo '<h3>' . esc_html__( 'Last sync run', 'feed-to-blogroll' ) . '</h3>';
 			echo '<ul>';
 			if ( isset( $stats['blogs_added'] ) ) {
-				echo '<li>' . esc_html__( 'Blogs added:', 'feed-to-blogroll' ) . ' ' . esc_html( $stats['blogs_added'] ) . '</li>';
+				echo '<li>' . esc_html__( 'Blogs added:', 'feed-to-blogroll' ) . ' ' . esc_html( (string) $stats['blogs_added'] ) . '</li>';
 			}
 			if ( isset( $stats['blogs_updated'] ) ) {
-				echo '<li>' . esc_html__( 'Blogs updated:', 'feed-to-blogroll' ) . ' ' . esc_html( $stats['blogs_updated'] ) . '</li>';
+				echo '<li>' . esc_html__( 'Blogs updated:', 'feed-to-blogroll' ) . ' ' . esc_html( (string) $stats['blogs_updated'] ) . '</li>';
+			}
+			if ( isset( $stats['blogs_deactivated'] ) ) {
+				echo '<li>' . esc_html__( 'Blogs deactivated:', 'feed-to-blogroll' ) . ' ' . esc_html( (string) $stats['blogs_deactivated'] ) . '</li>';
+			}
+			if ( isset( $stats['duration'] ) && $stats['duration'] > 0 ) {
+				echo '<li>' . esc_html__( 'Duration (seconds):', 'feed-to-blogroll' ) . ' ' . esc_html( number_format_i18n( (float) $stats['duration'], 2 ) ) . '</li>';
 			}
 			echo '</ul>';
 			echo '</div>';
@@ -684,51 +700,7 @@ class Feed_To_Blogroll_Admin {
 			);
 		}
 
-		// Try cached OPML first
-		$cached = get_transient( 'feed_to_blogroll_opml' );
-		if ( false !== $cached && is_array( $cached ) && isset( $cached['opml'], $cached['filename'] ) ) {
-			wp_send_json_success( $cached );
-		}
-
-		$blogs = get_posts(
-			array(
-				'post_type'              => 'blogroll',
-				'post_status'            => 'publish',
-				'posts_per_page'         => -1,
-				'no_found_rows'          => true,
-				'update_post_meta_cache' => false,
-				'update_post_term_cache' => false,
-			)
-		);
-
-		$opml = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
-		$opml .= '<opml version="2.0">' . "\n";
-		$opml .= '  <head>' . "\n";
-		$opml .= '    <title>' . esc_html( get_bloginfo( 'name' ) ) . ' Blogroll</title>' . "\n";
-		$opml .= '    <dateCreated>' . gmdate( 'D, d M Y H:i:s' ) . ' GMT</dateCreated>' . "\n";
-		$opml .= '  </head>' . "\n";
-		$opml .= '  <body>' . "\n";
-
-		foreach ( $blogs as $blog ) {
-			$rss_url = get_post_meta( $blog->ID, 'rss_url', true );
-			$site_url = get_post_meta( $blog->ID, 'site_url', true );
-
-			if ( $rss_url ) {
-				$opml .= '    <outline type="rss" text="' . esc_attr( $blog->post_title ) . '" title="' . esc_attr( $blog->post_title ) . '" xmlUrl="' . esc_attr( $rss_url ) . '" htmlUrl="' . esc_attr( $site_url ) . '" />' . "\n";
-			}
-		}
-
-		$opml .= '  </body>' . "\n";
-		$opml .= '</opml>';
-
-		$response = array(
-			'opml'     => $opml,
-			'filename' => 'blogroll-' . gmdate( 'Y-m-d' ) . '.opml',
-		);
-
-		// Cache OPML for 1 hour
-		set_transient( 'feed_to_blogroll_opml', $response, HOUR_IN_SECONDS );
-
+		$response = Feed_To_Blogroll_OPML::get_export_payload();
 		wp_send_json_success( $response );
 	}
 
@@ -842,14 +814,75 @@ class Feed_To_Blogroll_Admin {
 	}
 
 	/**
-	 * Placeholder methods for other tabs
+	 * Blogs tab: quick links and recent entries.
 	 */
 	private function blogs_tab_content() {
-		echo '<p>' . esc_html__( 'Blogs management content will be displayed here.', 'feed-to-blogroll' ) . '</p>';
+		$manage_url = admin_url( 'edit.php?post_type=blogroll' );
+		$add_url    = admin_url( 'post-new.php?post_type=blogroll' );
+		echo '<p>' . esc_html__( 'Manage synced blogs as a custom post type, or add entries manually.', 'feed-to-blogroll' ) . '</p>';
+		echo '<p>';
+		printf(
+			'<a class="button button-primary" href="%s">%s</a> ',
+			esc_url( $manage_url ),
+			esc_html__( 'All blogs', 'feed-to-blogroll' )
+		);
+		printf(
+			'<a class="button" href="%s">%s</a>',
+			esc_url( $add_url ),
+			esc_html__( 'Add new', 'feed-to-blogroll' )
+		);
+		echo '</p>';
+
+		$recent = get_posts(
+			array(
+				'post_type'              => 'blogroll',
+				'post_status'            => array( 'publish', 'draft' ),
+				'posts_per_page'         => 10,
+				'orderby'                => 'modified',
+				'order'                  => 'DESC',
+				'no_found_rows'          => true,
+				'update_post_meta_cache' => true,
+				'update_post_term_cache' => false,
+			)
+		);
+
+		if ( empty( $recent ) ) {
+			echo '<p><em>' . esc_html__( 'No blogroll entries yet.', 'feed-to-blogroll' ) . '</em></p>';
+			return;
+		}
+
+		echo '<table class="widefat striped"><thead><tr>';
+		echo '<th>' . esc_html__( 'Title', 'feed-to-blogroll' ) . '</th>';
+		echo '<th>' . esc_html__( 'Website', 'feed-to-blogroll' ) . '</th>';
+		echo '<th>' . esc_html__( 'Status', 'feed-to-blogroll' ) . '</th>';
+		echo '</tr></thead><tbody>';
+		foreach ( $recent as $post ) {
+			$edit_link = get_edit_post_link( $post->ID, '' );
+			$edit_href = $edit_link ? $edit_link : get_permalink( $post );
+			$site_url  = get_post_meta( $post->ID, 'site_url', true );
+			echo '<tr>';
+			echo '<td><a href="' . esc_url( $edit_href ) . '">' . esc_html( get_the_title( $post ) ) . '</a></td>';
+			echo '<td>';
+			if ( $site_url ) {
+				echo '<a href="' . esc_url( $site_url ) . '" target="_blank" rel="noopener noreferrer">' . esc_html( (string) wp_parse_url( $site_url, PHP_URL_HOST ) ) . '</a>';
+			} else {
+				echo '—';
+			}
+			echo '</td>';
+			echo '<td>' . esc_html( $post->post_status ) . '</td>';
+			echo '</tr>';
+		}
+		echo '</tbody></table>';
 	}
 
+	/**
+	 * Export tab: OPML download via admin AJAX.
+	 */
 	private function export_tab_content() {
-		echo '<p>' . esc_html__( 'Export functionality will be displayed here.', 'feed-to-blogroll' ) . '</p>';
+		echo '<p>' . esc_html__( 'Download an OPML file of all published blogroll feeds. The file matches what visitors can export from the front end when enabled.', 'feed-to-blogroll' ) . '</p>';
+		echo '<p><button type="button" id="export-opml" class="button button-primary" data-nonce="' . esc_attr( wp_create_nonce( 'feed_to_blogroll_admin' ) ) . '">';
+		echo esc_html__( 'Download OPML', 'feed-to-blogroll' );
+		echo '</button></p>';
 	}
 
 	private function settings_tab_content() {

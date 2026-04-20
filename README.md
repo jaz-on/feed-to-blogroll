@@ -1,6 +1,6 @@
 # Feed to Blogroll
 
-[![WordPress](https://img.shields.io/badge/WordPress-6.0+-blue)](https://wordpress.org/)
+[![WordPress](https://img.shields.io/badge/WordPress-6.1+-blue)](https://wordpress.org/)
 [![PHP](https://img.shields.io/badge/PHP-8.2+-blue)](https://php.net/)
 [![License](https://img.shields.io/badge/License-GPL%20v2+-green)](https://www.gnu.org/licenses/gpl-2.0.html)
 
@@ -10,7 +10,7 @@ Automatic blogroll synchronization with Feedbin API.
 
 ## Features
 
-- **Automatic Synchronization**: Daily sync with Feedbin API
+- **Automatic Synchronization**: WP-Cron sync with Feedbin (frequency: twice daily, daily, or weekly)
 - **Custom Post Type**: Dedicated 'blogroll' post type with native WordPress meta fields
 - **Responsive Grid Layout**: 4-column desktop, 2-column mobile design
 - **OPML Export**: Export your blogroll as OPML file
@@ -19,12 +19,12 @@ Automatic blogroll synchronization with Feedbin API.
 - **REST API**: Access blogroll data via WordPress REST API
 - **Admin Dashboard**: Comprehensive management interface
 - **Security**: Nonces, capability checks, and data sanitization
-- **Performance**: Optimized caching and conditional loading
+- **Performance**: Optimized caching; front-end assets load when shortcodes/block render
 - **Accessibility**: WCAG 2.1 AA compliant with ARIA support
 
 ## Requirements
 
-- WordPress 6.0 or higher
+- WordPress 6.1 or higher
 - PHP 8.2 or higher (minimum requirement)
 - Feedbin account with API access
 
@@ -66,6 +66,10 @@ define( 'FEED_TO_BLOGROLL_PASSWORD', 'your-secure-password' );
 ```
 When defined, the corresponding fields in Settings are locked (read-only).
 
+- **REST permissions (optional hardening)** — by default the blogroll JSON and OPML endpoints are public (same data as the shortcode). Return `false` from a callback on these filters to block anonymous access:
+  - `feed_to_blogroll_rest_blogroll_permission`
+  - `feed_to_blogroll_rest_opml_permission`
+
 ## Usage
 
 ### Basic Blogroll
@@ -99,7 +103,10 @@ Access your blogroll data programmatically:
 ```bash
 GET /wp-json/feed-to-blogroll/v1/blogroll
 GET /wp-json/feed-to-blogroll/v1/blogroll?category=tech&limit=10
+GET /wp-json/feed-to-blogroll/v1/opml
 ```
+
+The OPML route returns JSON: `{ "opml": "<xml string>", "filename": "blogroll-YYYY-MM-DD.opml" }` (same shape the front-end export button consumes).
 
 ### Blocks
 
@@ -136,10 +143,7 @@ This plugin collects and stores:
 
 ### Uninstall
 
-When deleting the plugin from WordPress Admin, all plugin data is removed:
-- Options: `feed_to_blogroll_options`
-- Custom post type entries (`blogroll`) and related taxonomies
-- Scheduled events and transients
+When deleting the plugin from WordPress Admin, all plugin data is removed, including options such as `feed_to_blogroll_options`, `feed_to_blogroll_plugin_version`, API status/cache keys, the blogroll CPT and `blogroll_category` terms, scheduled cron events, and related transients.
 
 ## Accessibility
 
@@ -193,6 +197,12 @@ composer phpcbf
 Pull requests and pushes to `main` / `dev` run the same checks in GitHub Actions (`.github/workflows/phpcs.yml`).
 
 ### Testing
+
+Run the lightweight PHPUnit suite (option merge helper; no full WordPress test install required):
+
+```bash
+composer test
+```
 
 The plugin follows WordPress coding standards and includes comprehensive error handling. Test thoroughly in a development environment before deploying to production.
 

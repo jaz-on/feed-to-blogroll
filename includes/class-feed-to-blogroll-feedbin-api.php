@@ -338,11 +338,15 @@ class Feed_To_Blogroll_Feedbin_API {
 			$test_result = $this->test_connection();
 
 			if ( is_wp_error( $test_result ) ) {
-				$status['error'] = $test_result->get_error_message();
+				$status['error']     = $test_result->get_error_message();
 				$status['connected'] = false;
+				update_option( 'feed_to_blogroll_api_connected', false );
+				update_option( 'feed_to_blogroll_api_last_error', $test_result->get_error_message() );
 			} else {
 				$status['connected'] = true;
-				$status['error'] = '';
+				$status['error']     = '';
+				update_option( 'feed_to_blogroll_api_connected', true );
+				update_option( 'feed_to_blogroll_api_last_error', '' );
 			}
 
 			update_option( 'feed_to_blogroll_api_last_test', current_time( 'mysql' ) );

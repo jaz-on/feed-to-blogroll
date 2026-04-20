@@ -32,9 +32,6 @@ class Feed_To_Blogroll_CPT {
 		add_filter( 'manage_blogroll_posts_columns', array( $this, 'set_custom_columns' ) );
 		add_action( 'manage_blogroll_posts_custom_column', array( $this, 'custom_column_content' ), 10, 2 );
 		add_filter( 'manage_edit-blogroll_sortable_columns', array( $this, 'set_sortable_columns' ) );
-
-		// Add custom capabilities
-		add_action( 'init', array( $this, 'add_custom_capabilities' ) );
 	}
 
 	/**
@@ -138,6 +135,7 @@ class Feed_To_Blogroll_CPT {
 			'post',
 			'rss_url',
 			array(
+				'object_subtype'    => 'blogroll',
 				'type'              => 'string',
 				'description'       => __( 'RSS Feed URL for this blog', 'feed-to-blogroll' ),
 				'single'            => true,
@@ -154,6 +152,7 @@ class Feed_To_Blogroll_CPT {
 			'post',
 			'site_url',
 			array(
+				'object_subtype'    => 'blogroll',
 				'type'              => 'string',
 				'description'       => __( 'Main website URL for this blog', 'feed-to-blogroll' ),
 				'single'            => true,
@@ -170,6 +169,7 @@ class Feed_To_Blogroll_CPT {
 			'post',
 			'feed_id',
 			array(
+				'object_subtype'    => 'blogroll',
 				'type'              => 'integer',
 				'description'       => __( 'Feedbin internal feed ID', 'feed-to-blogroll' ),
 				'single'            => true,
@@ -186,6 +186,7 @@ class Feed_To_Blogroll_CPT {
 			'post',
 			'sync_status',
 			array(
+				'object_subtype'    => 'blogroll',
 				'type'              => 'string',
 				'description'       => __( 'Current synchronization status', 'feed-to-blogroll' ),
 				'single'            => true,
@@ -202,6 +203,7 @@ class Feed_To_Blogroll_CPT {
 			'post',
 			'last_sync',
 			array(
+				'object_subtype'    => 'blogroll',
 				'type'              => 'string',
 				'description'       => __( 'When this blog was last synchronized', 'feed-to-blogroll' ),
 				'single'            => true,
@@ -456,39 +458,6 @@ class Feed_To_Blogroll_CPT {
 		$columns['last_sync'] = 'last_sync';
 		$columns['sync_status'] = 'sync_status';
 		return $columns;
-	}
-
-	/**
-	 * Add custom capabilities to roles
-	 */
-	public function add_custom_capabilities() {
-		$admin_role = get_role( 'administrator' );
-		if ( $admin_role ) {
-			$admin_role->add_cap( 'edit_blogrolls' );
-			$admin_role->add_cap( 'edit_others_blogrolls' );
-			$admin_role->add_cap( 'publish_blogrolls' );
-			$admin_role->add_cap( 'read_private_blogrolls' );
-			$admin_role->add_cap( 'delete_blogrolls' );
-			$admin_role->add_cap( 'delete_private_blogrolls' );
-			$admin_role->add_cap( 'delete_published_blogrolls' );
-			$admin_role->add_cap( 'delete_others_blogrolls' );
-			$admin_role->add_cap( 'edit_private_blogrolls' );
-			$admin_role->add_cap( 'edit_published_blogrolls' );
-		}
-
-		$editor_role = get_role( 'editor' );
-		if ( $editor_role ) {
-			$editor_role->add_cap( 'edit_blogrolls' );
-			$editor_role->add_cap( 'edit_others_blogrolls' );
-			$editor_role->add_cap( 'publish_blogrolls' );
-			$editor_role->add_cap( 'read_private_blogrolls' );
-			$editor_role->add_cap( 'delete_blogrolls' );
-			$editor_role->add_cap( 'delete_private_blogrolls' );
-			$editor_role->add_cap( 'delete_published_blogrolls' );
-			$editor_role->add_cap( 'delete_others_blogrolls' );
-			$editor_role->add_cap( 'edit_private_blogrolls' );
-			$editor_role->add_cap( 'edit_published_blogrolls' );
-		}
 	}
 
 	/**

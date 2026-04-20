@@ -3,8 +3,8 @@
  * Plugin Name: Feed to Blogroll
  * Plugin URI: https://github.com/jaz-on/feed-to-blogroll
  * Description: Synchronizes your blogroll from the Feedbin API into WordPress custom post types with no external Composer dependencies.
- * Version: 1.1.0
- * Requires at least: 6.0
+ * Version: 1.2.0
+ * Requires at least: 6.1
  * Tested up to: 6.9
  * Requires PHP: 8.2
  * Author: Jason Rouet
@@ -17,7 +17,7 @@
  * Primary Branch: main
  *
  * @package FeedToBlogroll
- * @since 1.1.0
+ * @since 1.2.0
  */
 
 // Prevent direct access
@@ -26,13 +26,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Define plugin constants
-define( 'FEED_TO_BLOGROLL_VERSION', '1.1.0' );
+define( 'FEED_TO_BLOGROLL_VERSION', '1.2.0' );
 define( 'FEED_TO_BLOGROLL_PLUGIN_FILE', __FILE__ );
 define( 'FEED_TO_BLOGROLL_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'FEED_TO_BLOGROLL_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'FEED_TO_BLOGROLL_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
 define( 'FEED_TO_BLOGROLL_GITHUB_URL', 'https://github.com/jaz-on/feed-to-blogroll' );
 define( 'FEED_TO_BLOGROLL_KOFI_URL', 'https://ko-fi.com/jasonrouet' );
+
+require_once FEED_TO_BLOGROLL_PLUGIN_DIR . 'includes/options-merge.php';
 
 // Load the main plugin class
 require_once FEED_TO_BLOGROLL_PLUGIN_DIR . 'class-feed-to-blogroll-plugin.php';

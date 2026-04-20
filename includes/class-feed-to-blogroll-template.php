@@ -29,10 +29,6 @@ class Feed_To_Blogroll_Template {
 		// Register REST API routes
 		add_action( 'rest_api_init', array( $this, 'register_rest_routes' ) );
 
-		// Register AJAX handlers for frontend export
-		add_action( 'wp_ajax_feed_to_blogroll_export_opml', array( $this, 'export_opml_frontend' ) );
-		add_action( 'wp_ajax_nopriv_feed_to_blogroll_export_opml', array( $this, 'export_opml_frontend' ) );
-
 		// Invalidate caches when blogroll content changes
 		add_action( 'save_post_blogroll', array( $this, 'bust_blogroll_caches' ), 10, 3 );
 		add_action( 'deleted_post', array( $this, 'bust_blogroll_caches_on_delete' ) );
@@ -71,8 +67,7 @@ class Feed_To_Blogroll_Template {
 			'feed-to-blogroll-frontend',
 			'feedToBlogrollFrontend',
 			array(
-				'ajaxUrl' => admin_url( 'admin-ajax.php' ),
-				'nonce'   => wp_create_nonce( 'feed_to_blogroll_export' ),
+				'restUrl' => esc_url_raw( rest_url( 'feed-to-blogroll/v1/opml' ) ),
 				'strings' => array(
 					'exporting'   => __( 'Exporting...', 'feed-to-blogroll' ),
 					'exported'    => __( 'OPML file downloaded successfully!', 'feed-to-blogroll' ),
@@ -233,12 +228,10 @@ class Feed_To_Blogroll_Template {
 		?>
 		<div class="<?php echo esc_attr( $container_class ); ?>" role="region" aria-label="<?php esc_attr_e( 'Blogroll', 'feed-to-blogroll' ); ?>">
 			<?php if ( $atts['show_export'] ) : ?>
-				<?php $export_nonce = wp_create_nonce( 'feed_to_blogroll_export' ); ?>
 				<div class="blogroll-export" role="toolbar" aria-label="<?php esc_attr_e( 'Blogroll export options', 'feed-to-blogroll' ); ?>">
 					<button
 						type="button"
 						class="export-opml-button"
-						data-nonce="<?php echo esc_attr( $export_nonce ); ?>"
 					>
 						<span class="dashicons dashicons-download" aria-hidden="true"></span>
 						<?php esc_html_e( 'Export OPML', 'feed-to-blogroll' ); ?>
@@ -327,8 +320,7 @@ class Feed_To_Blogroll_Template {
 			'feed-to-blogroll-frontend',
 			'feedToBlogrollFrontend',
 			array(
-				'ajaxUrl' => admin_url( 'admin-ajax.php' ),
-				'nonce'   => wp_create_nonce( 'feed_to_blogroll_export' ),
+				'restUrl' => esc_url_raw( rest_url( 'feed-to-blogroll/v1/opml' ) ),
 				'strings' => array(
 					'exporting' => __( 'Exporting...', 'feed-to-blogroll' ),
 					'exported'  => __( 'OPML file downloaded successfully!', 'feed-to-blogroll' ),
@@ -384,7 +376,7 @@ class Feed_To_Blogroll_Template {
 			array(
 				'methods'             => WP_REST_Server::READABLE,
 				'callback'            => array( $this, 'get_blogroll_rest' ),
-				'permission_callback' => '__return_true',
+				'permission_callback' => array( $this, 'rest_blogroll_permission_check' ),
 				'args'                => array(
 					'category' => array(
 						'validate_callback' => function ( $value ) {
@@ -400,6 +392,68 @@ class Feed_To_Blogroll_Template {
 				),
 			)
 		);
+
+		// Public OPML export (JSON: opml, filename). Deny via filter feed_to_blogroll_rest_opml_permission.
+		register_rest_route(
+			'feed-to-blogroll/v1',
+			'/opml',
+			array(
+				'methods'             => WP_REST_Server::READABLE,
+				'callback'            => array( $this, 'get_opml_rest' ),
+				'permission_callback' => array( $this, 'rest_opml_permission_check' ),
+			)
+		);
+	}
+
+	/**
+	 * REST permission for listing blogroll JSON.
+	 *
+	 * @return bool|WP_Error
+	 */
+	public function rest_blogroll_permission_check() {
+		$allowed = (bool) apply_filters( 'feed_to_blogroll_rest_blogroll_permission', true );
+		if ( $allowed ) {
+			return true;
+		}
+		return new WP_Error(
+			'rest_forbidden',
+			__( 'Sorry, you are not allowed to access the blogroll endpoint.', 'feed-to-blogroll' ),
+			array( 'status' => rest_authorization_required_code() )
+		);
+	}
+
+	/**
+	 * REST permission for OPML export.
+	 *
+	 * @return bool|WP_Error
+	 */
+	public function rest_opml_permission_check() {
+		$allowed = (bool) apply_filters( 'feed_to_blogroll_rest_opml_permission', true );
+		if ( $allowed ) {
+			return true;
+		}
+		return new WP_Error(
+			'rest_forbidden',
+			__( 'Sorry, you are not allowed to export OPML.', 'feed-to-blogroll' ),
+			array( 'status' => rest_authorization_required_code() )
+		);
+	}
+
+	/**
+	 * REST callback: OPML payload.
+	 *
+	 * @return WP_REST_Response|WP_Error
+	 */
+	public function get_opml_rest() {
+		if ( ! class_exists( 'Feed_To_Blogroll_OPML' ) ) {
+			return new WP_Error(
+				'server_error',
+				__( 'OPML export is unavailable.', 'feed-to-blogroll' ),
+				array( 'status' => 500 )
+			);
+		}
+		$payload = Feed_To_Blogroll_OPML::get_export_payload();
+		return rest_ensure_response( $payload );
 	}
 
 	/**
@@ -441,70 +495,16 @@ class Feed_To_Blogroll_Template {
 	}
 
 	/**
-	 * Frontend OPML export via AJAX
-	 */
-	public function export_opml_frontend() {
-		// Check nonce
-		$nonce = isset( $_POST['nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['nonce'] ) ) : '';
-		if ( empty( $nonce ) || ! wp_verify_nonce( $nonce, 'feed_to_blogroll_export' ) ) {
-			wp_send_json_error( __( 'Security check failed', 'feed-to-blogroll' ) );
-		}
-
-		// Try cached OPML first
-		$cached = get_transient( 'feed_to_blogroll_opml' );
-		if ( false !== $cached && is_array( $cached ) && isset( $cached['opml'], $cached['filename'] ) ) {
-			wp_send_json_success( $cached );
-		}
-
-		$blogs = get_posts(
-			array(
-				'post_type'      => 'blogroll',
-				'post_status'    => 'publish',
-				'posts_per_page' => -1,
-				'no_found_rows'  => true,
-			)
-		);
-
-		$opml = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
-		$opml .= '<opml version="2.0">' . "\n";
-		$opml .= '  <head>' . "\n";
-		$opml .= '    <title>' . esc_html( get_bloginfo( 'name' ) ) . ' Blogroll</title>' . "\n";
-		$opml .= '    <dateCreated>' . gmdate( 'D, d M Y H:i:s' ) . ' GMT</dateCreated>' . "\n";
-		$opml .= '  </head>' . "\n";
-		$opml .= '  <body>' . "\n";
-
-		foreach ( $blogs as $blog ) {
-			$rss_url = get_post_meta( $blog->ID, 'rss_url', true );
-			$site_url = get_post_meta( $blog->ID, 'site_url', true );
-
-			if ( $rss_url ) {
-				$opml .= '    <outline type="rss" text="' . esc_attr( $blog->post_title ) . '" ';
-				$opml .= 'title="' . esc_attr( $blog->post_title ) . '" ';
-				$opml .= 'xmlUrl="' . esc_attr( $rss_url ) . '" ';
-				$opml .= 'htmlUrl="' . esc_attr( $site_url ) . '" />' . "\n";
-			}
-		}
-
-		$opml .= '  </body>' . "\n";
-		$opml .= '</opml>';
-
-		$response = array(
-			'opml'     => $opml,
-			'filename' => 'blogroll-' . gmdate( 'Y-m-d' ) . '.opml',
-		);
-
-		// Cache OPML for 1 hour
-		set_transient( 'feed_to_blogroll_opml', $response, HOUR_IN_SECONDS );
-
-		wp_send_json_success( $response );
-	}
-
-	/**
 	 * Bust blogroll caches when content changes
 	 */
 	public function bust_blogroll_caches() {
 		$this->increment_cache_version();
-		wp_cache_flush_group( 'feed_to_blogroll' );
+		if ( function_exists( 'wp_cache_flush_group' ) ) {
+			wp_cache_flush_group( 'feed_to_blogroll' );
+		}
+		if ( class_exists( 'Feed_To_Blogroll_OPML' ) ) {
+			Feed_To_Blogroll_OPML::bust_cache();
+		}
 	}
 
 	/**

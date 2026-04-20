@@ -4,6 +4,27 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-04-20
+
+### Added
+
+- Custom weekly cron schedule and `Feed_To_Blogroll_Plugin::reschedule_sync_cron()` so **Sync frequency** (twice daily, daily, weekly) and **Automatic synchronization** match the real WP-Cron event; `plugins_loaded` version option migrates existing installs.
+- `last_sync_stats` stored under `feed_to_blogroll_options` for dashboard “last sync run” counts; per-post `last_sync` / `sync_status` updated on create, update, and Feedbin removal (draft + inactive).
+- Shared `Feed_To_Blogroll_OPML` helper; public REST `GET /wp-json/feed-to-blogroll/v1/opml` (filterable via `feed_to_blogroll_rest_opml_permission`); front-end export uses `fetch()` to this endpoint.
+- `feed_to_blogroll_merge_saved_options()` and PHPUnit scaffold (`phpunit.xml.dist`, `tests/`) for option merge behavior.
+- Blogs and Export admin tabs with real content; plugin DB version option `feed_to_blogroll_plugin_version`.
+
+### Changed
+
+- Settings sanitize callback **merges** into existing `feed_to_blogroll_options` so `last_sync`, `sync_status`, and stats are not wiped on save; checkbox `auto_sync` uses a hidden `0` value when unchecked.
+- Feedbin API status persistence: `feed_to_blogroll_api_connected` and `feed_to_blogroll_api_last_error` updated when the hourly connection test runs.
+- REST `GET .../blogroll` permission is filterable via `feed_to_blogroll_rest_blogroll_permission` (default public).
+- Post meta registration uses `object_subtype` `blogroll` for `rss_url`, `site_url`, `feed_id`, `sync_status`, `last_sync`.
+- CPT capabilities are added on activation / upgrade only (removed per-request `init` cap grants).
+- Template class always loaded so REST routes register in admin contexts; `wp_cache_flush_group` called only when available; OPML transient busted on blogroll cache bust.
+- **Requires WordPress 6.1+** (plugin header, README, `plugin.json`); removed unused `feedbin_api_key` default; Composer autoload PSR-4 entries removed (classes use manual requires).
+- Uninstall deletes extended options/transients and no longer relies on `current_user_can()` during uninstall.
+
 ## [1.1.0] - 2026-04-18
 
 ### Added

@@ -14,17 +14,18 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 	exit;
 }
 
-// Security check
-if ( ! current_user_can( 'activate_plugins' ) ) {
-	exit;
-}
-
 // Clean up options
 delete_option( 'feed_to_blogroll_options' );
+delete_option( 'feed_to_blogroll_plugin_version' );
+delete_option( 'feed_to_blogroll_api_last_test' );
+delete_option( 'feed_to_blogroll_api_connected' );
+delete_option( 'feed_to_blogroll_api_last_error' );
+delete_option( 'feed_to_blogroll_cache_version' );
 
 // Clean up transients
 delete_transient( 'feed_to_blogroll_sync_lock' );
 delete_transient( 'feed_to_blogroll_api_cache' );
+delete_transient( 'feed_to_blogroll_opml' );
 
 // Clean up scheduled events
 wp_clear_scheduled_hook( 'feed_to_blogroll_sync_cron' );
@@ -33,17 +34,15 @@ wp_clear_scheduled_hook( 'feed_to_blogroll_sync_cron' );
 $post_types = array( 'blogroll' );
 
 foreach ( $post_types as $plugin_post_type ) {
-	// Get all posts of this type
-			$plugin_posts = get_posts(
-				array(
-					'post_type'      => $plugin_post_type,
-					'post_status'    => 'any',
-					'posts_per_page' => -1,
-					'fields'         => 'ids',
-				)
-			);
+	$plugin_posts = get_posts(
+		array(
+			'post_type'      => $plugin_post_type,
+			'post_status'    => 'any',
+			'posts_per_page' => -1,
+			'fields'         => 'ids',
+		)
+	);
 
-	// Delete each post
 	foreach ( $plugin_posts as $plugin_post_id ) {
 		wp_delete_post( $plugin_post_id, true );
 	}
@@ -60,6 +59,10 @@ foreach ( $taxonomies as $plugin_taxonomy ) {
 		)
 	);
 
+	if ( is_wp_error( $plugin_terms ) || empty( $plugin_terms ) ) {
+		continue;
+	}
+
 	foreach ( $plugin_terms as $plugin_term ) {
 		wp_delete_term( $plugin_term->term_id, $plugin_taxonomy );
 	}
@@ -72,7 +75,6 @@ $upload_dir        = wp_upload_dir();
 $plugin_upload_dir = $upload_dir['basedir'] . '/feed-to-blogroll/';
 
 if ( is_dir( $plugin_upload_dir ) ) {
-	// Remove the entire directory
 	require_once ABSPATH . 'wp-admin/includes/class-wp-filesystem-base.php';
 	require_once ABSPATH . 'wp-admin/includes/class-wp-filesystem-direct.php';
 

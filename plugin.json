@@ -1,6 +1,6 @@
 {
 	"name": "feed-to-blogroll",
-	"version": "1.1.0",
+	"version": "1.2.0",
 	"description": "Automatic blogroll synchronization with Feedbin API",
 	"author": "Jason Rouet",
 	"authorUrl": "https://jasonrouet.local",
@@ -9,7 +9,7 @@
 	"textDomain": "feed-to-blogroll",
 	"domainPath": "/languages",
 	"requires": {
-		"wordpress": "6.0",
+		"wordpress": "6.1",
 		"php": "8.2"
 	},
 	"tested": {

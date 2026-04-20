@@ -79,46 +79,44 @@
 			e.preventDefault();
 			
 			const $button = $(e.target);
-			const nonce = $button.data('nonce') || (window.feedToBlogrollFrontend ? feedToBlogrollFrontend.nonce : '');
+			const restUrl = (window.feedToBlogrollFrontend && feedToBlogrollFrontend.restUrl) ? feedToBlogrollFrontend.restUrl : '';
 			
 			// Show loading state
 			var exportingText = (window.feedToBlogrollFrontend && feedToBlogrollFrontend.strings && feedToBlogrollFrontend.strings.exporting) ? feedToBlogrollFrontend.strings.exporting : 'Exporting...';
 			$button.addClass('loading').text(exportingText);
 			
-			// Make AJAX request to get OPML data
-			$.ajax({
-				url: feedToBlogrollFrontend.ajaxUrl,
-				type: 'POST',
-				data: {
-					action: 'feed_to_blogroll_export_opml',
-					nonce: nonce
-				},
-				success: function(response) {
-					if (response && response.success === true && response.data && response.data.opml && response.data.filename) {
-						// Create and download OPML file
-						FeedToBlogrollFrontend.downloadOPML(
-							response.data.opml,
-							response.data.filename
-						);
-						
-						// Show success message
+			if (!restUrl) {
+				var missingUrlMsg = (window.feedToBlogrollFrontend && feedToBlogrollFrontend.strings && feedToBlogrollFrontend.strings.error) ? feedToBlogrollFrontend.strings.error : 'Export failed. Please try again.';
+				FeedToBlogrollFrontend.showMessage(missingUrlMsg, 'error');
+				var labelMissing = (window.feedToBlogrollFrontend && feedToBlogrollFrontend.strings && feedToBlogrollFrontend.strings.exportLabel) ? feedToBlogrollFrontend.strings.exportLabel : 'Export OPML';
+				$button.removeClass('loading').html('<span class="dashicons dashicons-download" aria-hidden="true"></span> ' + labelMissing);
+				return;
+			}
+
+			fetch(restUrl, { credentials: 'same-origin' })
+				.then(function(res) {
+					if (!res.ok) {
+						throw new Error('HTTP ' + res.status);
+					}
+					return res.json();
+				})
+				.then(function(data) {
+					if (data && data.opml && data.filename) {
+						FeedToBlogrollFrontend.downloadOPML(data.opml, data.filename);
 						var exportedMsg = (window.feedToBlogrollFrontend && feedToBlogrollFrontend.strings && feedToBlogrollFrontend.strings.exported) ? feedToBlogrollFrontend.strings.exported : 'OPML file exported successfully!';
 						FeedToBlogrollFrontend.showMessage(exportedMsg, 'success');
 					} else {
-						var errMsg = (window.feedToBlogrollFrontend && feedToBlogrollFrontend.strings && feedToBlogrollFrontend.strings.error) ? feedToBlogrollFrontend.strings.error : 'Export failed. Please try again.';
-						FeedToBlogrollFrontend.showMessage(errMsg, 'error');
+						throw new Error('Invalid response');
 					}
-				},
-				error: function() {
+				})
+				.catch(function() {
 					var errMsg = (window.feedToBlogrollFrontend && feedToBlogrollFrontend.strings && feedToBlogrollFrontend.strings.error) ? feedToBlogrollFrontend.strings.error : 'Export failed. Please try again.';
 					FeedToBlogrollFrontend.showMessage(errMsg, 'error');
-				},
-				complete: function() {
-					// Reset button state
+				})
+				.finally(function() {
 					var label = (window.feedToBlogrollFrontend && feedToBlogrollFrontend.strings && feedToBlogrollFrontend.strings.exportLabel) ? feedToBlogrollFrontend.strings.exportLabel : 'Export OPML';
-					$button.removeClass('loading').text(label);
-				}
-			});
+					$button.removeClass('loading').html('<span class="dashicons dashicons-download" aria-hidden="true"></span> ' + label);
+				});
 		},
 
 		/**

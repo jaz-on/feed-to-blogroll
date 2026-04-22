@@ -227,11 +227,22 @@ We welcome contributions! Please feel free to submit a Pull Request. For major c
 
 This project is licensed under the GPL v2 or later - see the [LICENSE](https://www.gnu.org/licenses/gpl-2.0.html) file for details.
 
-## Author
+## Author & Sponsorship
 
-**Jason Rouet**
+This plugin is built and maintained by **Jason Rouet** in my free time.
 
-- Website: [jasonrouet.com](https://jasonrouet.com)
-- GitHub: [@jaz-on](https://github.com/jaz-on)
+- 🌐 Website: [jasonrouet.com](https://jasonrouet.com)
+- 🐙 GitHub: [@jaz-on](https://github.com/jaz-on)
+- 🐘 Mastodon: [@jrouet@pouet.chapril.org](https://pouet.chapril.org/@jrouet)
+- 📫 Email: [bonjour@jasonrouet.com](mailto:bonjour@jasonrouet.com)
 
-Built with WordPress best practices and integrated with the Distributed theme.
+### Enjoying this plugin?
+
+If this project is useful to you, here are a few ways to support my work:
+
+- ☕ A one-time coffee on [Ko-fi](https://ko-fi.com/jasonrouet)
+- 💖 A monthly sponsorship via [GitHub Sponsors](https://github.com/sponsors/jaz-on)
+- ⭐ A star on this repo, feedback, issues or PRs
+- 📢 Sharing the project with others
+
+More about what your support funds (hosting, tools, volunteer hours on WordPress & WPFR): [jasonrouet.com/soutenir/](https://jasonrouet.com/soutenir/)

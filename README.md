@@ -231,7 +231,7 @@ This project is licensed under the GPL v2 or later - see the [LICENSE](https://w
 
 **Jason Rouet**
 
-- Website: [jasonrouet.local](https://jasonrouet.local)
+- Website: [jasonrouet.com](https://jasonrouet.com)
 - GitHub: [@jaz-on](https://github.com/jaz-on)
 
 Built with WordPress best practices and integrated with the Distributed theme.

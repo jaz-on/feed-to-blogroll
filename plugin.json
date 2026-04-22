@@ -3,7 +3,7 @@
 	"version": "1.2.0",
 	"description": "Automatic blogroll synchronization with Feedbin API",
 	"author": "Jason Rouet",
-	"authorUrl": "https://jasonrouet.local",
+	"authorUrl": "https://jasonrouet.com",
 	"license": "GPL-2.0-or-later",
 	"licenseUrl": "https://www.gnu.org/licenses/gpl-2.0.html",
 	"textDomain": "feed-to-blogroll",

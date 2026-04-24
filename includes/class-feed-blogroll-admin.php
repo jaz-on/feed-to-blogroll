@@ -2,7 +2,7 @@
 /**
  * Blogroll Administration
  *
- * @package FeedToBlogroll
+ * @package FeedBlogroll
  * @since 1.0.0
  */
 
@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @since 1.0.0
  */
-class Feed_To_Blogroll_Admin {
+class Feed_Blogroll_Admin {
 
 	/**
 	 * Constructor
@@ -25,9 +25,9 @@ class Feed_To_Blogroll_Admin {
 		add_action( 'admin_menu', array( $this, 'add_admin_menu' ) );
 		add_action( 'admin_init', array( $this, 'init_settings' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_scripts' ) );
-		add_action( 'wp_ajax_feed_to_blogroll_test_connection', array( $this, 'test_connection' ) );
-		add_action( 'wp_ajax_feed_to_blogroll_export_opml', array( $this, 'export_opml' ) );
-		add_filter( 'plugin_action_links_' . plugin_basename( FEED_TO_BLOGROLL_PLUGIN_FILE ), array( $this, 'add_plugin_action_links' ) );
+		add_action( 'wp_ajax_feed_blogroll_test_connection', array( $this, 'test_connection' ) );
+		add_action( 'wp_ajax_feed_blogroll_export_opml', array( $this, 'export_opml' ) );
+		add_filter( 'plugin_action_links_' . plugin_basename( FEED_BLOGROLL_PLUGIN_FILE ), array( $this, 'add_plugin_action_links' ) );
 		add_filter( 'plugin_row_meta', array( $this, 'add_plugin_row_meta' ), 10, 2 );
 
 		// Check CPT registration on admin pages
@@ -42,10 +42,10 @@ class Feed_To_Blogroll_Admin {
 	 */
 	public function add_admin_menu() {
 		add_menu_page(
-			__( 'Feed to Blogroll', 'feed-to-blogroll' ),
-			__( 'Blogroll', 'feed-to-blogroll' ),
+			__( 'Feed Blogroll', 'feed-blogroll' ),
+			__( 'Blogroll', 'feed-blogroll' ),
 			'manage_options',
-			'feed-to-blogroll',
+			'feed-blogroll',
 			array( $this, 'admin_page' ),
 			'dashicons-rss',
 			30
@@ -53,34 +53,34 @@ class Feed_To_Blogroll_Admin {
 
 		// Add submenu pages for blog management
 		add_submenu_page(
-			'feed-to-blogroll',
-			__( 'Dashboard', 'feed-to-blogroll' ),
-			__( 'Dashboard', 'feed-to-blogroll' ),
+			'feed-blogroll',
+			__( 'Dashboard', 'feed-blogroll' ),
+			__( 'Dashboard', 'feed-blogroll' ),
 			'manage_options',
-			'feed-to-blogroll',
+			'feed-blogroll',
 			array( $this, 'admin_page' )
 		);
 
 		add_submenu_page(
-			'feed-to-blogroll',
-			__( 'All Blogs', 'feed-to-blogroll' ),
-			__( 'All Blogs', 'feed-to-blogroll' ),
+			'feed-blogroll',
+			__( 'All Blogs', 'feed-blogroll' ),
+			__( 'All Blogs', 'feed-blogroll' ),
 			'manage_options',
 			'edit.php?post_type=blogroll'
 		);
 
 		add_submenu_page(
-			'feed-to-blogroll',
-			__( 'Add New Blog', 'feed-to-blogroll' ),
-			__( 'Add New Blog', 'feed-to-blogroll' ),
+			'feed-blogroll',
+			__( 'Add New Blog', 'feed-blogroll' ),
+			__( 'Add New Blog', 'feed-blogroll' ),
 			'manage_options',
 			'post-new.php?post_type=blogroll'
 		);
 
 		add_submenu_page(
-			'feed-to-blogroll',
-			__( 'Categories', 'feed-to-blogroll' ),
-			__( 'Categories', 'feed-to-blogroll' ),
+			'feed-blogroll',
+			__( 'Categories', 'feed-blogroll' ),
+			__( 'Categories', 'feed-blogroll' ),
 			'manage_options',
 			'edit-tags.php?taxonomy=blogroll_category&post_type=blogroll'
 		);
@@ -88,11 +88,11 @@ class Feed_To_Blogroll_Admin {
 		// Add diagnostic page only for administrators
 		if ( current_user_can( 'manage_options' ) ) {
 			add_submenu_page(
-				'feed-to-blogroll',
-				__( 'Diagnostics', 'feed-to-blogroll' ),
-				__( 'Diagnostics', 'feed-to-blogroll' ),
+				'feed-blogroll',
+				__( 'Diagnostics', 'feed-blogroll' ),
+				__( 'Diagnostics', 'feed-blogroll' ),
 				'manage_options',
-				'feed-to-blogroll-diagnostics',
+				'feed-blogroll-diagnostics',
 				array( $this, 'diagnostics_page' )
 			);
 		}
@@ -107,8 +107,8 @@ class Feed_To_Blogroll_Admin {
 	public function add_plugin_action_links( $links ) {
 		$settings_link = sprintf(
 			'<a href="%s">%s</a>',
-			esc_url( admin_url( 'admin.php?page=feed-to-blogroll&tab=settings' ) ),
-			esc_html__( 'Settings', 'feed-to-blogroll' )
+			esc_url( admin_url( 'admin.php?page=feed-blogroll&tab=settings' ) ),
+			esc_html__( 'Settings', 'feed-blogroll' )
 		);
 		array_unshift( $links, $settings_link );
 		return $links;
@@ -122,20 +122,20 @@ class Feed_To_Blogroll_Admin {
 	 * @return array Plugin row meta links.
 	 */
 	public function add_plugin_row_meta( $plugin_meta, $plugin_file ) {
-		if ( plugin_basename( FEED_TO_BLOGROLL_PLUGIN_FILE ) !== $plugin_file ) {
+		if ( plugin_basename( FEED_BLOGROLL_PLUGIN_FILE ) !== $plugin_file ) {
 			return $plugin_meta;
 		}
 
 		$new_links = array(
 			sprintf(
 				'<a href="%1$s" target="_blank" rel="noopener noreferrer">%2$s</a>',
-				esc_url( FEED_TO_BLOGROLL_GITHUB_URL ),
-				esc_html__( 'GitHub', 'feed-to-blogroll' )
+				esc_url( FEED_BLOGROLL_GITHUB_URL ),
+				esc_html__( 'GitHub', 'feed-blogroll' )
 			),
 			sprintf(
 				'<a href="%1$s" target="_blank" rel="noopener noreferrer">%2$s</a>',
-				esc_url( FEED_TO_BLOGROLL_KOFI_URL ),
-				esc_html__( 'Donate', 'feed-to-blogroll' )
+				esc_url( FEED_BLOGROLL_KOFI_URL ),
+				esc_html__( 'Donate', 'feed-blogroll' )
 			),
 		);
 
@@ -147,8 +147,8 @@ class Feed_To_Blogroll_Admin {
 	 */
 	public function init_settings() {
 		register_setting(
-			'feed_to_blogroll_options',
-			'feed_to_blogroll_options',
+			'feed_blogroll_options',
+			'feed_blogroll_options',
 			array(
 				'sanitize_callback' => array( $this, 'sanitize_options' ),
 				'default'           => array(),
@@ -157,63 +157,63 @@ class Feed_To_Blogroll_Admin {
 
 		// API Settings Section
 		add_settings_section(
-			'feed_to_blogroll_api_section',
-			__( 'Feedbin API Configuration', 'feed-to-blogroll' ),
+			'feed_blogroll_api_section',
+			__( 'Feedbin API Configuration', 'feed-blogroll' ),
 			array( $this, 'api_section_callback' ),
-			'feed_to_blogroll_options'
+			'feed_blogroll_options'
 		);
 
 		// Username field
 		add_settings_field(
 			'feedbin_username',
-			__( 'Feedbin Username', 'feed-to-blogroll' ),
+			__( 'Feedbin Username', 'feed-blogroll' ),
 			array( $this, 'username_field_callback' ),
-			'feed_to_blogroll_options',
-			'feed_to_blogroll_api_section'
+			'feed_blogroll_options',
+			'feed_blogroll_api_section'
 		);
 
 		// Password field
 		add_settings_field(
 			'feedbin_password',
-			__( 'Feedbin Password', 'feed-to-blogroll' ),
+			__( 'Feedbin Password', 'feed-blogroll' ),
 			array( $this, 'password_field_callback' ),
-			'feed_to_blogroll_options',
-			'feed_to_blogroll_api_section'
+			'feed_blogroll_options',
+			'feed_blogroll_api_section'
 		);
 
 		// Sync Settings Section
 		add_settings_section(
-			'feed_to_blogroll_sync_section',
-			__( 'Synchronization Settings', 'feed-to-blogroll' ),
+			'feed_blogroll_sync_section',
+			__( 'Synchronization Settings', 'feed-blogroll' ),
 			array( $this, 'sync_section_callback' ),
-			'feed_to_blogroll_options'
+			'feed_blogroll_options'
 		);
 
 		// Auto sync field
 		add_settings_field(
 			'auto_sync',
-			__( 'Automatic Synchronization', 'feed-to-blogroll' ),
+			__( 'Automatic Synchronization', 'feed-blogroll' ),
 			array( $this, 'auto_sync_field_callback' ),
-			'feed_to_blogroll_options',
-			'feed_to_blogroll_sync_section'
+			'feed_blogroll_options',
+			'feed_blogroll_sync_section'
 		);
 
 		// Sync frequency field
 		add_settings_field(
 			'sync_frequency',
-			__( 'Sync Frequency', 'feed-to-blogroll' ),
+			__( 'Sync Frequency', 'feed-blogroll' ),
 			array( $this, 'sync_frequency_field_callback' ),
-			'feed_to_blogroll_options',
-			'feed_to_blogroll_sync_section'
+			'feed_blogroll_options',
+			'feed_blogroll_sync_section'
 		);
 
 		// Last sync info field
 		add_settings_field(
 			'last_sync_info',
-			__( 'Last Synchronization', 'feed-to-blogroll' ),
+			__( 'Last Synchronization', 'feed-blogroll' ),
 			array( $this, 'last_sync_info_callback' ),
-			'feed_to_blogroll_options',
-			'feed_to_blogroll_sync_section'
+			'feed_blogroll_options',
+			'feed_blogroll_sync_section'
 		);
 	}
 
@@ -225,7 +225,7 @@ class Feed_To_Blogroll_Admin {
 			$input = array();
 		}
 
-		$existing = get_option( 'feed_to_blogroll_options', array() );
+		$existing = get_option( 'feed_blogroll_options', array() );
 		if ( ! is_array( $existing ) ) {
 			$existing = array();
 		}
@@ -236,9 +236,9 @@ class Feed_To_Blogroll_Admin {
 			$email = sanitize_email( $input['feedbin_username'] );
 			if ( ! is_email( $email ) ) {
 				add_settings_error(
-					'feed_to_blogroll_options',
+					'feed_blogroll_options',
 					'invalid_email',
-					__( 'Please enter a valid email address for Feedbin username.', 'feed-to-blogroll' )
+					__( 'Please enter a valid email address for Feedbin username.', 'feed-blogroll' )
 				);
 			} else {
 				$sanitized['feedbin_username'] = $email;
@@ -260,33 +260,33 @@ class Feed_To_Blogroll_Admin {
 				: 'daily';
 		}
 
-		return feed_to_blogroll_merge_saved_options( $existing, $sanitized );
+		return feed_blogroll_merge_saved_options( $existing, $sanitized );
 	}
 
 	/**
 	 * API section callback
 	 */
 	public function api_section_callback() {
-		echo '<p>' . esc_html__( 'Configure your Feedbin API credentials below. These are the same credentials you use to log into Feedbin.com.', 'feed-to-blogroll' ) . '</p>';
+		echo '<p>' . esc_html__( 'Configure your Feedbin API credentials below. These are the same credentials you use to log into Feedbin.com.', 'feed-blogroll' ) . '</p>';
 	}
 
 	/**
 	 * Username field callback
 	 */
 	public function username_field_callback() {
-		$options  = get_option( 'feed_to_blogroll_options', array() );
+		$options  = get_option( 'feed_blogroll_options', array() );
 		$username = isset( $options['feedbin_username'] ) ? $options['feedbin_username'] : '';
-		$constant_defined = defined( 'FEED_TO_BLOGROLL_USERNAME' );
+		$constant_defined = defined( 'FEED_BLOGROLL_USERNAME' );
 
 		$attr_disabled = $constant_defined ? 'disabled' : '';
 		printf(
-			'<input type="email" id="feedbin_username" name="feed_to_blogroll_options[feedbin_username]" value="%s" class="regular-text" %s aria-describedby="username-description" />',
+			'<input type="email" id="feedbin_username" name="feed_blogroll_options[feedbin_username]" value="%s" class="regular-text" %s aria-describedby="username-description" />',
 			esc_attr( $username ),
 			esc_attr( $attr_disabled )
 		);
-		echo '<p id="username-description" class="description">' . esc_html__( 'Your Feedbin account email address', 'feed-to-blogroll' ) . '</p>';
+		echo '<p id="username-description" class="description">' . esc_html__( 'Your Feedbin account email address', 'feed-blogroll' ) . '</p>';
 		if ( $constant_defined ) {
-			echo '<p class="description"><em>' . esc_html__( 'This field is locked because FEED_TO_BLOGROLL_USERNAME is defined in wp-config.php.', 'feed-to-blogroll' ) . '</em></p>';
+			echo '<p class="description"><em>' . esc_html__( 'This field is locked because FEED_BLOGROLL_USERNAME is defined in wp-config.php.', 'feed-blogroll' ) . '</em></p>';
 		}
 	}
 
@@ -294,19 +294,19 @@ class Feed_To_Blogroll_Admin {
 	 * Password field callback
 	 */
 	public function password_field_callback() {
-		$options  = get_option( 'feed_to_blogroll_options', array() );
+		$options  = get_option( 'feed_blogroll_options', array() );
 		$password = isset( $options['feedbin_password'] ) ? $options['feedbin_password'] : '';
-		$constant_defined = defined( 'FEED_TO_BLOGROLL_PASSWORD' );
+		$constant_defined = defined( 'FEED_BLOGROLL_PASSWORD' );
 
 		$attr_disabled = $constant_defined ? 'disabled' : '';
 		printf(
-			'<input type="password" id="feedbin_password" name="feed_to_blogroll_options[feedbin_password]" value="%s" class="regular-text" %s aria-describedby="password-description" />',
+			'<input type="password" id="feedbin_password" name="feed_blogroll_options[feedbin_password]" value="%s" class="regular-text" %s aria-describedby="password-description" />',
 			esc_attr( $password ),
 			esc_attr( $attr_disabled )
 		);
-		echo '<p id="password-description" class="description">' . esc_html__( 'Your Feedbin account password', 'feed-to-blogroll' ) . '</p>';
+		echo '<p id="password-description" class="description">' . esc_html__( 'Your Feedbin account password', 'feed-blogroll' ) . '</p>';
 		if ( $constant_defined ) {
-			echo '<p class="description"><em>' . esc_html__( 'This field is locked because FEED_TO_BLOGROLL_PASSWORD is defined in wp-config.php.', 'feed-to-blogroll' ) . '</em></p>';
+			echo '<p class="description"><em>' . esc_html__( 'This field is locked because FEED_BLOGROLL_PASSWORD is defined in wp-config.php.', 'feed-blogroll' ) . '</em></p>';
 		}
 	}
 
@@ -314,43 +314,43 @@ class Feed_To_Blogroll_Admin {
 	 * Sync section callback
 	 */
 	public function sync_section_callback() {
-		echo '<p>' . esc_html__( 'Configure how often the plugin should automatically synchronize with your Feedbin account.', 'feed-to-blogroll' ) . '</p>';
+		echo '<p>' . esc_html__( 'Configure how often the plugin should automatically synchronize with your Feedbin account.', 'feed-blogroll' ) . '</p>';
 	}
 
 	/**
 	 * Auto sync field callback
 	 */
 	public function auto_sync_field_callback() {
-		$options   = get_option( 'feed_to_blogroll_options', array() );
+		$options   = get_option( 'feed_blogroll_options', array() );
 		$auto_sync = ! empty( $options['auto_sync'] );
 
-		echo '<input type="hidden" name="feed_to_blogroll_options[auto_sync]" value="0" />';
+		echo '<input type="hidden" name="feed_blogroll_options[auto_sync]" value="0" />';
 		printf(
-			'<label><input type="checkbox" id="auto_sync" name="feed_to_blogroll_options[auto_sync]" value="1" %s /> %s</label>',
+			'<label><input type="checkbox" id="auto_sync" name="feed_blogroll_options[auto_sync]" value="1" %s /> %s</label>',
 			checked( true, $auto_sync, false ),
-			esc_html__( 'Enable automatic synchronization', 'feed-to-blogroll' )
+			esc_html__( 'Enable automatic synchronization', 'feed-blogroll' )
 		);
-		echo '<p class="description">' . esc_html__( 'When enabled, the plugin will automatically sync with Feedbin according to the frequency set below.', 'feed-to-blogroll' ) . '</p>';
+		echo '<p class="description">' . esc_html__( 'When enabled, the plugin will automatically sync with Feedbin according to the frequency set below.', 'feed-blogroll' ) . '</p>';
 	}
 
 	/**
 	 * Sync frequency field callback
 	 */
 	public function sync_frequency_field_callback() {
-		$options   = get_option( 'feed_to_blogroll_options', array() );
+		$options   = get_option( 'feed_blogroll_options', array() );
 		$frequency = isset( $options['sync_frequency'] ) ? $options['sync_frequency'] : 'daily';
 		$auto_sync = ! empty( $options['auto_sync'] );
 
 		$frequencies = array(
-			'twice_daily' => __( 'Twice a day (morning & evening)', 'feed-to-blogroll' ),
-			'daily'       => __( 'Once a day (morning)', 'feed-to-blogroll' ),
-			'weekly'      => __( 'Once a week (Monday morning)', 'feed-to-blogroll' ),
+			'twice_daily' => __( 'Twice a day (morning & evening)', 'feed-blogroll' ),
+			'daily'       => __( 'Once a day (morning)', 'feed-blogroll' ),
+			'weekly'      => __( 'Once a week (Monday morning)', 'feed-blogroll' ),
 		);
 
 		$disabled = $auto_sync ? '' : 'disabled';
 		$class    = $auto_sync ? 'regular-text' : 'regular-text sync-frequency-disabled';
 
-		echo '<select id="sync_frequency" name="feed_to_blogroll_options[sync_frequency]" ' . esc_attr( $disabled ) . ' class="' . esc_attr( $class ) . '">';
+		echo '<select id="sync_frequency" name="feed_blogroll_options[sync_frequency]" ' . esc_attr( $disabled ) . ' class="' . esc_attr( $class ) . '">';
 		foreach ( $frequencies as $value => $label ) {
 			printf(
 				'<option value="%s" %s>%s</option>',
@@ -364,7 +364,7 @@ class Feed_To_Blogroll_Admin {
 		if ( $auto_sync ) {
 			echo '<div class="next-sync-details">';
 			echo '<p class="description">';
-			echo '<strong>' . esc_html__( 'Next sync:', 'feed-to-blogroll' ) . '</strong> ';
+			echo '<strong>' . esc_html__( 'Next sync:', 'feed-blogroll' ) . '</strong> ';
 			$next_sync_info = $this->get_next_sync_time( $frequency );
 			echo '<span class="next-sync-time ' . esc_attr( $next_sync_info['class'] ) . '">' . esc_html( $next_sync_info['text'] ) . '</span>';
 			echo '</p>';
@@ -374,7 +374,7 @@ class Feed_To_Blogroll_Admin {
 			echo '</div>';
 		} else {
 			echo '<p class="description sync-frequency-disabled">';
-			echo '<em>' . esc_html__( 'Enable automatic synchronization above to set frequency', 'feed-to-blogroll' ) . '</em>';
+			echo '<em>' . esc_html__( 'Enable automatic synchronization above to set frequency', 'feed-blogroll' ) . '</em>';
 			echo '</p>';
 		}
 	}
@@ -383,45 +383,45 @@ class Feed_To_Blogroll_Admin {
 	 * Enqueue admin scripts with improved accessibility
 	 */
 	public function enqueue_admin_scripts( $hook ) {
-		if ( ! in_array( $hook, array( 'toplevel_page_feed-to-blogroll', 'blogroll_page_feed-to-blogroll-settings', 'blogroll_page_feed-to-blogroll-diagnostics' ), true ) ) {
+		if ( ! in_array( $hook, array( 'toplevel_page_feed-blogroll', 'blogroll_page_feed-blogroll-settings', 'blogroll_page_feed-blogroll-diagnostics' ), true ) ) {
 			return;
 		}
 
 		wp_enqueue_script(
-			'feed-to-blogroll-admin',
-			FEED_TO_BLOGROLL_PLUGIN_URL . 'assets/js/admin.js',
+			'feed-blogroll-admin',
+			FEED_BLOGROLL_PLUGIN_URL . 'assets/js/admin.js',
 			array( 'jquery', 'common', 'wp-a11y' ),
-			FEED_TO_BLOGROLL_VERSION,
+			FEED_BLOGROLL_VERSION,
 			true
 		);
 
 		// Enable native WordPress postbox system
 		wp_enqueue_script( 'postbox' );
 		wp_add_inline_script(
-			'feed-to-blogroll-admin',
-			'jQuery(function($){ if ( typeof postboxes !== "undefined" ) { postboxes.add_postbox_toggles("toplevel_page_feed-to-blogroll"); postboxes.add_postbox_toggles("blogroll_page_feed-to-blogroll-settings"); postboxes.add_postbox_toggles("blogroll_page_feed-to-blogroll-diagnostics"); } });'
+			'feed-blogroll-admin',
+			'jQuery(function($){ if ( typeof postboxes !== "undefined" ) { postboxes.add_postbox_toggles("toplevel_page_feed-blogroll"); postboxes.add_postbox_toggles("blogroll_page_feed-blogroll-settings"); postboxes.add_postbox_toggles("blogroll_page_feed-blogroll-diagnostics"); } });'
 		);
 
 		wp_localize_script(
-			'feed-to-blogroll-admin',
-			'feedToBlogrollAdmin',
+			'feed-blogroll-admin',
+			'feedBlogrollAdmin',
 			array(
 				'ajaxUrl' => esc_url( admin_url( 'admin-ajax.php' ) ),
-				'nonce'   => wp_create_nonce( 'feed_to_blogroll_admin' ),
+				'nonce'   => wp_create_nonce( 'feed_blogroll_admin' ),
 				'strings' => array(
-					'testing'   => __( 'Testing connection...', 'feed-to-blogroll' ),
-					'syncing'   => __( 'Synchronizing...', 'feed-to-blogroll' ),
-					'exporting' => __( 'Exporting...', 'feed-to-blogroll' ),
-					'error'     => __( 'An error occurred', 'feed-to-blogroll' ),
+					'testing'   => __( 'Testing connection...', 'feed-blogroll' ),
+					'syncing'   => __( 'Synchronizing...', 'feed-blogroll' ),
+					'exporting' => __( 'Exporting...', 'feed-blogroll' ),
+					'error'     => __( 'An error occurred', 'feed-blogroll' ),
 				),
 			)
 		);
 
 		wp_enqueue_style(
-			'feed-to-blogroll-admin',
-			FEED_TO_BLOGROLL_PLUGIN_URL . 'assets/css/admin.css',
+			'feed-blogroll-admin',
+			FEED_BLOGROLL_PLUGIN_URL . 'assets/css/admin.css',
 			array(),
-			FEED_TO_BLOGROLL_VERSION
+			FEED_BLOGROLL_VERSION
 		);
 	}
 
@@ -429,9 +429,9 @@ class Feed_To_Blogroll_Admin {
 	 * Main admin page with improved accessibility
 	 */
 	public function admin_page() {
-		$sync       = new Feed_To_Blogroll_Sync();
+		$sync       = new Feed_Blogroll_Sync();
 		$stats      = $sync->get_sync_stats();
-		$api        = new Feed_To_Blogroll_Feedbin_API();
+		$api        = new Feed_Blogroll_Feedbin_API();
 		$api_status = $api->get_api_status();
 
 		// Get current tab with validation
@@ -448,42 +448,42 @@ class Feed_To_Blogroll_Admin {
 		}
 		?>
 		<div class="wrap">
-			<h1 class="wp-heading-inline"><?php esc_html_e( 'Feed to Blogroll', 'feed-to-blogroll' ); ?></h1>
+			<h1 class="wp-heading-inline"><?php esc_html_e( 'Feed Blogroll', 'feed-blogroll' ); ?></h1>
 			
 			<hr class="wp-header-end">
 			
-			<nav class="nav-tab-wrapper wp-clearfix" role="tablist" aria-label="<?php esc_attr_e( 'Blogroll management tabs', 'feed-to-blogroll' ); ?>">
-				<a href="?page=feed-to-blogroll&tab=dashboard" 
+			<nav class="nav-tab-wrapper wp-clearfix" role="tablist" aria-label="<?php esc_attr_e( 'Blogroll management tabs', 'feed-blogroll' ); ?>">
+				<a href="?page=feed-blogroll&tab=dashboard" 
 				   class="nav-tab <?php echo esc_attr( 'dashboard' === $current_tab ? 'nav-tab-active' : '' ); ?>"
 				   role="tab"
 				   aria-selected="<?php echo esc_attr( 'dashboard' === $current_tab ? 'true' : 'false' ); ?>"
 				   aria-controls="tab-dashboard">
 					<span class="dashicons dashicons-dashboard" aria-hidden="true"></span>
-					<?php esc_html_e( 'Dashboard', 'feed-to-blogroll' ); ?>
+					<?php esc_html_e( 'Dashboard', 'feed-blogroll' ); ?>
 				</a>
-				<a href="?page=feed-to-blogroll&tab=blogs" 
+				<a href="?page=feed-blogroll&tab=blogs" 
 				   class="nav-tab <?php echo esc_attr( 'blogs' === $current_tab ? 'nav-tab-active' : '' ); ?>"
 				   role="tab"
 				   aria-selected="<?php echo esc_attr( 'blogs' === $current_tab ? 'true' : 'false' ); ?>"
 				   aria-controls="tab-blogs">
 					<span class="dashicons dashicons-rss" aria-hidden="true"></span>
-					<?php esc_html_e( 'Blogs', 'feed-to-blogroll' ); ?>
+					<?php esc_html_e( 'Blogs', 'feed-blogroll' ); ?>
 				</a>
-				<a href="?page=feed-to-blogroll&tab=export" 
+				<a href="?page=feed-blogroll&tab=export" 
 				   class="nav-tab <?php echo esc_attr( 'export' === $current_tab ? 'nav-tab-active' : '' ); ?>"
 				   role="tab"
 				   aria-selected="<?php echo esc_attr( 'export' === $current_tab ? 'true' : 'false' ); ?>"
 				   aria-controls="tab-export">
 					<span class="dashicons dashicons-download" aria-hidden="true"></span>
-					<?php esc_html_e( 'Export', 'feed-to-blogroll' ); ?>
+					<?php esc_html_e( 'Export', 'feed-blogroll' ); ?>
 				</a>
-				<a href="?page=feed-to-blogroll&tab=settings" 
+				<a href="?page=feed-blogroll&tab=settings" 
 				   class="nav-tab <?php echo esc_attr( 'settings' === $current_tab ? 'nav-tab-active' : '' ); ?>"
 				   role="tab"
 				   aria-selected="<?php echo esc_attr( 'settings' === $current_tab ? 'true' : 'false' ); ?>"
 				   aria-controls="tab-settings">
 					<span class="dashicons dashicons-admin-settings" aria-hidden="true"></span>
-					<?php esc_html_e( 'Settings', 'feed-to-blogroll' ); ?>
+					<?php esc_html_e( 'Settings', 'feed-blogroll' ); ?>
 				</a>
 			</nav>
 
@@ -499,7 +499,7 @@ class Feed_To_Blogroll_Admin {
 				<?php $this->export_tab_content(); ?>
 			</div>
 
-			<div id="tab-settings" role="tabpanel" aria-labelledby="settings-tab" class="tab-content <?php echo esc_attr( 'settings' === $current_tab ? 'active' : '' ); ?>">
+			<div id="tab-settings" role="tabpanel" aria-labelledby="settings-tab" class="tab-content feed-blogroll-settings <?php echo esc_attr( 'settings' === $current_tab ? 'active' : '' ); ?>">
 				<?php $this->settings_tab_content(); ?>
 			</div>
 		</div>
@@ -517,7 +517,7 @@ class Feed_To_Blogroll_Admin {
 					<div class="meta-box-sortables">
 						<div class="postbox">
 							<h2 class="hndle ui-sortable-handle">
-								<span><?php esc_html_e( 'Synchronization Status', 'feed-to-blogroll' ); ?></span>
+								<span><?php esc_html_e( 'Synchronization Status', 'feed-blogroll' ); ?></span>
 							</h2>
 							<div class="inside">
 								<?php $this->display_sync_status( $stats ); ?>
@@ -534,7 +534,7 @@ class Feed_To_Blogroll_Admin {
 	 * Display synchronization status
 	 */
 	private function display_sync_status( $stats ) {
-		$options = get_option( 'feed_to_blogroll_options', array() );
+		$options = get_option( 'feed_blogroll_options', array() );
 		$last_sync = isset( $options['last_sync'] ) ? $options['last_sync'] : '';
 		$sync_status = isset( $options['sync_status'] ) ? $options['sync_status'] : 'idle';
 
@@ -543,34 +543,34 @@ class Feed_To_Blogroll_Admin {
 			$time_ago = human_time_diff( $last_sync_time, time() );
 
 			echo '<div class="sync-status-info">';
-			echo '<p><strong>' . esc_html__( 'Last sync:', 'feed-to-blogroll' ) . '</strong> ';
+			echo '<p><strong>' . esc_html__( 'Last sync:', 'feed-blogroll' ) . '</strong> ';
 			echo esc_html( date_i18n( 'F j, Y \a\t g:i a', $last_sync_time ) );
 			/* translators: %s: time ago */
-			echo ' <em>(' . esc_html( sprintf( __( '%s ago', 'feed-to-blogroll' ), $time_ago ) ) . ')</em></p>';
+			echo ' <em>(' . esc_html( sprintf( __( '%s ago', 'feed-blogroll' ), $time_ago ) ) . ')</em></p>';
 
-			echo '<p><strong>' . esc_html__( 'Status:', 'feed-to-blogroll' ) . '</strong> ';
+			echo '<p><strong>' . esc_html__( 'Status:', 'feed-blogroll' ) . '</strong> ';
 			echo '<span class="sync-status-' . esc_attr( $sync_status ) . '">' . esc_html( $this->get_status_label( $sync_status ) ) . '</span></p>';
 			echo '</div>';
 		} else {
-			echo '<p><em>' . esc_html__( 'No synchronization has been performed yet.', 'feed-to-blogroll' ) . '</em></p>';
+			echo '<p><em>' . esc_html__( 'No synchronization has been performed yet.', 'feed-blogroll' ) . '</em></p>';
 		}
 
 		// Display sync statistics (last completed run).
 		if ( ! empty( $stats ) && ( isset( $stats['blogs_added'] ) || isset( $stats['blogs_updated'] ) || isset( $stats['blogs_deactivated'] ) ) ) {
 			echo '<div class="sync-stats">';
-			echo '<h3>' . esc_html__( 'Last sync run', 'feed-to-blogroll' ) . '</h3>';
+			echo '<h3>' . esc_html__( 'Last sync run', 'feed-blogroll' ) . '</h3>';
 			echo '<ul>';
 			if ( isset( $stats['blogs_added'] ) ) {
-				echo '<li>' . esc_html__( 'Blogs added:', 'feed-to-blogroll' ) . ' ' . esc_html( (string) $stats['blogs_added'] ) . '</li>';
+				echo '<li>' . esc_html__( 'Blogs added:', 'feed-blogroll' ) . ' ' . esc_html( (string) $stats['blogs_added'] ) . '</li>';
 			}
 			if ( isset( $stats['blogs_updated'] ) ) {
-				echo '<li>' . esc_html__( 'Blogs updated:', 'feed-to-blogroll' ) . ' ' . esc_html( (string) $stats['blogs_updated'] ) . '</li>';
+				echo '<li>' . esc_html__( 'Blogs updated:', 'feed-blogroll' ) . ' ' . esc_html( (string) $stats['blogs_updated'] ) . '</li>';
 			}
 			if ( isset( $stats['blogs_deactivated'] ) ) {
-				echo '<li>' . esc_html__( 'Blogs deactivated:', 'feed-to-blogroll' ) . ' ' . esc_html( (string) $stats['blogs_deactivated'] ) . '</li>';
+				echo '<li>' . esc_html__( 'Blogs deactivated:', 'feed-blogroll' ) . ' ' . esc_html( (string) $stats['blogs_deactivated'] ) . '</li>';
 			}
 			if ( isset( $stats['duration'] ) && $stats['duration'] > 0 ) {
-				echo '<li>' . esc_html__( 'Duration (seconds):', 'feed-to-blogroll' ) . ' ' . esc_html( number_format_i18n( (float) $stats['duration'], 2 ) ) . '</li>';
+				echo '<li>' . esc_html__( 'Duration (seconds):', 'feed-blogroll' ) . ' ' . esc_html( number_format_i18n( (float) $stats['duration'], 2 ) ) . '</li>';
 			}
 			echo '</ul>';
 			echo '</div>';
@@ -578,8 +578,8 @@ class Feed_To_Blogroll_Admin {
 
 		// Manual sync button
 		echo '<div class="manual-sync-section">';
-		echo '<button type="button" id="manual-sync" class="button button-primary" data-nonce="' . esc_attr( wp_create_nonce( 'feed_to_blogroll_admin' ) ) . '">';
-		echo esc_html__( 'Manual Sync', 'feed-to-blogroll' );
+		echo '<button type="button" id="manual-sync" class="button button-primary" data-nonce="' . esc_attr( wp_create_nonce( 'feed_blogroll_admin' ) ) . '">';
+		echo esc_html__( 'Manual Sync', 'feed-blogroll' );
 		echo '</button>';
 		echo '<span class="spinner" style="float: none; margin-left: 10px;"></span>';
 		echo '</div>';
@@ -590,12 +590,12 @@ class Feed_To_Blogroll_Admin {
 	 */
 	private function get_status_label( $status ) {
 		$labels = array(
-			'success'   => __( 'Success', 'feed-to-blogroll' ),
-			'error'     => __( 'Error', 'feed-to-blogroll' ),
-			'running'   => __( 'Running', 'feed-to-blogroll' ),
-			'completed' => __( 'Completed', 'feed-to-blogroll' ),
-			'idle'      => __( 'Idle', 'feed-to-blogroll' ),
-			'unknown'   => __( 'Unknown', 'feed-to-blogroll' ),
+			'success'   => __( 'Success', 'feed-blogroll' ),
+			'error'     => __( 'Error', 'feed-blogroll' ),
+			'running'   => __( 'Running', 'feed-blogroll' ),
+			'completed' => __( 'Completed', 'feed-blogroll' ),
+			'idle'      => __( 'Idle', 'feed-blogroll' ),
+			'unknown'   => __( 'Unknown', 'feed-blogroll' ),
 		);
 
 		return isset( $labels[ $status ] ) ? $labels[ $status ] : $labels['unknown'];
@@ -609,7 +609,7 @@ class Feed_To_Blogroll_Admin {
 		if ( ! isset( $_SERVER['REQUEST_METHOD'] ) || 'POST' !== $_SERVER['REQUEST_METHOD'] ) {
 			wp_send_json_error(
 				array(
-					'message' => esc_html__( 'Invalid request method', 'feed-to-blogroll' ),
+					'message' => esc_html__( 'Invalid request method', 'feed-blogroll' ),
 					'code'    => 'invalid_method',
 					'context' => 'http_validation',
 				)
@@ -618,10 +618,10 @@ class Feed_To_Blogroll_Admin {
 
 		// Check nonce
 		$nonce = isset( $_POST['nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['nonce'] ) ) : '';
-		if ( empty( $nonce ) || ! wp_verify_nonce( $nonce, 'feed_to_blogroll_admin' ) ) {
+		if ( empty( $nonce ) || ! wp_verify_nonce( $nonce, 'feed_blogroll_admin' ) ) {
 			wp_send_json_error(
 				array(
-					'message' => esc_html__( 'Security check failed. Please refresh the page and try again.', 'feed-to-blogroll' ),
+					'message' => esc_html__( 'Security check failed. Please refresh the page and try again.', 'feed-blogroll' ),
 					'code'    => 'nonce_failed',
 					'context' => 'security_validation',
 				)
@@ -632,14 +632,14 @@ class Feed_To_Blogroll_Admin {
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error(
 				array(
-					'message' => esc_html__( 'Insufficient permissions to perform this action.', 'feed-to-blogroll' ),
+					'message' => esc_html__( 'Insufficient permissions to perform this action.', 'feed-blogroll' ),
 					'code'    => 'insufficient_permissions',
 					'context' => 'capability_check',
 				)
 			);
 		}
 
-		$api = new Feed_To_Blogroll_Feedbin_API();
+		$api = new Feed_Blogroll_Feedbin_API();
 		$result = $api->test_connection();
 
 		if ( is_wp_error( $result ) ) {
@@ -670,7 +670,7 @@ class Feed_To_Blogroll_Admin {
 		if ( ! isset( $_SERVER['REQUEST_METHOD'] ) || 'POST' !== $_SERVER['REQUEST_METHOD'] ) {
 			wp_send_json_error(
 				array(
-					'message' => esc_html__( 'Invalid request method', 'feed-to-blogroll' ),
+					'message' => esc_html__( 'Invalid request method', 'feed-blogroll' ),
 					'code'    => 'invalid_method',
 					'context' => 'http_validation',
 				)
@@ -679,10 +679,10 @@ class Feed_To_Blogroll_Admin {
 
 		// Check nonce
 		$nonce = isset( $_POST['nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['nonce'] ) ) : '';
-		if ( empty( $nonce ) || ! wp_verify_nonce( $nonce, 'feed_to_blogroll_admin' ) ) {
+		if ( empty( $nonce ) || ! wp_verify_nonce( $nonce, 'feed_blogroll_admin' ) ) {
 			wp_send_json_error(
 				array(
-					'message' => esc_html__( 'Security check failed. Please refresh the page and try again.', 'feed-to-blogroll' ),
+					'message' => esc_html__( 'Security check failed. Please refresh the page and try again.', 'feed-blogroll' ),
 					'code'    => 'nonce_failed',
 					'context' => 'security_validation',
 				)
@@ -693,14 +693,14 @@ class Feed_To_Blogroll_Admin {
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error(
 				array(
-					'message' => esc_html__( 'Insufficient permissions to perform this action.', 'feed-to-blogroll' ),
+					'message' => esc_html__( 'Insufficient permissions to perform this action.', 'feed-blogroll' ),
 					'code'    => 'insufficient_permissions',
 					'context' => 'capability_check',
 				)
 			);
 		}
 
-		$response = Feed_To_Blogroll_OPML::get_export_payload();
+		$response = Feed_Blogroll_OPML::get_export_payload();
 		wp_send_json_success( $response );
 	}
 
@@ -708,11 +708,11 @@ class Feed_To_Blogroll_Admin {
 	 * Get next sync time based on frequency
 	 */
 	private function get_next_sync_time( $frequency ) {
-		$last_sync = get_option( 'feed_to_blogroll_options' )['last_sync'] ?? '';
+		$last_sync = get_option( 'feed_blogroll_options' )['last_sync'] ?? '';
 
 		if ( ! $last_sync ) {
 			return array(
-				'text'  => __( 'Not scheduled yet', 'feed-to-blogroll' ),
+				'text'  => __( 'Not scheduled yet', 'feed-blogroll' ),
 				'class' => 'not-scheduled',
 			);
 		}
@@ -722,7 +722,7 @@ class Feed_To_Blogroll_Admin {
 
 		if ( time() >= $next_sync_time ) {
 			return array(
-				'text'  => __( 'Due now', 'feed-to-blogroll' ),
+				'text'  => __( 'Due now', 'feed-blogroll' ),
 				'class' => 'due-now',
 			);
 		}
@@ -730,7 +730,7 @@ class Feed_To_Blogroll_Admin {
 		$time_until = human_time_diff( time(), $next_sync_time );
 		return array(
 			/* translators: %s: time until next sync */
-			'text'  => sprintf( __( 'In %s', 'feed-to-blogroll' ), $time_until ),
+			'text'  => sprintf( __( 'In %s', 'feed-blogroll' ), $time_until ),
 			'class' => 'scheduled',
 		);
 	}
@@ -757,13 +757,13 @@ class Feed_To_Blogroll_Admin {
 	private function get_schedule_details( $frequency ) {
 		switch ( $frequency ) {
 			case 'twice_daily':
-				return __( 'Schedule: Morning (9:00 AM) and Evening (9:00 PM)', 'feed-to-blogroll' );
+				return __( 'Schedule: Morning (9:00 AM) and Evening (9:00 PM)', 'feed-blogroll' );
 			case 'daily':
-				return __( 'Schedule: Every morning at 9:00 AM', 'feed-to-blogroll' );
+				return __( 'Schedule: Every morning at 9:00 AM', 'feed-blogroll' );
 			case 'weekly':
-				return __( 'Schedule: Every Monday morning at 9:00 AM', 'feed-to-blogroll' );
+				return __( 'Schedule: Every Monday morning at 9:00 AM', 'feed-blogroll' );
 			default:
-				return __( 'Schedule: Daily at 9:00 AM', 'feed-to-blogroll' );
+				return __( 'Schedule: Daily at 9:00 AM', 'feed-blogroll' );
 		}
 	}
 
@@ -773,7 +773,7 @@ class Feed_To_Blogroll_Admin {
 	public function check_cpt_registration() {
 		if ( ! post_type_exists( 'blogroll' ) ) {
 			echo '<div class="notice notice-error">';
-			echo '<p>' . esc_html__( 'Feed to Blogroll: Custom Post Type not registered. Please deactivate and reactivate the plugin.', 'feed-to-blogroll' ) . '</p>';
+			echo '<p>' . esc_html__( 'Feed Blogroll: Custom Post Type not registered. Please deactivate and reactivate the plugin.', 'feed-blogroll' ) . '</p>';
 			echo '</div>';
 		}
 	}
@@ -786,27 +786,27 @@ class Feed_To_Blogroll_Admin {
 			return;
 		}
 
-		if ( ! defined( 'FEED_TO_BLOGROLL_USERNAME' ) && ! defined( 'FEED_TO_BLOGROLL_PASSWORD' ) ) {
+		if ( ! defined( 'FEED_BLOGROLL_USERNAME' ) && ! defined( 'FEED_BLOGROLL_PASSWORD' ) ) {
 			return;
 		}
 
 		// Limit notice to our plugin screens if possible
 		$screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
-		if ( $screen && strpos( (string) $screen->id, 'feed-to-blogroll' ) === false ) {
+		if ( $screen && strpos( (string) $screen->id, 'feed-blogroll' ) === false ) {
 			return;
 		}
 
 		$parts = array();
-		if ( defined( 'FEED_TO_BLOGROLL_USERNAME' ) ) {
-			$parts[] = 'FEED_TO_BLOGROLL_USERNAME';
+		if ( defined( 'FEED_BLOGROLL_USERNAME' ) ) {
+			$parts[] = 'FEED_BLOGROLL_USERNAME';
 		}
-		if ( defined( 'FEED_TO_BLOGROLL_PASSWORD' ) ) {
-			$parts[] = 'FEED_TO_BLOGROLL_PASSWORD';
+		if ( defined( 'FEED_BLOGROLL_PASSWORD' ) ) {
+			$parts[] = 'FEED_BLOGROLL_PASSWORD';
 		}
 
 		$message = sprintf(
 			/* translators: %s: list of constants */
-			esc_html__( 'Credentials are controlled by %s in wp-config.php. Related settings fields are read-only.', 'feed-to-blogroll' ),
+			esc_html__( 'Credentials are controlled by %s in wp-config.php. Related settings fields are read-only.', 'feed-blogroll' ),
 			esc_html( implode( ', ', $parts ) )
 		);
 
@@ -819,17 +819,17 @@ class Feed_To_Blogroll_Admin {
 	private function blogs_tab_content() {
 		$manage_url = admin_url( 'edit.php?post_type=blogroll' );
 		$add_url    = admin_url( 'post-new.php?post_type=blogroll' );
-		echo '<p>' . esc_html__( 'Manage synced blogs as a custom post type, or add entries manually.', 'feed-to-blogroll' ) . '</p>';
+		echo '<p>' . esc_html__( 'Manage synced blogs as a custom post type, or add entries manually.', 'feed-blogroll' ) . '</p>';
 		echo '<p>';
 		printf(
 			'<a class="button button-primary" href="%s">%s</a> ',
 			esc_url( $manage_url ),
-			esc_html__( 'All blogs', 'feed-to-blogroll' )
+			esc_html__( 'All blogs', 'feed-blogroll' )
 		);
 		printf(
 			'<a class="button" href="%s">%s</a>',
 			esc_url( $add_url ),
-			esc_html__( 'Add new', 'feed-to-blogroll' )
+			esc_html__( 'Add new', 'feed-blogroll' )
 		);
 		echo '</p>';
 
@@ -847,14 +847,14 @@ class Feed_To_Blogroll_Admin {
 		);
 
 		if ( empty( $recent ) ) {
-			echo '<p><em>' . esc_html__( 'No blogroll entries yet.', 'feed-to-blogroll' ) . '</em></p>';
+			echo '<p><em>' . esc_html__( 'No blogroll entries yet.', 'feed-blogroll' ) . '</em></p>';
 			return;
 		}
 
 		echo '<table class="widefat striped"><thead><tr>';
-		echo '<th>' . esc_html__( 'Title', 'feed-to-blogroll' ) . '</th>';
-		echo '<th>' . esc_html__( 'Website', 'feed-to-blogroll' ) . '</th>';
-		echo '<th>' . esc_html__( 'Status', 'feed-to-blogroll' ) . '</th>';
+		echo '<th>' . esc_html__( 'Title', 'feed-blogroll' ) . '</th>';
+		echo '<th>' . esc_html__( 'Website', 'feed-blogroll' ) . '</th>';
+		echo '<th>' . esc_html__( 'Status', 'feed-blogroll' ) . '</th>';
 		echo '</tr></thead><tbody>';
 		foreach ( $recent as $post ) {
 			$edit_link = get_edit_post_link( $post->ID, '' );
@@ -879,16 +879,16 @@ class Feed_To_Blogroll_Admin {
 	 * Export tab: OPML download via admin AJAX.
 	 */
 	private function export_tab_content() {
-		echo '<p>' . esc_html__( 'Download an OPML file of all published blogroll feeds. The file matches what visitors can export from the front end when enabled.', 'feed-to-blogroll' ) . '</p>';
-		echo '<p><button type="button" id="export-opml" class="button button-primary" data-nonce="' . esc_attr( wp_create_nonce( 'feed_to_blogroll_admin' ) ) . '">';
-		echo esc_html__( 'Download OPML', 'feed-to-blogroll' );
+		echo '<p>' . esc_html__( 'Download an OPML file of all published blogroll feeds. The file matches what visitors can export from the front end when enabled.', 'feed-blogroll' ) . '</p>';
+		echo '<p><button type="button" id="export-opml" class="button button-primary" data-nonce="' . esc_attr( wp_create_nonce( 'feed_blogroll_admin' ) ) . '">';
+		echo esc_html__( 'Download OPML', 'feed-blogroll' );
 		echo '</button></p>';
 	}
 
 	private function settings_tab_content() {
 		echo '<form method="post" action="options.php">';
-		settings_fields( 'feed_to_blogroll_options' );
-		do_settings_sections( 'feed_to_blogroll_options' );
+		settings_fields( 'feed_blogroll_options' );
+		do_settings_sections( 'feed_blogroll_options' );
 		submit_button();
 		echo '</form>';
 	}

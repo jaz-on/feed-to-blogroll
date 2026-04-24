@@ -2,7 +2,7 @@
 /**
  * PHPUnit bootstrap (no full WordPress test install required).
  *
- * @package FeedToBlogroll
+ * @package FeedBlogroll
  */
 
 declare(strict_types=1);

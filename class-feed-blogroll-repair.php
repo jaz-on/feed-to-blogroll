@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Repair class for CPT registration
  */
-class Feed_To_Blogroll_Repair {
+class Feed_Blogroll_Repair {
 
 	/**
 	 * Constructor
@@ -27,13 +27,13 @@ class Feed_To_Blogroll_Repair {
 	 * Add repair menu
 	 */
 	public function add_repair_menu() {
-		// Add as a submenu under the main Feed to Blogroll menu instead of Tools
+		// Add as a submenu under the main Feed Blogroll menu instead of Tools
 		add_submenu_page(
-			'feed-to-blogroll',
-			__( 'Repair Feed to Blogroll CPT', 'feed-to-blogroll' ),
-			__( 'Repair CPT', 'feed-to-blogroll' ),
+			'feed-blogroll',
+			__( 'Repair Feed Blogroll CPT', 'feed-blogroll' ),
+			__( 'Repair CPT', 'feed-blogroll' ),
 			'manage_options',
-			'feed-to-blogroll-repair',
+			'feed-blogroll-repair',
 			array( $this, 'repair_page' )
 		);
 	}
@@ -85,7 +85,7 @@ class Feed_To_Blogroll_Repair {
 		echo '<table class="form-table">';
 		echo '<tr><th>Blogroll CPT Registered:</th><td>' . ( post_type_exists( 'blogroll' ) ? '✅ Yes' : '❌ No' ) . '</td></tr>';
 		echo '<tr><th>Blogroll Category Taxonomy:</th><td>' . ( taxonomy_exists( 'blogroll_category' ) ? '✅ Yes' : '❌ No' ) . '</td></tr>';
-		echo '<tr><th>Plugin Active:</th><td>' . ( is_plugin_active( 'feed-to-blogroll/feed-to-blogroll.php' ) ? '✅ Yes' : '❌ No' ) . '</td></tr>';
+		echo '<tr><th>Plugin Active:</th><td>' . ( is_plugin_active( 'feed-blogroll/feed-blogroll.php' ) ? '✅ Yes' : '❌ No' ) . '</td></tr>';
 		echo '</table>';
 	}
 
@@ -94,10 +94,10 @@ class Feed_To_Blogroll_Repair {
 	 */
 	private function force_cpt_registration() {
 		// Load the CPT class (correct filename)
-		require_once FEED_TO_BLOGROLL_PLUGIN_DIR . 'includes/class-feed-to-blogroll-cpt.php';
+		require_once FEED_BLOGROLL_PLUGIN_DIR . 'includes/class-feed-blogroll-cpt.php';
 
 		// Create new instance and force registration
-		$cpt = new Feed_To_Blogroll_CPT();
+		$cpt = new Feed_Blogroll_CPT();
 		$cpt->force_registration();
 
 		// Register meta fields
@@ -106,10 +106,10 @@ class Feed_To_Blogroll_Repair {
 		// Log the repair
 		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-			error_log( 'Feed to Blogroll: CPT registration repaired manually' );
+			error_log( 'Feed Blogroll: CPT registration repaired manually' );
 		}
 	}
 }
 
 // Initialize repair
-new Feed_To_Blogroll_Repair();
+new Feed_Blogroll_Repair();

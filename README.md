@@ -1,4 +1,4 @@
-# Feed to Blogroll
+# Feed Blogroll
 
 [![WordPress](https://img.shields.io/badge/WordPress-6.1+-blue)](https://wordpress.org/)
 [![PHP](https://img.shields.io/badge/PHP-8.2+-blue)](https://php.net/)
@@ -30,7 +30,7 @@ Automatic blogroll synchronization with Feedbin API.
 
 ## Installation
 
-1. Upload the plugin files to `/wp-content/plugins/feed-to-blogroll/`
+1. Upload the plugin files to `/wp-content/plugins/feed-blogroll/`
 2. Activate the plugin through the 'Plugins' screen in WordPress
 3. Go to 'Blogroll > Settings' to configure your Feedbin API credentials
 4. Use the `[blogroll]` shortcode to display your blogroll on any page
@@ -39,7 +39,7 @@ This plugin is distributed from GitHub (not currently from the WordPress.org plu
 
 ### Branch strategy
 
-- **`main`**: stable branch. Use tagged releases ([Releases](https://github.com/jaz-on/feed-to-blogroll/releases)) or `main` for production-style sites.
+- **`main`**: stable branch. Use tagged releases ([Releases](https://github.com/jaz-on/feed-blogroll/releases)) or `main` for production-style sites.
 - **`dev`**: integration branch for upcoming changes. Use only if you want to test pre-release updates.
 
 ### Updates via Git Updater
@@ -47,28 +47,28 @@ This plugin is distributed from GitHub (not currently from the WordPress.org plu
 The plugin declares `GitHub Plugin URI` and `Primary Branch` so you can update it from the WordPress dashboard using [Git Updater](https://github.com/git-updater/git-updater) (successor to the earlier GitHub-focused updater).
 
 1. Install and activate **Git Updater** on your site.
-2. Install **Feed to Blogroll** from this repository (ZIP of `main` or `dev`, or clone into `wp-content/plugins/feed-to-blogroll/`).
-3. Git Updater will offer updates when the **Version** header in [`feed-to-blogroll.php`](feed-to-blogroll.php) increases on the branch set by **Primary Branch** (`main` on `main`, `dev` on `dev`).
+2. Install **Feed Blogroll** from this repository (ZIP of `main` or `dev`, or clone into `wp-content/plugins/feed-blogroll/`).
+3. Git Updater will offer updates when the **Version** header in [`feed-blogroll.php`](feed-blogroll.php) increases on the branch set by **Primary Branch** (`main` on `main`, `dev` on `dev`).
 
 **Verify manually (recommended once):** after connecting the site to GitHub, open **Dashboard → Settings → Git Updater** (or the plugin’s update UI), confirm the repository is detected, then push a version bump to the tracked branch and confirm an update appears under **Dashboard → Updates**.
 
 ### Security (optional)
-- You can define `FEED_TO_BLOGROLL_FETCH_TAGS` in wp-config.php to disable fetching Feedbin tags (reduces API calls):
+- You can define `FEED_BLOGROLL_FETCH_TAGS` in wp-config.php to disable fetching Feedbin tags (reduces API calls):
 ```php
-define( 'FEED_TO_BLOGROLL_FETCH_TAGS', false );
+define( 'FEED_BLOGROLL_FETCH_TAGS', false );
 ```
 When defined, the plugin will skip per-feed tag requests and use only core subscription data.
 
 - You can also define credentials in wp-config.php to avoid storing them in the database:
 ```php
-define( 'FEED_TO_BLOGROLL_USERNAME', 'your-email@example.com' );
-define( 'FEED_TO_BLOGROLL_PASSWORD', 'your-secure-password' );
+define( 'FEED_BLOGROLL_USERNAME', 'your-email@example.com' );
+define( 'FEED_BLOGROLL_PASSWORD', 'your-secure-password' );
 ```
 When defined, the corresponding fields in Settings are locked (read-only).
 
 - **REST permissions (optional hardening)** — by default the blogroll JSON and OPML endpoints are public (same data as the shortcode). Return `false` from a callback on these filters to block anonymous access:
-  - `feed_to_blogroll_rest_blogroll_permission`
-  - `feed_to_blogroll_rest_opml_permission`
+  - `feed_blogroll_rest_blogroll_permission`
+  - `feed_blogroll_rest_opml_permission`
 
 ## Usage
 
@@ -101,16 +101,16 @@ When defined, the corresponding fields in Settings are locked (read-only).
 Access your blogroll data programmatically:
 
 ```bash
-GET /wp-json/feed-to-blogroll/v1/blogroll
-GET /wp-json/feed-to-blogroll/v1/blogroll?category=tech&limit=10
-GET /wp-json/feed-to-blogroll/v1/opml
+GET /wp-json/feed-blogroll/v1/blogroll
+GET /wp-json/feed-blogroll/v1/blogroll?category=tech&limit=10
+GET /wp-json/feed-blogroll/v1/opml
 ```
 
 The OPML route returns JSON: `{ "opml": "<xml string>", "filename": "blogroll-YYYY-MM-DD.opml" }` (same shape the front-end export button consumes).
 
 ### Blocks
 
-- Block: Blogroll (`feed-to-blogroll/blogroll`)
+- Block: Blogroll (`feed-blogroll/blogroll`)
 - Attributes:
   - `category` (string): filter by category slug (default: all)
   - `limit` (number): number of blogs to display (-1 for all)
@@ -143,7 +143,7 @@ This plugin collects and stores:
 
 ### Uninstall
 
-When deleting the plugin from WordPress Admin, all plugin data is removed, including options such as `feed_to_blogroll_options`, `feed_to_blogroll_plugin_version`, API status/cache keys, the blogroll CPT and `blogroll_category` terms, scheduled cron events, and related transients.
+When deleting the plugin from WordPress Admin, all plugin data is removed, including options such as `feed_blogroll_options`, `feed_blogroll_plugin_version`, API status/cache keys, the blogroll CPT and `blogroll_category` terms, scheduled cron events, and related transients.
 
 ## Accessibility
 
@@ -179,8 +179,8 @@ When deleting the plugin from WordPress Admin, all plugin data is removed, inclu
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/jaz-on/feed-to-blogroll.git
-cd feed-to-blogroll
+git clone https://github.com/jaz-on/feed-blogroll.git
+cd feed-blogroll
 ```
 
 2. Install dependencies:
@@ -209,7 +209,7 @@ The plugin follows WordPress coding standards and includes comprehensive error h
 **Release ZIP (matches `git archive` exclusions):** from a clean checkout on the tag or branch you want to ship:
 
 ```bash
-git archive --format=zip --prefix=feed-to-blogroll/ -o feed-to-blogroll.zip HEAD
+git archive --format=zip --prefix=feed-blogroll/ -o feed-blogroll.zip HEAD
 ```
 
 Development-only paths listed in [`.gitattributes`](.gitattributes) are omitted from the archive.
@@ -220,8 +220,8 @@ Development-only paths listed in [`.gitattributes`](.gitattributes) are omitted 
 
 We welcome contributions! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
 
-- **Issues**: [GitHub Issues](https://github.com/jaz-on/feed-to-blogroll/issues)
-- **Repository**: [GitHub Repository](https://github.com/jaz-on/feed-to-blogroll)
+- **Issues**: [GitHub Issues](https://github.com/jaz-on/feed-blogroll/issues)
+- **Repository**: [GitHub Repository](https://github.com/jaz-on/feed-blogroll)
 
 ## License
 

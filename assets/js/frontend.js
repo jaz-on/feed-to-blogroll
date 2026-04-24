@@ -1,5 +1,5 @@
 /**
- * Feed to Blogroll - Frontend JavaScript
+ * Feed Blogroll - Frontend JavaScript
  * Handles frontend interactions and OPML export
  */
 
@@ -7,7 +7,7 @@
 	'use strict';
 
 	// Frontend functionality
-	const FeedToBlogrollFrontend = {
+	const FeedBlogrollFrontend = {
 		
 		/**
 		 * Initialize frontend functionality
@@ -60,7 +60,7 @@
 		 * Initialize smooth scrolling for anchor links
 		 */
 		initSmoothScrolling: function() {
-			$('.feed-to-blogroll-container').on('click', 'a[href^="#"]', function(e) {
+			$('.feed-blogroll-container').on('click', 'a[href^="#"]', function(e) {
 				e.preventDefault();
 				
 				const target = $(this.getAttribute('href'));
@@ -79,16 +79,16 @@
 			e.preventDefault();
 			
 			const $button = $(e.target);
-			const restUrl = (window.feedToBlogrollFrontend && feedToBlogrollFrontend.restUrl) ? feedToBlogrollFrontend.restUrl : '';
+			const restUrl = (window.feedBlogrollFrontend && feedBlogrollFrontend.restUrl) ? feedBlogrollFrontend.restUrl : '';
 			
 			// Show loading state
-			var exportingText = (window.feedToBlogrollFrontend && feedToBlogrollFrontend.strings && feedToBlogrollFrontend.strings.exporting) ? feedToBlogrollFrontend.strings.exporting : 'Exporting...';
+			var exportingText = (window.feedBlogrollFrontend && feedBlogrollFrontend.strings && feedBlogrollFrontend.strings.exporting) ? feedBlogrollFrontend.strings.exporting : 'Exporting...';
 			$button.addClass('loading').text(exportingText);
 			
 			if (!restUrl) {
-				var missingUrlMsg = (window.feedToBlogrollFrontend && feedToBlogrollFrontend.strings && feedToBlogrollFrontend.strings.error) ? feedToBlogrollFrontend.strings.error : 'Export failed. Please try again.';
-				FeedToBlogrollFrontend.showMessage(missingUrlMsg, 'error');
-				var labelMissing = (window.feedToBlogrollFrontend && feedToBlogrollFrontend.strings && feedToBlogrollFrontend.strings.exportLabel) ? feedToBlogrollFrontend.strings.exportLabel : 'Export OPML';
+				var missingUrlMsg = (window.feedBlogrollFrontend && feedBlogrollFrontend.strings && feedBlogrollFrontend.strings.error) ? feedBlogrollFrontend.strings.error : 'Export failed. Please try again.';
+				FeedBlogrollFrontend.showMessage(missingUrlMsg, 'error');
+				var labelMissing = (window.feedBlogrollFrontend && feedBlogrollFrontend.strings && feedBlogrollFrontend.strings.exportLabel) ? feedBlogrollFrontend.strings.exportLabel : 'Export OPML';
 				$button.removeClass('loading').html('<span class="dashicons dashicons-download" aria-hidden="true"></span> ' + labelMissing);
 				return;
 			}
@@ -102,19 +102,19 @@
 				})
 				.then(function(data) {
 					if (data && data.opml && data.filename) {
-						FeedToBlogrollFrontend.downloadOPML(data.opml, data.filename);
-						var exportedMsg = (window.feedToBlogrollFrontend && feedToBlogrollFrontend.strings && feedToBlogrollFrontend.strings.exported) ? feedToBlogrollFrontend.strings.exported : 'OPML file exported successfully!';
-						FeedToBlogrollFrontend.showMessage(exportedMsg, 'success');
+						FeedBlogrollFrontend.downloadOPML(data.opml, data.filename);
+						var exportedMsg = (window.feedBlogrollFrontend && feedBlogrollFrontend.strings && feedBlogrollFrontend.strings.exported) ? feedBlogrollFrontend.strings.exported : 'OPML file exported successfully!';
+						FeedBlogrollFrontend.showMessage(exportedMsg, 'success');
 					} else {
 						throw new Error('Invalid response');
 					}
 				})
 				.catch(function() {
-					var errMsg = (window.feedToBlogrollFrontend && feedToBlogrollFrontend.strings && feedToBlogrollFrontend.strings.error) ? feedToBlogrollFrontend.strings.error : 'Export failed. Please try again.';
-					FeedToBlogrollFrontend.showMessage(errMsg, 'error');
+					var errMsg = (window.feedBlogrollFrontend && feedBlogrollFrontend.strings && feedBlogrollFrontend.strings.error) ? feedBlogrollFrontend.strings.error : 'Export failed. Please try again.';
+					FeedBlogrollFrontend.showMessage(errMsg, 'error');
 				})
 				.finally(function() {
-					var label = (window.feedToBlogrollFrontend && feedToBlogrollFrontend.strings && feedToBlogrollFrontend.strings.exportLabel) ? feedToBlogrollFrontend.strings.exportLabel : 'Export OPML';
+					var label = (window.feedBlogrollFrontend && feedBlogrollFrontend.strings && feedBlogrollFrontend.strings.exportLabel) ? feedBlogrollFrontend.strings.exportLabel : 'Export OPML';
 					$button.removeClass('loading').html('<span class="dashicons dashicons-download" aria-hidden="true"></span> ' + label);
 				});
 		},
@@ -170,7 +170,7 @@
 		 */
 		showMessage: function(message, type) {
 			// Create message element
-			const $message = $('<div class="feed-to-blogroll-message ' + type + '">' + message + '</div>');
+			const $message = $('<div class="feed-blogroll-message ' + type + '">' + message + '</div>');
 			
 			// Add to page
 			$('body').append($message);
@@ -324,7 +324,7 @@
 		 * Handle errors gracefully
 		 */
 		handleError: function(error, context) {
-			console.error('Feed to Blogroll Frontend Error:', error, context);
+			console.error('Feed Blogroll Frontend Error:', error, context);
 			
 			this.showMessage(
 				'An unexpected error occurred. Please try again.',
@@ -335,13 +335,13 @@
 
 	// Initialize when document is ready
 	$(document).ready(function() {
-		FeedToBlogrollFrontend.init();
-		FeedToBlogrollFrontend.initResponsive();
-		FeedToBlogrollFrontend.initAccessibility();
-		FeedToBlogrollFrontend.initPerformance();
+		FeedBlogrollFrontend.init();
+		FeedBlogrollFrontend.initResponsive();
+		FeedBlogrollFrontend.initAccessibility();
+		FeedBlogrollFrontend.initPerformance();
 	});
 
 	// Expose to global scope for debugging
-	window.FeedToBlogrollFrontend = FeedToBlogrollFrontend;
+	window.FeedBlogrollFrontend = FeedBlogrollFrontend;
 
 })(jQuery);

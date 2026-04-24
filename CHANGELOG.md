@@ -4,21 +4,25 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Changed
+
+- Renamed project identifiers from **feed-to-blogroll** / `feed_to_blogroll_*` / `Feed_To_Blogroll_*` to **feed-blogroll** / `feed_blogroll_*` / `Feed_Blogroll_*` (plugin bootstrap file, text domain, REST namespace, WP-Cron and AJAX hooks, Composer metadata, front-end CSS classes, block name, and wp-config constants `FEED_BLOGROLL_*`). Upgrades run a one-time migration of stored options and the legacy cron event.
+
 ## [1.2.0] - 2026-04-20
 
 ### Added
 
-- Custom weekly cron schedule and `Feed_To_Blogroll_Plugin::reschedule_sync_cron()` so **Sync frequency** (twice daily, daily, weekly) and **Automatic synchronization** match the real WP-Cron event; `plugins_loaded` version option migrates existing installs.
-- `last_sync_stats` stored under `feed_to_blogroll_options` for dashboard “last sync run” counts; per-post `last_sync` / `sync_status` updated on create, update, and Feedbin removal (draft + inactive).
-- Shared `Feed_To_Blogroll_OPML` helper; public REST `GET /wp-json/feed-to-blogroll/v1/opml` (filterable via `feed_to_blogroll_rest_opml_permission`); front-end export uses `fetch()` to this endpoint.
-- `feed_to_blogroll_merge_saved_options()` and PHPUnit scaffold (`phpunit.xml.dist`, `tests/`) for option merge behavior.
-- Blogs and Export admin tabs with real content; plugin DB version option `feed_to_blogroll_plugin_version`.
+- Custom weekly cron schedule and `Feed_Blogroll_Plugin::reschedule_sync_cron()` so **Sync frequency** (twice daily, daily, weekly) and **Automatic synchronization** match the real WP-Cron event; `plugins_loaded` version option migrates existing installs.
+- `last_sync_stats` stored under `feed_blogroll_options` for dashboard “last sync run” counts; per-post `last_sync` / `sync_status` updated on create, update, and Feedbin removal (draft + inactive).
+- Shared `Feed_Blogroll_OPML` helper; public REST `GET /wp-json/feed-blogroll/v1/opml` (filterable via `feed_blogroll_rest_opml_permission`); front-end export uses `fetch()` to this endpoint.
+- `feed_blogroll_merge_saved_options()` and PHPUnit scaffold (`phpunit.xml.dist`, `tests/`) for option merge behavior.
+- Blogs and Export admin tabs with real content; plugin DB version option `feed_blogroll_plugin_version`.
 
 ### Changed
 
-- Settings sanitize callback **merges** into existing `feed_to_blogroll_options` so `last_sync`, `sync_status`, and stats are not wiped on save; checkbox `auto_sync` uses a hidden `0` value when unchecked.
-- Feedbin API status persistence: `feed_to_blogroll_api_connected` and `feed_to_blogroll_api_last_error` updated when the hourly connection test runs.
-- REST `GET .../blogroll` permission is filterable via `feed_to_blogroll_rest_blogroll_permission` (default public).
+- Settings sanitize callback **merges** into existing `feed_blogroll_options` so `last_sync`, `sync_status`, and stats are not wiped on save; checkbox `auto_sync` uses a hidden `0` value when unchecked.
+- Feedbin API status persistence: `feed_blogroll_api_connected` and `feed_blogroll_api_last_error` updated when the hourly connection test runs.
+- REST `GET .../blogroll` permission is filterable via `feed_blogroll_rest_blogroll_permission` (default public).
 - Post meta registration uses `object_subtype` `blogroll` for `rss_url`, `site_url`, `feed_id`, `sync_status`, `last_sync`.
 - CPT capabilities are added on activation / upgrade only (removed per-request `init` cap grants).
 - Template class always loaded so REST routes register in admin contexts; `wp_cache_flush_group` called only when available; OPML transient busted on blogroll cache bust.
@@ -30,16 +34,16 @@ All notable changes to this project will be documented in this file.
 ### Added
 
 - Plugin headers `GitHub Plugin URI` and `Primary Branch` for [Git Updater](https://github.com/git-updater/git-updater) (track updates from GitHub; `dev` uses the `dev` branch, `main` uses `main` after release).
-- [GitHub Actions](https://github.com/jaz-on/feed-to-blogroll/actions) workflow running `composer phpcs` on pushes and pull requests to `main` and `dev`.
+- [GitHub Actions](https://github.com/jaz-on/feed-blogroll/actions) workflow running `composer phpcs` on pushes and pull requests to `main` and `dev`.
 - [`.gitattributes`](.gitattributes) `export-ignore` rules so `git archive` ZIPs omit Composer, PHPCS, and other development-only paths (aligned with [`.distignore`](.distignore)).
 
 ### Changed
 
 - README: branch strategy (`main` stable vs `dev` integration), Git Updater installation, manual verification of updates, and fixed REST API / block documentation formatting.
-- Aligned plugin version to **1.1.0** across the main plugin file, `FEED_TO_BLOGROLL_VERSION`, `block.json`, `plugin.json`, and the POT header.
+- Aligned plugin version to **1.1.0** across the main plugin file, `FEED_BLOGROLL_VERSION`, `block.json`, `plugin.json`, and the POT header.
 - PHPCS: increased `absoluteLineLimit` for long admin HTML/translatable strings; PHPCBF fixes in CPT, template, and main plugin class.
 
 ## [1.0.0] - Initial release
 
 - Feedbin API synchronization, `blogroll` custom post type with native meta fields (no ACF dependency).
-- Admin UI, shortcodes `[blogroll]` / `[blogroll_grid]`, block `feed-to-blogroll/blogroll`, REST API, OPML export, categories/tags, cron sync, security hardening, caching, and accessibility-oriented markup.
+- Admin UI, shortcodes `[blogroll]` / `[blogroll_grid]`, block `feed-blogroll/blogroll`, REST API, OPML export, categories/tags, cron sync, security hardening, caching, and accessibility-oriented markup.

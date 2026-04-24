@@ -1,5 +1,5 @@
 /**
- * Feed to Blogroll - Admin JavaScript
+ * Feed Blogroll - Admin JavaScript
  * Handles admin interface interactions and AJAX requests
  * Uses WordPress native admin patterns
  */
@@ -8,7 +8,7 @@
 	'use strict';
 
 	// Admin functionality
-	const FeedToBlogrollAdmin = {
+	const FeedBlogrollAdmin = {
 		
 		/**
 		 * Initialize admin functionality
@@ -32,7 +32,7 @@
 			$(document).on('click', '#export-opml', this.exportOPML.bind(this));
 			
 			// Settings form submission
-			$(document).on('submit', '.feed-to-blogroll-settings form', this.handleSettingsSubmit.bind(this));
+			$(document).on('submit', '.feed-blogroll-settings form', this.handleSettingsSubmit.bind(this));
 		},
 
 		/**
@@ -62,31 +62,31 @@
 			const originalText = $button.text();
 			
 			// Show loading state
-			$button.addClass('loading').text(feedToBlogrollAdmin.strings.testing);
+			$button.addClass('loading').text(feedBlogrollAdmin.strings.testing);
 			
 			// Make AJAX request
 			$.ajax({
-				url: feedToBlogrollAdmin.ajaxUrl,
+				url: feedBlogrollAdmin.ajaxUrl,
 				type: 'POST',
 				data: {
-					action: 'feed_to_blogroll_test_connection',
-					nonce: feedToBlogrollAdmin.nonce
+					action: 'feed_blogroll_test_connection',
+					nonce: feedBlogrollAdmin.nonce
 				},
 				success: function(response) {
 					if (response.success) {
-						FeedToBlogrollAdmin.showMessage(
+						FeedBlogrollAdmin.showMessage(
 							response.data.message + ' (' + response.data.count + ' subscriptions found)',
 							'success'
 						);
 					} else {
-						FeedToBlogrollAdmin.showMessage(
+						FeedBlogrollAdmin.showMessage(
 							response.data || 'Connection test failed',
 							'error'
 						);
 					}
 				},
 				error: function() {
-					FeedToBlogrollAdmin.showMessage(
+					FeedBlogrollAdmin.showMessage(
 						'Network error occurred',
 						'error'
 					);
@@ -108,22 +108,22 @@
 			const originalText = $button.text();
 			
 			// Show loading state
-			$button.addClass('loading').text(feedToBlogrollAdmin.strings.syncing);
+			$button.addClass('loading').text(feedBlogrollAdmin.strings.syncing);
 			
 			// Show progress indicator
 			$('#sync-progress').show();
 			
 			// Make AJAX request
 			$.ajax({
-				url: feedToBlogrollAdmin.ajaxUrl,
+				url: feedBlogrollAdmin.ajaxUrl,
 				type: 'POST',
 				data: {
-					action: 'feed_to_blogroll_manual_sync',
-					nonce: feedToBlogrollAdmin.nonce
+					action: 'feed_blogroll_manual_sync',
+					nonce: feedBlogrollAdmin.nonce
 				},
 				success: function(response) {
 					if (response.success) {
-						FeedToBlogrollAdmin.showMessage(
+						FeedBlogrollAdmin.showMessage(
 							response.data.message,
 							'success'
 						);
@@ -133,14 +133,14 @@
 							location.reload();
 						}, 2000);
 					} else {
-						FeedToBlogrollAdmin.showMessage(
+						FeedBlogrollAdmin.showMessage(
 							response.data || 'Synchronization failed',
 							'error'
 						);
 					}
 				},
 				error: function() {
-					FeedToBlogrollAdmin.showMessage(
+					FeedBlogrollAdmin.showMessage(
 						'Network error occurred',
 						'error'
 					);
@@ -163,38 +163,38 @@
 			const originalText = $button.text();
 			
 			// Show loading state
-			$button.addClass('loading').text(feedToBlogrollAdmin.strings.exporting);
+			$button.addClass('loading').text(feedBlogrollAdmin.strings.exporting);
 			
 			// Make AJAX request
 			$.ajax({
-				url: feedToBlogrollAdmin.ajaxUrl,
+				url: feedBlogrollAdmin.ajaxUrl,
 				type: 'POST',
 				data: {
-					action: 'feed_to_blogroll_export_opml',
-					nonce: feedToBlogrollAdmin.nonce
+					action: 'feed_blogroll_export_opml',
+					nonce: feedBlogrollAdmin.nonce
 				},
 				success: function(response) {
 					if (response.success) {
 						// Create and download OPML file
-						FeedToBlogrollAdmin.downloadFile(
+						FeedBlogrollAdmin.downloadFile(
 							response.data.opml,
 							response.data.filename,
 							'application/xml'
 						);
 						
-						FeedToBlogrollAdmin.showMessage(
+						FeedBlogrollAdmin.showMessage(
 							'OPML file exported successfully',
 							'success'
 						);
 					} else {
-						FeedToBlogrollAdmin.showMessage(
+						FeedBlogrollAdmin.showMessage(
 							response.data || 'Export failed',
 							'error'
 						);
 					}
 				},
 				error: function() {
-					FeedToBlogrollAdmin.showMessage(
+					FeedBlogrollAdmin.showMessage(
 						'Network error occurred',
 						'error'
 					);
@@ -226,7 +226,7 @@
 		 * Show message to user using WordPress admin notices
 		 */
 		showMessage: function(message, type) {
-			const $messagesContainer = $('#feed-to-blogroll-messages');
+			const $messagesContainer = $('#feed-blogroll-messages');
 			const noticeClass = 'notice notice-' + type + ' is-dismissible';
 
 			const $message = $('<div/>', { 'class': noticeClass });
@@ -280,7 +280,7 @@
 		 * Handle errors gracefully
 		 */
 		handleError: function(error, context) {
-			console.error('Feed to Blogroll Admin Error:', error, context);
+			console.error('Feed Blogroll Admin Error:', error, context);
 			
 			this.showMessage(
 				'An unexpected error occurred. Please check the console for details.',
@@ -291,10 +291,10 @@
 
 	// Initialize when document is ready
 	$(document).ready(function() {
-		FeedToBlogrollAdmin.init();
+		FeedBlogrollAdmin.init();
 	});
 
 	// Expose to global scope for debugging
-	window.FeedToBlogrollAdmin = FeedToBlogrollAdmin;
+	window.FeedBlogrollAdmin = FeedBlogrollAdmin;
 
 })(jQuery);

@@ -1,9 +1,9 @@
 /**
- * Feed to Blogroll - Frontend Styles
+ * Feed Blogroll - Frontend Styles
  * Responsive grid layout for blogroll display
  */
 
-.feed-to-blogroll-container {
+.feed-blogroll-container {
 	max-width: 1200px;
 	margin: 0 auto;
 	padding: 2rem 1rem;
@@ -43,7 +43,7 @@
 .export-opml-button.loading .wp-block-button__link,
 .export-opml-button .wp-block-button__link.loading,
 .export-opml-button.loading,
-.feed-to-blogroll-container .export-opml-button.loading {
+.feed-blogroll-container .export-opml-button.loading {
 	position: relative;
 	opacity: 0.8;
 	pointer-events: none;
@@ -52,7 +52,7 @@
 .export-opml-button.loading .wp-block-button__link::after,
 .export-opml-button .wp-block-button__link.loading::after,
 .export-opml-button.loading::after,
-.feed-to-blogroll-container .export-opml-button.loading::after {
+.feed-blogroll-container .export-opml-button.loading::after {
 	content: '';
 	display: inline-block;
 	width: 16px;
@@ -244,7 +244,7 @@
 
 /* Responsive design */
 @media (max-width: 768px) {
-	.feed-to-blogroll-container {
+	.feed-blogroll-container {
 		padding: 1rem 0.5rem;
 	}
 	

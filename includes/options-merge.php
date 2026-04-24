@@ -2,7 +2,7 @@
 /**
  * Pure merge helper for saved options (unit-testable).
  *
- * @package FeedToBlogroll
+ * @package FeedBlogroll
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -16,6 +16,6 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @param array $sanitized_subset Keys produced by the settings sanitize callback.
  * @return array
  */
-function feed_to_blogroll_merge_saved_options( array $existing, array $sanitized_subset ) {
+function feed_blogroll_merge_saved_options( array $existing, array $sanitized_subset ) {
 	return array_merge( $existing, $sanitized_subset );
 }

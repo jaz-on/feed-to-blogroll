@@ -2,7 +2,7 @@
 /**
  * Main Plugin Class
  *
- * @package FeedToBlogroll
+ * @package FeedBlogroll
  * @since 1.0.0
  */
 
@@ -16,19 +16,19 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @since 1.0.0
  */
-class Feed_To_Blogroll_Plugin {
+class Feed_Blogroll_Plugin {
 
 	/**
 	 * Plugin instance
 	 *
-	 * @var Feed_To_Blogroll_Plugin
+	 * @var Feed_Blogroll_Plugin
 	 */
 	private static $instance = null;
 
 	/**
 	 * Get plugin instance
 	 *
-	 * @return Feed_To_Blogroll_Plugin
+	 * @return Feed_Blogroll_Plugin
 	 */
 	public static function get_instance() {
 		if ( null === self::$instance ) {
@@ -49,9 +49,66 @@ class Feed_To_Blogroll_Plugin {
 	 */
 	private function init_hooks() {
 		add_filter( 'cron_schedules', array( $this, 'register_weekly_cron_schedule' ) );
+		add_action( 'plugins_loaded', array( $this, 'migrate_legacy_slug_identifiers' ), 1 );
 		add_action( 'plugins_loaded', array( $this, 'maybe_upgrade' ), 5 );
-		add_action( 'updated_option', array( $this, 'on_updated_feed_to_blogroll_options' ), 10, 3 );
+		add_action( 'updated_option', array( $this, 'on_updated_feed_blogroll_options' ), 10, 3 );
 		add_action( 'init', array( $this, 'init_plugin' ) );
+	}
+
+	/**
+	 * One-time migration from pre–feed-blogroll option keys, cron hook, and transients.
+	 */
+	public function migrate_legacy_slug_identifiers() {
+		if ( '1' === get_option( 'feed_blogroll_legacy_slug_migration', '' ) ) {
+			return;
+		}
+
+		$touched = false;
+
+		if ( false !== get_option( 'feed_to_blogroll_options', false ) ) {
+			$legacy  = (array) get_option( 'feed_to_blogroll_options', array() );
+			$current = get_option( 'feed_blogroll_options', false );
+			if ( false === $current ) {
+				update_option( 'feed_blogroll_options', $legacy );
+			} else {
+				update_option( 'feed_blogroll_options', wp_parse_args( (array) $current, $legacy ) );
+			}
+			delete_option( 'feed_to_blogroll_options' );
+			$touched = true;
+		}
+
+		$scalar_migrations = array(
+			'feed_to_blogroll_plugin_version'  => 'feed_blogroll_plugin_version',
+			'feed_to_blogroll_api_last_test'   => 'feed_blogroll_api_last_test',
+			'feed_to_blogroll_api_connected'   => 'feed_blogroll_api_connected',
+			'feed_to_blogroll_api_last_error'  => 'feed_blogroll_api_last_error',
+			'feed_to_blogroll_cache_version'   => 'feed_blogroll_cache_version',
+		);
+		foreach ( $scalar_migrations as $old_key => $new_key ) {
+			if ( false === get_option( $old_key, false ) ) {
+				continue;
+			}
+			if ( false === get_option( $new_key, false ) ) {
+				update_option( $new_key, get_option( $old_key ) );
+			}
+			delete_option( $old_key );
+			$touched = true;
+		}
+
+		while ( ( $timestamp = wp_next_scheduled( 'feed_to_blogroll_sync_cron' ) ) ) {
+			wp_unschedule_event( $timestamp, 'feed_to_blogroll_sync_cron' );
+			$touched = true;
+		}
+
+		delete_transient( 'feed_to_blogroll_opml' );
+		delete_transient( 'feed_to_blogroll_sync_lock' );
+		delete_transient( 'feed_to_blogroll_api_cache' );
+
+		update_option( 'feed_blogroll_legacy_slug_migration', '1' );
+
+		if ( $touched ) {
+			self::reschedule_sync_cron();
+		}
 	}
 
 	/**
@@ -64,7 +121,7 @@ class Feed_To_Blogroll_Plugin {
 		if ( ! isset( $schedules['weekly'] ) ) {
 			$schedules['weekly'] = array(
 				'interval' => WEEK_IN_SECONDS,
-				'display'  => __( 'Once Weekly', 'feed-to-blogroll' ),
+				'display'  => __( 'Once Weekly', 'feed-blogroll' ),
 			);
 		}
 		return $schedules;
@@ -74,14 +131,14 @@ class Feed_To_Blogroll_Plugin {
 	 * After plugin update: reschedule cron, ensure capabilities, store DB version.
 	 */
 	public function maybe_upgrade() {
-		$stored = (string) get_option( 'feed_to_blogroll_plugin_version', '' );
-		if ( version_compare( $stored, FEED_TO_BLOGROLL_VERSION, '>=' ) ) {
+		$stored = (string) get_option( 'feed_blogroll_plugin_version', '' );
+		if ( version_compare( $stored, FEED_BLOGROLL_VERSION, '>=' ) ) {
 			return;
 		}
 
 		self::reschedule_sync_cron();
 		$this->add_custom_capabilities_once();
-		update_option( 'feed_to_blogroll_plugin_version', FEED_TO_BLOGROLL_VERSION );
+		update_option( 'feed_blogroll_plugin_version', FEED_BLOGROLL_VERSION );
 	}
 
 	/**
@@ -91,8 +148,8 @@ class Feed_To_Blogroll_Plugin {
 	 * @param mixed  $old_value Previous value.
 	 * @param mixed  $value     New value.
 	 */
-	public function on_updated_feed_to_blogroll_options( $option, $old_value, $value ) {
-		if ( 'feed_to_blogroll_options' !== $option ) {
+	public function on_updated_feed_blogroll_options( $option, $old_value, $value ) {
+		if ( 'feed_blogroll_options' !== $option ) {
 			return;
 		}
 
@@ -117,9 +174,9 @@ class Feed_To_Blogroll_Plugin {
 	 * Clear and re-register the sync cron event from current options.
 	 */
 	public static function reschedule_sync_cron() {
-		wp_clear_scheduled_hook( 'feed_to_blogroll_sync_cron' );
+		wp_clear_scheduled_hook( 'feed_blogroll_sync_cron' );
 
-		$options = get_option( 'feed_to_blogroll_options', array() );
+		$options = get_option( 'feed_blogroll_options', array() );
 		if ( empty( $options['auto_sync'] ) ) {
 			return;
 		}
@@ -133,7 +190,7 @@ class Feed_To_Blogroll_Plugin {
 			$schedule = 'weekly';
 		}
 
-		wp_schedule_event( time(), $schedule, 'feed_to_blogroll_sync_cron' );
+		wp_schedule_event( time(), $schedule, 'feed_blogroll_sync_cron' );
 	}
 
 	/**
@@ -156,22 +213,22 @@ class Feed_To_Blogroll_Plugin {
 	 */
 	private function load_dependencies() {
 		// Core classes always needed
-		require_once FEED_TO_BLOGROLL_PLUGIN_DIR . 'includes/class-feed-to-blogroll-opml.php';
-		require_once FEED_TO_BLOGROLL_PLUGIN_DIR . 'includes/class-feed-to-blogroll-feedbin-api.php';
-		require_once FEED_TO_BLOGROLL_PLUGIN_DIR . 'includes/class-feed-to-blogroll-sync.php';
-		require_once FEED_TO_BLOGROLL_PLUGIN_DIR . 'includes/class-feed-to-blogroll-cpt.php';
+		require_once FEED_BLOGROLL_PLUGIN_DIR . 'includes/class-feed-blogroll-opml.php';
+		require_once FEED_BLOGROLL_PLUGIN_DIR . 'includes/class-feed-blogroll-feedbin-api.php';
+		require_once FEED_BLOGROLL_PLUGIN_DIR . 'includes/class-feed-blogroll-sync.php';
+		require_once FEED_BLOGROLL_PLUGIN_DIR . 'includes/class-feed-blogroll-cpt.php';
 
 		// Admin classes only when needed
 		if ( is_admin() ) {
-			require_once FEED_TO_BLOGROLL_PLUGIN_DIR . 'includes/class-feed-to-blogroll-admin.php';
+			require_once FEED_BLOGROLL_PLUGIN_DIR . 'includes/class-feed-blogroll-admin.php';
 		}
 
 		// Template/shortcodes/REST (REST must register even when is_admin() is true).
-		require_once FEED_TO_BLOGROLL_PLUGIN_DIR . 'includes/class-feed-to-blogroll-template.php';
+		require_once FEED_BLOGROLL_PLUGIN_DIR . 'includes/class-feed-blogroll-template.php';
 
 		// Load repair script only in debug mode
 		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-			require_once FEED_TO_BLOGROLL_PLUGIN_DIR . 'class-feed-to-blogroll-repair.php';
+			require_once FEED_BLOGROLL_PLUGIN_DIR . 'class-feed-blogroll-repair.php';
 		}
 	}
 
@@ -180,7 +237,7 @@ class Feed_To_Blogroll_Plugin {
 	 */
 	private function init_components() {
 		// Initialize Custom Post Type
-		$cpt = new Feed_To_Blogroll_CPT();
+		$cpt = new Feed_Blogroll_CPT();
 
 		// Force registration if not exists
 		if ( ! post_type_exists( 'blogroll' ) ) {
@@ -188,17 +245,17 @@ class Feed_To_Blogroll_Plugin {
 		}
 
 		// Initialize Feedbin API
-		new Feed_To_Blogroll_Feedbin_API();
+		new Feed_Blogroll_Feedbin_API();
 
 		// Initialize synchronization
-		new Feed_To_Blogroll_Sync();
+		new Feed_Blogroll_Sync();
 
 		// Initialize admin interface only when needed
 		if ( is_admin() ) {
-			new Feed_To_Blogroll_Admin();
+			new Feed_Blogroll_Admin();
 		}
 
-		new Feed_To_Blogroll_Template();
+		new Feed_Blogroll_Template();
 
 		// Initialize block support
 		$this->init_block_support();
@@ -228,7 +285,7 @@ class Feed_To_Blogroll_Plugin {
 			'core/group',
 			array(
 				'name'         => 'blogroll-card',
-				'label'        => __( 'Blogroll Card', 'feed-to-blogroll' ),
+				'label'        => __( 'Blogroll Card', 'feed-blogroll' ),
 				'inline_style' => '
 					.wp-block-group.is-style-blogroll-card {
 						background: var(--wp--preset--color--background, #ffffff);
@@ -252,7 +309,7 @@ class Feed_To_Blogroll_Plugin {
 			'core/group',
 			array(
 				'name'         => 'blogroll-grid',
-				'label'        => __( 'Blogroll Grid', 'feed-to-blogroll' ),
+				'label'        => __( 'Blogroll Grid', 'feed-blogroll' ),
 				'inline_style' => '
 					.wp-block-group.is-style-blogroll-grid {
 						display: grid;
@@ -275,7 +332,7 @@ class Feed_To_Blogroll_Plugin {
 	public function register_block() {
 		if ( function_exists( 'register_block_type_from_metadata' ) ) {
 			register_block_type_from_metadata(
-				FEED_TO_BLOGROLL_PLUGIN_DIR . 'block.json',
+				FEED_BLOGROLL_PLUGIN_DIR . 'block.json',
 				array(
 					'render_callback' => array( $this, 'render_blogroll_block' ),
 				)
@@ -318,12 +375,12 @@ class Feed_To_Blogroll_Plugin {
 		$this->load_dependencies();
 
 		// Check if classes are available
-		if ( ! class_exists( 'Feed_To_Blogroll_CPT' ) ) {
-			wp_die( esc_html__( 'Feed to Blogroll: Required classes not found during activation.', 'feed-to-blogroll' ) );
+		if ( ! class_exists( 'Feed_Blogroll_CPT' ) ) {
+			wp_die( esc_html__( 'Feed Blogroll: Required classes not found during activation.', 'feed-blogroll' ) );
 		}
 
 		// Create Custom Post Type
-		$cpt = new Feed_To_Blogroll_CPT();
+		$cpt = new Feed_Blogroll_CPT();
 		$cpt->create_post_type();
 
 		// Add custom capabilities to roles once on activation
@@ -379,7 +436,7 @@ class Feed_To_Blogroll_Plugin {
 	 */
 	public function deactivate() {
 		// Clear scheduled cron job
-		wp_clear_scheduled_hook( 'feed_to_blogroll_sync_cron' );
+		wp_clear_scheduled_hook( 'feed_blogroll_sync_cron' );
 
 		// Flush rewrite rules
 		flush_rewrite_rules();
@@ -402,13 +459,13 @@ class Feed_To_Blogroll_Plugin {
 			'last_sync_stats'  => array(),
 		);
 
-		if ( false === get_option( 'feed_to_blogroll_options', false ) ) {
-			add_option( 'feed_to_blogroll_options', $default_options, '', 'no' );
+		if ( false === get_option( 'feed_blogroll_options', false ) ) {
+			add_option( 'feed_blogroll_options', $default_options, '', 'no' );
 			return;
 		}
 
-		$existing = get_option( 'feed_to_blogroll_options', array() );
-		update_option( 'feed_to_blogroll_options', wp_parse_args( (array) $existing, $default_options ) );
+		$existing = get_option( 'feed_blogroll_options', array() );
+		update_option( 'feed_blogroll_options', wp_parse_args( (array) $existing, $default_options ) );
 	}
 
 	/**
@@ -446,4 +503,4 @@ class Feed_To_Blogroll_Plugin {
 }
 
 // Initialize plugin
-Feed_To_Blogroll_Plugin::get_instance();
+Feed_Blogroll_Plugin::get_instance();

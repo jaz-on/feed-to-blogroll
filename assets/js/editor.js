@@ -1,5 +1,5 @@
 /**
- * Feed to Blogroll - Editor Script
+ * Feed Blogroll - Editor Script
  * Simple editor script for the blogroll block
  */
 
@@ -7,9 +7,9 @@
 	'use strict';
 
 	// Register the block
-	wp.blocks.registerBlockType('feed-to-blogroll/blogroll', {
-		title: wp.i18n.__('Blogroll', 'feed-to-blogroll'),
-		description: wp.i18n.__('Display a blogroll of RSS feeds.', 'feed-to-blogroll'),
+	wp.blocks.registerBlockType('feed-blogroll/blogroll', {
+		title: wp.i18n.__('Blogroll', 'feed-blogroll'),
+		description: wp.i18n.__('Display a blogroll of RSS feeds.', 'feed-blogroll'),
 		category: 'widgets',
 		icon: 'rss',
 		supports: {
@@ -38,24 +38,24 @@
 			var attributes = props.attributes;
 			
 			return wp.element.createElement('div', {
-				className: 'feed-to-blogroll-editor-preview'
+				className: 'feed-blogroll-editor-preview'
 			}, [
 				wp.element.createElement('div', {
-					className: 'feed-to-blogroll-editor-header'
-				}, wp.element.createElement('h3', {}, wp.i18n.__('Blogroll', 'feed-to-blogroll'))),
+					className: 'feed-blogroll-editor-header'
+				}, wp.element.createElement('h3', {}, wp.i18n.__('Blogroll', 'feed-blogroll'))),
 				wp.element.createElement('div', {
-					className: 'feed-to-blogroll-editor-content'
-				}, wp.element.createElement('p', {}, wp.i18n.__('Blogroll content will be displayed here.', 'feed-to-blogroll'))),
+					className: 'feed-blogroll-editor-content'
+				}, wp.element.createElement('p', {}, wp.i18n.__('Blogroll content will be displayed here.', 'feed-blogroll'))),
 				wp.element.createElement('div', {
-					className: 'feed-to-blogroll-editor-settings'
+					className: 'feed-blogroll-editor-settings'
 				}, [
 					wp.element.createElement('p', {}, [
-						wp.element.createElement('strong', {}, wp.i18n.__('Settings:', 'feed-to-blogroll')),
+						wp.element.createElement('strong', {}, wp.i18n.__('Settings:', 'feed-blogroll')),
 						' ',
 						wp.i18n.sprintf(
-							wp.i18n.__('Category: %s, Limit: %s, Columns: %s', 'feed-to-blogroll'),
-							attributes.category || wp.i18n.__('All', 'feed-to-blogroll'),
-							attributes.limit === -1 ? wp.i18n.__('All', 'feed-to-blogroll') : attributes.limit,
+							wp.i18n.__('Category: %s, Limit: %s, Columns: %s', 'feed-blogroll'),
+							attributes.category || wp.i18n.__('All', 'feed-blogroll'),
+							attributes.limit === -1 ? wp.i18n.__('All', 'feed-blogroll') : attributes.limit,
 							attributes.columns
 						)
 					])

@@ -1,11 +1,11 @@
-# Repository Status - Feed to Blogroll Plugin
+# Repository Status - Feed Blogroll Plugin
 
 ## État actuel
 
-- **Dépôt distant** : GitHub (https://github.com/jaz-on/feed-to-blogroll.git)
+- **Dépôt distant** : GitHub (https://github.com/jaz-on/feed-blogroll.git)
 - **`main`** : branche stable ; releases versionnées (tags `v*`) ; en-tête plugin `Primary Branch: main` pour Git Updater.
 - **`dev`** : intégration continue ; pour suivre cette branche avec Git Updater, configurer la branche `dev` dans l’admin WordPress (l’en-tête du plugin reste `Primary Branch: main`).
-- **Dernier alignement version** : **1.1.0** (header WordPress, constante, `block.json`, `plugin.json`)
+- **Dernier alignement version** : **1.2.0** (header WordPress, constante, `block.json`, `plugin.json`)
 
 ## Tags de version
 
@@ -15,13 +15,13 @@
 ## Structure du projet
 
 ```
-feed-to-blogroll/
+feed-blogroll/
 ├── .distignore             # Fichiers exclus du packaging manuel
 ├── .gitattributes          # Fichiers exclus de `git archive` (ZIP release)
 ├── CHANGELOG.md
 ├── README.md
 ├── LICENSE
-├── feed-to-blogroll.php
+├── feed-blogroll.php
 ├── block.json
 ├── composer.json
 ├── phpcs.xml

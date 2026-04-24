@@ -1,8 +1,8 @@
 <?php
 /**
- * Tests for feed_to_blogroll_merge_saved_options().
+ * Tests for feed_blogroll_merge_saved_options().
  *
- * @package FeedToBlogroll
+ * @package FeedBlogroll
  */
 
 declare(strict_types=1);
@@ -10,7 +10,7 @@ declare(strict_types=1);
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers ::feed_to_blogroll_merge_saved_options
+ * @covers ::feed_blogroll_merge_saved_options
  */
 final class OptionsMergeTest extends TestCase {
 
@@ -24,7 +24,7 @@ final class OptionsMergeTest extends TestCase {
 			'auto_sync'        => true,
 		);
 
-		$merged = feed_to_blogroll_merge_saved_options( $existing, $subset );
+		$merged = feed_blogroll_merge_saved_options( $existing, $subset );
 
 		$this->assertSame( '2020-01-01 12:00:00', $merged['last_sync'] );
 		$this->assertSame( 'success', $merged['sync_status'] );

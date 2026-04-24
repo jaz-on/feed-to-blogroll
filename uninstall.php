@@ -1,11 +1,11 @@
 <?php
 /**
- * Uninstall script for Feed to Blogroll plugin
+ * Uninstall script for Feed Blogroll plugin
  *
  * This file is executed when the plugin is deleted from WordPress admin.
  * It cleans up all plugin data including options, custom post types, and files.
  *
- * @package FeedToBlogroll
+ * @package FeedBlogroll
  * @since 1.0.0
  */
 
@@ -15,6 +15,15 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 }
 
 // Clean up options
+delete_option( 'feed_blogroll_options' );
+delete_option( 'feed_blogroll_plugin_version' );
+delete_option( 'feed_blogroll_api_last_test' );
+delete_option( 'feed_blogroll_api_connected' );
+delete_option( 'feed_blogroll_api_last_error' );
+delete_option( 'feed_blogroll_cache_version' );
+delete_option( 'feed_blogroll_legacy_slug_migration' );
+
+// Legacy keys (pre–feed-blogroll rename).
 delete_option( 'feed_to_blogroll_options' );
 delete_option( 'feed_to_blogroll_plugin_version' );
 delete_option( 'feed_to_blogroll_api_last_test' );
@@ -23,11 +32,15 @@ delete_option( 'feed_to_blogroll_api_last_error' );
 delete_option( 'feed_to_blogroll_cache_version' );
 
 // Clean up transients
+delete_transient( 'feed_blogroll_sync_lock' );
+delete_transient( 'feed_blogroll_api_cache' );
+delete_transient( 'feed_blogroll_opml' );
+delete_transient( 'feed_to_blogroll_opml' );
 delete_transient( 'feed_to_blogroll_sync_lock' );
 delete_transient( 'feed_to_blogroll_api_cache' );
-delete_transient( 'feed_to_blogroll_opml' );
 
 // Clean up scheduled events
+wp_clear_scheduled_hook( 'feed_blogroll_sync_cron' );
 wp_clear_scheduled_hook( 'feed_to_blogroll_sync_cron' );
 
 // Clean up custom post types and their data
@@ -72,14 +85,20 @@ foreach ( $taxonomies as $plugin_taxonomy ) {
 
 // Clean up uploaded files (if any)
 $upload_dir        = wp_upload_dir();
-$plugin_upload_dir = $upload_dir['basedir'] . '/feed-to-blogroll/';
+$plugin_upload_dirs = array(
+	$upload_dir['basedir'] . '/feed-blogroll/',
+	$upload_dir['basedir'] . '/feed-to-blogroll/',
+);
 
-if ( is_dir( $plugin_upload_dir ) ) {
+if ( array_filter( $plugin_upload_dirs, 'is_dir' ) ) {
 	require_once ABSPATH . 'wp-admin/includes/class-wp-filesystem-base.php';
 	require_once ABSPATH . 'wp-admin/includes/class-wp-filesystem-direct.php';
-
 	$filesystem = new WP_Filesystem_Direct( null );
-	$filesystem->rmdir( $plugin_upload_dir, true );
+	foreach ( $plugin_upload_dirs as $plugin_upload_dir ) {
+		if ( is_dir( $plugin_upload_dir ) ) {
+			$filesystem->rmdir( $plugin_upload_dir, true );
+		}
+	}
 }
 
 // Flush rewrite rules

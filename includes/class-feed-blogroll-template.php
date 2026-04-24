@@ -2,7 +2,7 @@
 /**
  * Blogroll Template Integration
  *
- * @package FeedToBlogroll
+ * @package FeedBlogroll
  * @since 1.0.0
  */
 
@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @since 1.0.0
  */
-class Feed_To_Blogroll_Template {
+class Feed_Blogroll_Template {
 
 	/**
 	 * Constructor
@@ -49,30 +49,30 @@ class Feed_To_Blogroll_Template {
 		$enqueued = true;
 
 		wp_enqueue_style(
-			'feed-to-blogroll-frontend',
-			FEED_TO_BLOGROLL_PLUGIN_URL . 'assets/css/frontend.css',
+			'feed-blogroll-frontend',
+			FEED_BLOGROLL_PLUGIN_URL . 'assets/css/frontend.css',
 			array(),
-			FEED_TO_BLOGROLL_VERSION
+			FEED_BLOGROLL_VERSION
 		);
 
 		wp_enqueue_script(
-			'feed-to-blogroll-frontend',
-			FEED_TO_BLOGROLL_PLUGIN_URL . 'assets/js/frontend.js',
+			'feed-blogroll-frontend',
+			FEED_BLOGROLL_PLUGIN_URL . 'assets/js/frontend.js',
 			array( 'jquery' ),
-			FEED_TO_BLOGROLL_VERSION,
+			FEED_BLOGROLL_VERSION,
 			true
 		);
 
 		wp_localize_script(
-			'feed-to-blogroll-frontend',
-			'feedToBlogrollFrontend',
+			'feed-blogroll-frontend',
+			'feedBlogrollFrontend',
 			array(
-				'restUrl' => esc_url_raw( rest_url( 'feed-to-blogroll/v1/opml' ) ),
+				'restUrl' => esc_url_raw( rest_url( 'feed-blogroll/v1/opml' ) ),
 				'strings' => array(
-					'exporting'   => __( 'Exporting...', 'feed-to-blogroll' ),
-					'exported'    => __( 'OPML file downloaded successfully!', 'feed-to-blogroll' ),
-					'error'       => __( 'Export failed. Please try again.', 'feed-to-blogroll' ),
-					'exportLabel' => __( 'Export OPML', 'feed-to-blogroll' ),
+					'exporting'   => __( 'Exporting...', 'feed-blogroll' ),
+					'exported'    => __( 'OPML file downloaded successfully!', 'feed-blogroll' ),
+					'error'       => __( 'Export failed. Please try again.', 'feed-blogroll' ),
+					'exportLabel' => __( 'Export OPML', 'feed-blogroll' ),
 				),
 			)
 		);
@@ -110,9 +110,9 @@ class Feed_To_Blogroll_Template {
 			(string) $atts['category'],
 			(int) $atts['limit'],
 			(int) $atts['columns'],
-			(string) get_option( 'feed_to_blogroll_cache_version', 1 )
+			(string) get_option( 'feed_blogroll_cache_version', 1 )
 		);
-		$cached_output = wp_cache_get( $cache_key, 'feed_to_blogroll' );
+		$cached_output = wp_cache_get( $cache_key, 'feed_blogroll' );
 
 		if ( false !== $cached_output ) {
 			return $cached_output;
@@ -137,7 +137,7 @@ class Feed_To_Blogroll_Template {
 					$query_args['post__in'] = array_map( 'intval', $post_ids );
 				} else {
 					// No posts for this term, shortcut to empty result
-					return '<p class="blogroll-empty">' . esc_html__( 'No blogs found.', 'feed-to-blogroll' ) . '</p>';
+					return '<p class="blogroll-empty">' . esc_html__( 'No blogs found.', 'feed-blogroll' ) . '</p>';
 				}
 			}
 		}
@@ -145,8 +145,8 @@ class Feed_To_Blogroll_Template {
 		$blogs = get_posts( $query_args );
 
 		if ( empty( $blogs ) ) {
-			$output = '<p class="blogroll-empty">' . esc_html__( 'No blogs found.', 'feed-to-blogroll' ) . '</p>';
-			wp_cache_set( $cache_key, $output, 'feed_to_blogroll', HOUR_IN_SECONDS );
+			$output = '<p class="blogroll-empty">' . esc_html__( 'No blogs found.', 'feed-blogroll' ) . '</p>';
+			wp_cache_set( $cache_key, $output, 'feed_blogroll', HOUR_IN_SECONDS );
 			return $output;
 		}
 
@@ -158,7 +158,7 @@ class Feed_To_Blogroll_Template {
 		$output = ob_get_clean();
 
 		// Cache the output
-		wp_cache_set( $cache_key, $output, 'feed_to_blogroll', HOUR_IN_SECONDS );
+		wp_cache_set( $cache_key, $output, 'feed_blogroll', HOUR_IN_SECONDS );
 
 		return $output;
 	}
@@ -221,20 +221,20 @@ class Feed_To_Blogroll_Template {
 	 * @param array $atts Shortcode attributes
 	 */
 	private function render_blogroll( $blogs, $atts ) {
-		$container_class = 'feed-to-blogroll-container';
+		$container_class = 'feed-blogroll-container';
 		$grid_class = 'blogroll-grid';
 		$columns_class = 'columns-' . $atts['columns'];
 
 		?>
-		<div class="<?php echo esc_attr( $container_class ); ?>" role="region" aria-label="<?php esc_attr_e( 'Blogroll', 'feed-to-blogroll' ); ?>">
+		<div class="<?php echo esc_attr( $container_class ); ?>" role="region" aria-label="<?php esc_attr_e( 'Blogroll', 'feed-blogroll' ); ?>">
 			<?php if ( $atts['show_export'] ) : ?>
-				<div class="blogroll-export" role="toolbar" aria-label="<?php esc_attr_e( 'Blogroll export options', 'feed-to-blogroll' ); ?>">
+				<div class="blogroll-export" role="toolbar" aria-label="<?php esc_attr_e( 'Blogroll export options', 'feed-blogroll' ); ?>">
 					<button
 						type="button"
 						class="export-opml-button"
 					>
 						<span class="dashicons dashicons-download" aria-hidden="true"></span>
-						<?php esc_html_e( 'Export OPML', 'feed-to-blogroll' ); ?>
+						<?php esc_html_e( 'Export OPML', 'feed-blogroll' ); ?>
 					</button>
 				</div>
 			<?php endif; ?>
@@ -249,7 +249,7 @@ class Feed_To_Blogroll_Template {
 										<?php echo esc_html( $blog['title'] ); ?>
 										<span
 											class="external-link-icon"
-											aria-label="<?php esc_attr_e( 'Opens in new window', 'feed-to-blogroll' ); ?>"
+											aria-label="<?php esc_attr_e( 'Opens in new window', 'feed-blogroll' ); ?>"
 										>
 											<svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true">
 												<path d="M10.5 1.5h-3v1h2.293L5.5 6.793l.707.707L10.5 3.207V5.5h1v-3a1 1 0 0 0-1-1z"/>
@@ -270,7 +270,7 @@ class Feed_To_Blogroll_Template {
 						<?php endif; ?>
 
 						<?php if ( ! empty( $blog['categories'] ) ) : ?>
-							<div class="blog-categories" role="group" aria-label="<?php esc_attr_e( 'Blog categories', 'feed-to-blogroll' ); ?>">
+							<div class="blog-categories" role="group" aria-label="<?php esc_attr_e( 'Blog categories', 'feed-blogroll' ); ?>">
 								<?php foreach ( $blog['categories'] as $category ) : ?>
 									<span class="blog-category"><?php echo esc_html( $category ); ?></span>
 								<?php endforeach; ?>
@@ -280,13 +280,13 @@ class Feed_To_Blogroll_Template {
 						<footer class="blog-actions">
 							<?php if ( ! empty( $blog['site_url'] ) ) : ?>
 								<a href="<?php echo esc_url( $blog['site_url'] ); ?>" class="blog-link" target="_blank" rel="noopener noreferrer">
-									<?php esc_html_e( 'Visit Site', 'feed-to-blogroll' ); ?>
+									<?php esc_html_e( 'Visit Site', 'feed-blogroll' ); ?>
 								</a>
 							<?php endif; ?>
 							<?php if ( ! empty( $blog['rss_url'] ) ) : ?>
 								<a href="<?php echo esc_url( $blog['rss_url'] ); ?>" class="rss-link" target="_blank" rel="noopener noreferrer">
 									<span class="dashicons dashicons-rss" aria-hidden="true"></span>
-									<?php esc_html_e( 'RSS Feed', 'feed-to-blogroll' ); ?>
+									<?php esc_html_e( 'RSS Feed', 'feed-blogroll' ); ?>
 								</a>
 							<?php endif; ?>
 						</footer>
@@ -302,29 +302,29 @@ class Feed_To_Blogroll_Template {
 	 */
 	public function enqueue_frontend_scripts() {
 		wp_enqueue_style(
-			'feed-to-blogroll-frontend',
-			FEED_TO_BLOGROLL_PLUGIN_URL . 'assets/css/frontend.css',
+			'feed-blogroll-frontend',
+			FEED_BLOGROLL_PLUGIN_URL . 'assets/css/frontend.css',
 			array(),
-			FEED_TO_BLOGROLL_VERSION
+			FEED_BLOGROLL_VERSION
 		);
 
 		wp_enqueue_script(
-			'feed-to-blogroll-frontend',
-			FEED_TO_BLOGROLL_PLUGIN_URL . 'assets/js/frontend.js',
+			'feed-blogroll-frontend',
+			FEED_BLOGROLL_PLUGIN_URL . 'assets/js/frontend.js',
 			array( 'jquery' ),
-			FEED_TO_BLOGROLL_VERSION,
+			FEED_BLOGROLL_VERSION,
 			true
 		);
 
 		wp_localize_script(
-			'feed-to-blogroll-frontend',
-			'feedToBlogrollFrontend',
+			'feed-blogroll-frontend',
+			'feedBlogrollFrontend',
 			array(
-				'restUrl' => esc_url_raw( rest_url( 'feed-to-blogroll/v1/opml' ) ),
+				'restUrl' => esc_url_raw( rest_url( 'feed-blogroll/v1/opml' ) ),
 				'strings' => array(
-					'exporting' => __( 'Exporting...', 'feed-to-blogroll' ),
-					'exported'  => __( 'OPML file downloaded successfully!', 'feed-to-blogroll' ),
-					'error'     => __( 'Export failed. Please try again.', 'feed-to-blogroll' ),
+					'exporting' => __( 'Exporting...', 'feed-blogroll' ),
+					'exported'  => __( 'OPML file downloaded successfully!', 'feed-blogroll' ),
+					'error'     => __( 'Export failed. Please try again.', 'feed-blogroll' ),
 				),
 			)
 		);
@@ -349,14 +349,14 @@ class Feed_To_Blogroll_Template {
 					$content .= sprintf(
 						'<p><a href="%s" class="button button-primary" target="_blank" rel="noopener noreferrer">%s</a></p>',
 						esc_url( $site_url ),
-						esc_html__( 'Visit Website', 'feed-to-blogroll' )
+						esc_html__( 'Visit Website', 'feed-blogroll' )
 					);
 				}
 				if ( $rss_url ) {
 					$content .= sprintf(
 						'<p><a href="%s" class="button button-secondary" target="_blank" rel="noopener noreferrer">%s</a></p>',
 						esc_url( $rss_url ),
-						esc_html__( 'RSS Feed', 'feed-to-blogroll' )
+						esc_html__( 'RSS Feed', 'feed-blogroll' )
 					);
 				}
 				$content .= '</div>';
@@ -371,7 +371,7 @@ class Feed_To_Blogroll_Template {
 	 */
 	public function register_rest_routes() {
 		register_rest_route(
-			'feed-to-blogroll/v1',
+			'feed-blogroll/v1',
 			'/blogroll',
 			array(
 				'methods'             => WP_REST_Server::READABLE,
@@ -393,9 +393,9 @@ class Feed_To_Blogroll_Template {
 			)
 		);
 
-		// Public OPML export (JSON: opml, filename). Deny via filter feed_to_blogroll_rest_opml_permission.
+		// Public OPML export (JSON: opml, filename). Deny via filter feed_blogroll_rest_opml_permission.
 		register_rest_route(
-			'feed-to-blogroll/v1',
+			'feed-blogroll/v1',
 			'/opml',
 			array(
 				'methods'             => WP_REST_Server::READABLE,
@@ -411,13 +411,13 @@ class Feed_To_Blogroll_Template {
 	 * @return bool|WP_Error
 	 */
 	public function rest_blogroll_permission_check() {
-		$allowed = (bool) apply_filters( 'feed_to_blogroll_rest_blogroll_permission', true );
+		$allowed = (bool) apply_filters( 'feed_blogroll_rest_blogroll_permission', true );
 		if ( $allowed ) {
 			return true;
 		}
 		return new WP_Error(
 			'rest_forbidden',
-			__( 'Sorry, you are not allowed to access the blogroll endpoint.', 'feed-to-blogroll' ),
+			__( 'Sorry, you are not allowed to access the blogroll endpoint.', 'feed-blogroll' ),
 			array( 'status' => rest_authorization_required_code() )
 		);
 	}
@@ -428,13 +428,13 @@ class Feed_To_Blogroll_Template {
 	 * @return bool|WP_Error
 	 */
 	public function rest_opml_permission_check() {
-		$allowed = (bool) apply_filters( 'feed_to_blogroll_rest_opml_permission', true );
+		$allowed = (bool) apply_filters( 'feed_blogroll_rest_opml_permission', true );
 		if ( $allowed ) {
 			return true;
 		}
 		return new WP_Error(
 			'rest_forbidden',
-			__( 'Sorry, you are not allowed to export OPML.', 'feed-to-blogroll' ),
+			__( 'Sorry, you are not allowed to export OPML.', 'feed-blogroll' ),
 			array( 'status' => rest_authorization_required_code() )
 		);
 	}
@@ -445,14 +445,14 @@ class Feed_To_Blogroll_Template {
 	 * @return WP_REST_Response|WP_Error
 	 */
 	public function get_opml_rest() {
-		if ( ! class_exists( 'Feed_To_Blogroll_OPML' ) ) {
+		if ( ! class_exists( 'Feed_Blogroll_OPML' ) ) {
 			return new WP_Error(
 				'server_error',
-				__( 'OPML export is unavailable.', 'feed-to-blogroll' ),
+				__( 'OPML export is unavailable.', 'feed-blogroll' ),
 				array( 'status' => 500 )
 			);
 		}
-		$payload = Feed_To_Blogroll_OPML::get_export_payload();
+		$payload = Feed_Blogroll_OPML::get_export_payload();
 		return rest_ensure_response( $payload );
 	}
 
@@ -500,10 +500,10 @@ class Feed_To_Blogroll_Template {
 	public function bust_blogroll_caches() {
 		$this->increment_cache_version();
 		if ( function_exists( 'wp_cache_flush_group' ) ) {
-			wp_cache_flush_group( 'feed_to_blogroll' );
+			wp_cache_flush_group( 'feed_blogroll' );
 		}
-		if ( class_exists( 'Feed_To_Blogroll_OPML' ) ) {
-			Feed_To_Blogroll_OPML::bust_cache();
+		if ( class_exists( 'Feed_Blogroll_OPML' ) ) {
+			Feed_Blogroll_OPML::bust_cache();
 		}
 	}
 
@@ -527,7 +527,7 @@ class Feed_To_Blogroll_Template {
 	 * Increment cache version to invalidate all caches
 	 */
 	private function increment_cache_version() {
-		$current_version = get_option( 'feed_to_blogroll_cache_version', 1 );
-		update_option( 'feed_to_blogroll_cache_version', $current_version + 1 );
+		$current_version = get_option( 'feed_blogroll_cache_version', 1 );
+		update_option( 'feed_blogroll_cache_version', $current_version + 1 );
 	}
 }

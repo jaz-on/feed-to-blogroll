@@ -1,12 +1,12 @@
 {
-	"name": "feed-to-blogroll",
+	"name": "feed-blogroll",
 	"version": "1.2.0",
 	"description": "Automatic blogroll synchronization with Feedbin API",
 	"author": "Jason Rouet",
 	"authorUrl": "https://jasonrouet.com",
 	"license": "GPL-2.0-or-later",
 	"licenseUrl": "https://www.gnu.org/licenses/gpl-2.0.html",
-	"textDomain": "feed-to-blogroll",
+	"textDomain": "feed-blogroll",
 	"domainPath": "/languages",
 	"requires": {
 		"wordpress": "6.1",
@@ -78,7 +78,7 @@
 		]
 	},
 	"restApi": {
-		"namespace": "feed-to-blogroll/v1",
+		"namespace": "feed-blogroll/v1",
 		"endpoints": [
 			{
 				"route": "/blogroll",
@@ -100,23 +100,23 @@
 	},
 	"hooks": {
 		"actions": [
-			"feed_to_blogroll_sync_cron",
-			"feed_to_blogroll_manual_sync"
+			"feed_blogroll_sync_cron",
+			"feed_blogroll_manual_sync"
 		],
 		"filters": [
-			"feed_to_blogroll_sync_result",
-			"feed_to_blogroll_blog_data"
+			"feed_blogroll_sync_result",
+			"feed_blogroll_blog_data"
 		]
 	},
 	"cronJobs": [
 		{
-			"hook": "feed_to_blogroll_sync_cron",
+			"hook": "feed_blogroll_sync_cron",
 			"schedule": "daily",
 			"description": "Daily synchronization with Feedbin API"
 		}
 	],
 	"options": [
-		"feed_to_blogroll_options"
+		"feed_blogroll_options"
 	],
 	"postTypes": [
 		"blogroll"
@@ -152,10 +152,10 @@
 	},
 	"security": {
 		"nonces": [
-			"feed_to_blogroll_sync",
-			"feed_to_blogroll_admin",
-			"feed_to_blogroll_frontend",
-			"feed_to_blogroll_export"
+			"feed_blogroll_sync",
+			"feed_blogroll_admin",
+			"feed_blogroll_frontend",
+			"feed_blogroll_export"
 		],
 		"capabilities": [
 			"manage_options"

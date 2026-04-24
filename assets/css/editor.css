@@ -1,17 +1,17 @@
 /**
- * Feed to Blogroll - Editor Styles
+ * Feed Blogroll - Editor Styles
  * Styles for the WordPress block editor
  */
 
 /* Editor container styles */
-.editor-styles-wrapper .feed-to-blogroll-container {
+.editor-styles-wrapper .feed-blogroll-container {
 	max-width: 1200px;
 	margin: 0 auto;
 	padding: 2rem 1rem;
 }
 
 /* Block editor preview styles */
-.feed-to-blogroll-editor-preview {
+.feed-blogroll-editor-preview {
 	background: #f8f9fa;
 	border: 2px dashed #dee2e6;
 	border-radius: 8px;
@@ -20,19 +20,19 @@
 	margin: 1rem 0;
 }
 
-.feed-to-blogroll-editor-header h3 {
+.feed-blogroll-editor-header h3 {
 	margin: 0 0 1rem 0;
 	color: #495057;
 	font-size: 1.25rem;
 }
 
-.feed-to-blogroll-editor-content p {
+.feed-blogroll-editor-content p {
 	margin: 0 0 1rem 0;
 	color: #6c757d;
 	font-style: italic;
 }
 
-.feed-to-blogroll-editor-settings p {
+.feed-blogroll-editor-settings p {
 	margin: 0;
 	font-size: 0.9rem;
 	color: #495057;
@@ -125,7 +125,7 @@
 		grid-template-columns: 1fr;
 	}
 	
-	.editor-styles-wrapper .feed-to-blogroll-container {
+	.editor-styles-wrapper .feed-blogroll-container {
 		padding: 1rem 0.5rem;
 	}
 }

@@ -1,5 +1,5 @@
 /**
- * Feed to Blogroll - Admin Styles
+ * Feed Blogroll - Admin Styles
  * Minimal styling following WordPress Admin CSS standards
  * Uses native WordPress admin classes and minimal custom CSS
  */
@@ -36,7 +36,7 @@
 }
 
 /* Messages container - minimal styling */
-#feed-to-blogroll-messages {
+#feed-blogroll-messages {
 	margin-top: 2rem;
 }
 
@@ -128,28 +128,28 @@
 }
 
 /* Setup instructions styling - minimal custom CSS */
-.feed-to-blogroll-setup-instructions {
+.feed-blogroll-setup-instructions {
 	margin-bottom: 2rem;
 }
 
-.feed-to-blogroll-setup-instructions h3 {
+.feed-blogroll-setup-instructions h3 {
 	margin-top: 0;
 }
 
-.feed-to-blogroll-setup-instructions ol {
+.feed-blogroll-setup-instructions ol {
 	margin-left: 1.5rem;
 }
 
-.feed-to-blogroll-setup-instructions li {
+.feed-blogroll-setup-instructions li {
 	margin-bottom: 0.5rem;
 }
 
 /* Help links styling - minimal custom CSS */
-.feed-to-blogroll-help-links p {
+.feed-blogroll-help-links p {
 	margin-bottom: 0.5rem;
 }
 
-.feed-to-blogroll-help-links strong {
+.feed-blogroll-help-links strong {
 	color: #1d2327;
 }
 
@@ -168,7 +168,7 @@
 		width: auto;
 	}
 	
-	.feed-to-blogroll-setup-instructions ol {
+	.feed-blogroll-setup-instructions ol {
 		margin-left: 1rem;
 	}
 	

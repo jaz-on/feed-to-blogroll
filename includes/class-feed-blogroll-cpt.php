@@ -2,7 +2,7 @@
 /**
  * Custom Post Type for Blogroll
  *
- * @package FeedToBlogroll
+ * @package FeedBlogroll
  * @since 1.0.0
  */
 
@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @since 1.0.0
  */
-class Feed_To_Blogroll_CPT {
+class Feed_Blogroll_CPT {
 
 	/**
 	 * Constructor
@@ -39,30 +39,30 @@ class Feed_To_Blogroll_CPT {
 	 */
 	public function create_post_type() {
 		$labels = array(
-			'name'                  => _x( 'Blogroll', 'Post type general name', 'feed-to-blogroll' ),
-			'singular_name'         => _x( 'Blog', 'Post type singular name', 'feed-to-blogroll' ),
-			'menu_name'             => _x( 'Blogroll', 'Admin Menu text', 'feed-to-blogroll' ),
-			'name_admin_bar'        => _x( 'Blog', 'Add New on Toolbar', 'feed-to-blogroll' ),
-			'add_new'               => __( 'Add New', 'feed-to-blogroll' ),
-			'add_new_item'          => __( 'Add New Blog', 'feed-to-blogroll' ),
-			'new_item'              => __( 'New Blog', 'feed-to-blogroll' ),
-			'edit_item'             => __( 'Edit Blog', 'feed-to-blogroll' ),
-			'view_item'             => __( 'View Blog', 'feed-to-blogroll' ),
-			'all_items'             => __( 'All Blogs', 'feed-to-blogroll' ),
-			'search_items'          => __( 'Search Blogs', 'feed-to-blogroll' ),
-			'parent_item_colon'     => __( 'Parent Blogs:', 'feed-to-blogroll' ),
-			'not_found'             => __( 'No blogs found.', 'feed-to-blogroll' ),
-			'not_found_in_trash'    => __( 'No blogs found in Trash.', 'feed-to-blogroll' ),
-			'featured_image'        => _x( 'Blog Featured Image', 'Overrides the "Featured Image" phrase', 'feed-to-blogroll' ),
-			'set_featured_image'    => _x( 'Set featured image', 'Overrides the "Set featured image" phrase', 'feed-to-blogroll' ),
-			'remove_featured_image' => _x( 'Remove featured image', 'Overrides the "Remove featured image" phrase', 'feed-to-blogroll' ),
-			'use_featured_image'    => _x( 'Use as featured image', 'Overrides the "Use as featured image" phrase', 'feed-to-blogroll' ),
-			'archives'              => _x( 'Blog archives', 'The post type archive label', 'feed-to-blogroll' ),
-			'insert_into_item'      => _x( 'Insert into blog', 'Overrides the "Insert into post" phrase', 'feed-to-blogroll' ),
-			'uploaded_to_this_item' => _x( 'Uploaded to this blog', 'Overrides the "Uploaded to this post" phrase', 'feed-to-blogroll' ),
-			'filter_items_list'     => _x( 'Filter blogs list', 'Screen reader text for the filter links', 'feed-to-blogroll' ),
-			'items_list_navigation' => _x( 'Blogs list navigation', 'Screen reader text for the pagination', 'feed-to-blogroll' ),
-			'items_list'            => _x( 'Blogs list', 'Screen reader text for the items list', 'feed-to-blogroll' ),
+			'name'                  => _x( 'Blogroll', 'Post type general name', 'feed-blogroll' ),
+			'singular_name'         => _x( 'Blog', 'Post type singular name', 'feed-blogroll' ),
+			'menu_name'             => _x( 'Blogroll', 'Admin Menu text', 'feed-blogroll' ),
+			'name_admin_bar'        => _x( 'Blog', 'Add New on Toolbar', 'feed-blogroll' ),
+			'add_new'               => __( 'Add New', 'feed-blogroll' ),
+			'add_new_item'          => __( 'Add New Blog', 'feed-blogroll' ),
+			'new_item'              => __( 'New Blog', 'feed-blogroll' ),
+			'edit_item'             => __( 'Edit Blog', 'feed-blogroll' ),
+			'view_item'             => __( 'View Blog', 'feed-blogroll' ),
+			'all_items'             => __( 'All Blogs', 'feed-blogroll' ),
+			'search_items'          => __( 'Search Blogs', 'feed-blogroll' ),
+			'parent_item_colon'     => __( 'Parent Blogs:', 'feed-blogroll' ),
+			'not_found'             => __( 'No blogs found.', 'feed-blogroll' ),
+			'not_found_in_trash'    => __( 'No blogs found in Trash.', 'feed-blogroll' ),
+			'featured_image'        => _x( 'Blog Featured Image', 'Overrides the "Featured Image" phrase', 'feed-blogroll' ),
+			'set_featured_image'    => _x( 'Set featured image', 'Overrides the "Set featured image" phrase', 'feed-blogroll' ),
+			'remove_featured_image' => _x( 'Remove featured image', 'Overrides the "Remove featured image" phrase', 'feed-blogroll' ),
+			'use_featured_image'    => _x( 'Use as featured image', 'Overrides the "Use as featured image" phrase', 'feed-blogroll' ),
+			'archives'              => _x( 'Blog archives', 'The post type archive label', 'feed-blogroll' ),
+			'insert_into_item'      => _x( 'Insert into blog', 'Overrides the "Insert into post" phrase', 'feed-blogroll' ),
+			'uploaded_to_this_item' => _x( 'Uploaded to this blog', 'Overrides the "Uploaded to this post" phrase', 'feed-blogroll' ),
+			'filter_items_list'     => _x( 'Filter blogs list', 'Screen reader text for the filter links', 'feed-blogroll' ),
+			'items_list_navigation' => _x( 'Blogs list navigation', 'Screen reader text for the pagination', 'feed-blogroll' ),
+			'items_list'            => _x( 'Blogs list', 'Screen reader text for the items list', 'feed-blogroll' ),
 		);
 
 		$args = array(
@@ -91,17 +91,17 @@ class Feed_To_Blogroll_CPT {
 	public function create_taxonomies() {
 		// Blogroll Categories
 		$category_labels = array(
-			'name'              => _x( 'Blog Categories', 'taxonomy general name', 'feed-to-blogroll' ),
-			'singular_name'     => _x( 'Blog Category', 'taxonomy singular name', 'feed-to-blogroll' ),
-			'search_items'      => __( 'Search Categories', 'feed-to-blogroll' ),
-			'all_items'         => __( 'All Categories', 'feed-to-blogroll' ),
-			'parent_item'       => __( 'Parent Category', 'feed-to-blogroll' ),
-			'parent_item_colon' => __( 'Parent Category:', 'feed-to-blogroll' ),
-			'edit_item'         => __( 'Edit Category', 'feed-to-blogroll' ),
-			'update_item'       => __( 'Update Category', 'feed-to-blogroll' ),
-			'add_new_item'      => __( 'Add New Category', 'feed-to-blogroll' ),
-			'new_item_name'     => __( 'New Category Name', 'feed-to-blogroll' ),
-			'menu_name'         => __( 'Categories', 'feed-to-blogroll' ),
+			'name'              => _x( 'Blog Categories', 'taxonomy general name', 'feed-blogroll' ),
+			'singular_name'     => _x( 'Blog Category', 'taxonomy singular name', 'feed-blogroll' ),
+			'search_items'      => __( 'Search Categories', 'feed-blogroll' ),
+			'all_items'         => __( 'All Categories', 'feed-blogroll' ),
+			'parent_item'       => __( 'Parent Category', 'feed-blogroll' ),
+			'parent_item_colon' => __( 'Parent Category:', 'feed-blogroll' ),
+			'edit_item'         => __( 'Edit Category', 'feed-blogroll' ),
+			'update_item'       => __( 'Update Category', 'feed-blogroll' ),
+			'add_new_item'      => __( 'Add New Category', 'feed-blogroll' ),
+			'new_item_name'     => __( 'New Category Name', 'feed-blogroll' ),
+			'menu_name'         => __( 'Categories', 'feed-blogroll' ),
 		);
 
 		register_taxonomy(
@@ -137,7 +137,7 @@ class Feed_To_Blogroll_CPT {
 			array(
 				'object_subtype'    => 'blogroll',
 				'type'              => 'string',
-				'description'       => __( 'RSS Feed URL for this blog', 'feed-to-blogroll' ),
+				'description'       => __( 'RSS Feed URL for this blog', 'feed-blogroll' ),
 				'single'            => true,
 				'show_in_rest'      => true,
 				'sanitize_callback' => 'esc_url_raw',
@@ -154,7 +154,7 @@ class Feed_To_Blogroll_CPT {
 			array(
 				'object_subtype'    => 'blogroll',
 				'type'              => 'string',
-				'description'       => __( 'Main website URL for this blog', 'feed-to-blogroll' ),
+				'description'       => __( 'Main website URL for this blog', 'feed-blogroll' ),
 				'single'            => true,
 				'show_in_rest'      => true,
 				'sanitize_callback' => 'esc_url_raw',
@@ -171,7 +171,7 @@ class Feed_To_Blogroll_CPT {
 			array(
 				'object_subtype'    => 'blogroll',
 				'type'              => 'integer',
-				'description'       => __( 'Feedbin internal feed ID', 'feed-to-blogroll' ),
+				'description'       => __( 'Feedbin internal feed ID', 'feed-blogroll' ),
 				'single'            => true,
 				'show_in_rest'      => true,
 				'sanitize_callback' => 'absint',
@@ -188,7 +188,7 @@ class Feed_To_Blogroll_CPT {
 			array(
 				'object_subtype'    => 'blogroll',
 				'type'              => 'string',
-				'description'       => __( 'Current synchronization status', 'feed-to-blogroll' ),
+				'description'       => __( 'Current synchronization status', 'feed-blogroll' ),
 				'single'            => true,
 				'show_in_rest'      => true,
 				'sanitize_callback' => array( $this, 'sanitize_sync_status' ),
@@ -205,7 +205,7 @@ class Feed_To_Blogroll_CPT {
 			array(
 				'object_subtype'    => 'blogroll',
 				'type'              => 'string',
-				'description'       => __( 'When this blog was last synchronized', 'feed-to-blogroll' ),
+				'description'       => __( 'When this blog was last synchronized', 'feed-blogroll' ),
 				'single'            => true,
 				'show_in_rest'      => true,
 				'sanitize_callback' => 'sanitize_text_field',
@@ -233,7 +233,7 @@ class Feed_To_Blogroll_CPT {
 	public function add_meta_boxes() {
 		add_meta_box(
 			'blogroll_meta',
-			__( 'Blogroll Details', 'feed-to-blogroll' ),
+			__( 'Blogroll Details', 'feed-blogroll' ),
 			array( $this, 'meta_box_callback' ),
 			'blogroll',
 			'normal',
@@ -262,57 +262,57 @@ class Feed_To_Blogroll_CPT {
 		<table class="form-table">
 			<tr>
 				<th scope="row">
-					<label for="rss_url"><?php esc_html_e( 'RSS Feed URL', 'feed-to-blogroll' ); ?></label>
+					<label for="rss_url"><?php esc_html_e( 'RSS Feed URL', 'feed-blogroll' ); ?></label>
 				</th>
 				<td>
 					<input type="url" id="rss_url" name="rss_url" value="<?php echo esc_attr( $rss_url ); ?>" class="regular-text" required />
-					<p class="description"><?php esc_html_e( 'Enter the RSS feed URL for this blog', 'feed-to-blogroll' ); ?></p>
+					<p class="description"><?php esc_html_e( 'Enter the RSS feed URL for this blog', 'feed-blogroll' ); ?></p>
 				</td>
 			</tr>
 			<tr>
 				<th scope="row">
-					<label for="site_url"><?php esc_html_e( 'Website URL', 'feed-to-blogroll' ); ?></label>
+					<label for="site_url"><?php esc_html_e( 'Website URL', 'feed-blogroll' ); ?></label>
 				</th>
 				<td>
 					<input type="url" id="site_url" name="site_url" value="<?php echo esc_attr( $site_url ); ?>" class="regular-text" />
-					<p class="description"><?php esc_html_e( 'Enter the main website URL for this blog', 'feed-to-blogroll' ); ?></p>
+					<p class="description"><?php esc_html_e( 'Enter the main website URL for this blog', 'feed-blogroll' ); ?></p>
 				</td>
 			</tr>
 			<tr>
 				<th scope="row">
-					<label for="feed_id"><?php esc_html_e( 'Feedbin Feed ID', 'feed-to-blogroll' ); ?></label>
+					<label for="feed_id"><?php esc_html_e( 'Feedbin Feed ID', 'feed-blogroll' ); ?></label>
 				</th>
 				<td>
 					<input type="number" id="feed_id" name="feed_id" value="<?php echo esc_attr( $feed_id ); ?>" class="small-text" readonly />
-					<p class="description"><?php esc_html_e( 'Feedbin internal feed ID (auto-populated)', 'feed-to-blogroll' ); ?></p>
+					<p class="description"><?php esc_html_e( 'Feedbin internal feed ID (auto-populated)', 'feed-blogroll' ); ?></p>
 				</td>
 			</tr>
 			<tr>
 				<th scope="row">
-					<label for="sync_status"><?php esc_html_e( 'Sync Status', 'feed-to-blogroll' ); ?></label>
+					<label for="sync_status"><?php esc_html_e( 'Sync Status', 'feed-blogroll' ); ?></label>
 				</th>
 				<td>
 					<select id="sync_status" name="sync_status">
 						<option value="active" <?php selected( $sync_status, 'active' ); ?>>
-							<?php esc_html_e( 'Active', 'feed-to-blogroll' ); ?>
+							<?php esc_html_e( 'Active', 'feed-blogroll' ); ?>
 						</option>
 						<option value="inactive" <?php selected( $sync_status, 'inactive' ); ?>>
-							<?php esc_html_e( 'Inactive', 'feed-to-blogroll' ); ?>
+							<?php esc_html_e( 'Inactive', 'feed-blogroll' ); ?>
 						</option>
 						<option value="error" <?php selected( $sync_status, 'error' ); ?>>
-							<?php esc_html_e( 'Error', 'feed-to-blogroll' ); ?>
+							<?php esc_html_e( 'Error', 'feed-blogroll' ); ?>
 						</option>
 					</select>
-					<p class="description"><?php esc_html_e( 'Current synchronization status', 'feed-to-blogroll' ); ?></p>
+					<p class="description"><?php esc_html_e( 'Current synchronization status', 'feed-blogroll' ); ?></p>
 				</td>
 			</tr>
 			<tr>
 				<th scope="row">
-					<label for="last_sync"><?php esc_html_e( 'Last Sync', 'feed-to-blogroll' ); ?></label>
+					<label for="last_sync"><?php esc_html_e( 'Last Sync', 'feed-blogroll' ); ?></label>
 				</th>
 				<td>
 					<input type="text" id="last_sync" name="last_sync" value="<?php echo esc_attr( $last_sync ); ?>" class="regular-text" readonly />
-					<p class="description"><?php esc_html_e( 'When this blog was last synchronized', 'feed-to-blogroll' ); ?></p>
+					<p class="description"><?php esc_html_e( 'When this blog was last synchronized', 'feed-blogroll' ); ?></p>
 				</td>
 			</tr>
 		</table>
@@ -379,11 +379,11 @@ class Feed_To_Blogroll_CPT {
 		$new_columns['title'] = $columns['title'];
 
 		// Add custom columns
-		$new_columns['site_url'] = __( 'Website', 'feed-to-blogroll' );
-		$new_columns['rss_url'] = __( 'RSS Feed', 'feed-to-blogroll' );
-		$new_columns['author'] = __( 'Author', 'feed-to-blogroll' );
-		$new_columns['last_sync'] = __( 'Last Sync', 'feed-to-blogroll' );
-		$new_columns['sync_status'] = __( 'Status', 'feed-to-blogroll' );
+		$new_columns['site_url'] = __( 'Website', 'feed-blogroll' );
+		$new_columns['rss_url'] = __( 'RSS Feed', 'feed-blogroll' );
+		$new_columns['author'] = __( 'Author', 'feed-blogroll' );
+		$new_columns['last_sync'] = __( 'Last Sync', 'feed-blogroll' );
+		$new_columns['sync_status'] = __( 'Status', 'feed-blogroll' );
 
 		// Add date
 		$new_columns['date'] = $columns['date'];
@@ -414,7 +414,7 @@ class Feed_To_Blogroll_CPT {
 				$rss_url = get_post_meta( $post_id, 'rss_url', true );
 				if ( ! empty( $rss_url ) ) {
 					echo '<a href="' . esc_url( $rss_url ) . '" target="_blank" rel="noopener noreferrer">';
-					echo '<span class="dashicons dashicons-rss" title="' . esc_attr__( 'RSS Feed', 'feed-to-blogroll' ) . '"></span>';
+					echo '<span class="dashicons dashicons-rss" title="' . esc_attr__( 'RSS Feed', 'feed-blogroll' ) . '"></span>';
 					echo '</a>';
 				} else {
 					echo '—';
@@ -437,9 +437,9 @@ class Feed_To_Blogroll_CPT {
 				}
 
 				$status_labels = array(
-					'active'   => __( 'Active', 'feed-to-blogroll' ),
-					'inactive' => __( 'Inactive', 'feed-to-blogroll' ),
-					'error'    => __( 'Error', 'feed-to-blogroll' ),
+					'active'   => __( 'Active', 'feed-blogroll' ),
+					'inactive' => __( 'Inactive', 'feed-blogroll' ),
+					'error'    => __( 'Error', 'feed-blogroll' ),
 				);
 
 				$label = isset( $status_labels[ $sync_status ] ) ? $status_labels[ $sync_status ] : $sync_status;

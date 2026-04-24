@@ -2,7 +2,7 @@
 /**
  * OPML export builder (shared by admin AJAX, REST, and caches).
  *
- * @package FeedToBlogroll
+ * @package FeedBlogroll
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -12,12 +12,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * OPML export helper.
  */
-class Feed_To_Blogroll_OPML {
+class Feed_Blogroll_OPML {
 
 	/**
 	 * Transient key for cached export payload.
 	 */
-	public const TRANSIENT_KEY = 'feed_to_blogroll_opml';
+	public const TRANSIENT_KEY = 'feed_blogroll_opml';
 
 	/**
 	 * Get OPML payload array: opml string + filename. Uses transient cache when allowed.

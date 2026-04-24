@@ -2,7 +2,7 @@
 /**
  * Feedbin API Integration
  *
- * @package FeedToBlogroll
+ * @package FeedBlogroll
  * @since 1.0.0
  */
 
@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @since 1.0.0
  */
-class Feed_To_Blogroll_Feedbin_API {
+class Feed_Blogroll_Feedbin_API {
 
 	/**
 	 * API base URL
@@ -43,16 +43,16 @@ class Feed_To_Blogroll_Feedbin_API {
 	 * Load API credentials from options
 	 */
 	private function load_credentials() {
-		$options = get_option( 'feed_to_blogroll_options', array() );
+		$options = get_option( 'feed_blogroll_options', array() );
 
 		$username = isset( $options['feedbin_username'] ) ? $options['feedbin_username'] : '';
 		$password = isset( $options['feedbin_password'] ) ? $options['feedbin_password'] : '';
 
-		if ( defined( 'FEED_TO_BLOGROLL_USERNAME' ) ) {
-			$username = (string) constant( 'FEED_TO_BLOGROLL_USERNAME' );
+		if ( defined( 'FEED_BLOGROLL_USERNAME' ) ) {
+			$username = (string) constant( 'FEED_BLOGROLL_USERNAME' );
 		}
-		if ( defined( 'FEED_TO_BLOGROLL_PASSWORD' ) ) {
-			$password = (string) constant( 'FEED_TO_BLOGROLL_PASSWORD' );
+		if ( defined( 'FEED_BLOGROLL_PASSWORD' ) ) {
+			$password = (string) constant( 'FEED_BLOGROLL_PASSWORD' );
 		}
 
 		$this->credentials = array(
@@ -80,7 +80,7 @@ class Feed_To_Blogroll_Feedbin_API {
 	 */
 	private function make_request( $endpoint, $method = 'GET', $data = array() ) {
 		if ( ! $this->has_credentials() ) {
-			return new WP_Error( 'no_credentials', __( 'Feedbin credentials not configured', 'feed-to-blogroll' ) );
+			return new WP_Error( 'no_credentials', __( 'Feedbin credentials not configured', 'feed-blogroll' ) );
 		}
 
 		$url = $this->api_base . $endpoint;
@@ -90,7 +90,7 @@ class Feed_To_Blogroll_Feedbin_API {
 				// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
 				'Authorization' => 'Basic ' . base64_encode( $this->credentials['username'] . ':' . $this->credentials['password'] ),
 				'Content-Type'  => 'application/json',
-				'User-Agent'    => 'Feed-To-Blogroll/' . FEED_TO_BLOGROLL_VERSION,
+				'User-Agent'    => 'Feed-Blogroll/' . FEED_BLOGROLL_VERSION,
 			),
 			'timeout' => 30,
 		);
@@ -129,7 +129,7 @@ class Feed_To_Blogroll_Feedbin_API {
 					return new WP_Error(
 						'json_decode_error',
 						/* translators: %s: API endpoint path */
-						sprintf( __( 'Failed to decode JSON response from %s', 'feed-to-blogroll' ), $endpoint ),
+						sprintf( __( 'Failed to decode JSON response from %s', 'feed-blogroll' ), $endpoint ),
 						array(
 							'endpoint' => $endpoint,
 							'response' => $response_body,
@@ -142,7 +142,7 @@ class Feed_To_Blogroll_Feedbin_API {
 				return new WP_Error(
 					'auth_failed',
 					/* translators: no placeholder */
-					__( 'Feedbin authentication failed. Please check your username and password.', 'feed-to-blogroll' ),
+					__( 'Feedbin authentication failed. Please check your username and password.', 'feed-blogroll' ),
 					array(
 						'endpoint' => $endpoint,
 						'code' => $response_code,
@@ -153,7 +153,7 @@ class Feed_To_Blogroll_Feedbin_API {
 				return new WP_Error(
 					'forbidden',
 					/* translators: no placeholder */
-					__( 'Access forbidden. Please check your Feedbin account permissions.', 'feed-to-blogroll' ),
+					__( 'Access forbidden. Please check your Feedbin account permissions.', 'feed-blogroll' ),
 					array(
 						'endpoint' => $endpoint,
 						'code' => $response_code,
@@ -164,7 +164,7 @@ class Feed_To_Blogroll_Feedbin_API {
 				return new WP_Error(
 					'not_found',
 					/* translators: %s: endpoint path */
-					sprintf( __( 'API endpoint %s not found', 'feed-to-blogroll' ), $endpoint ),
+					sprintf( __( 'API endpoint %s not found', 'feed-blogroll' ), $endpoint ),
 					array(
 						'endpoint' => $endpoint,
 						'code' => $response_code,
@@ -174,7 +174,7 @@ class Feed_To_Blogroll_Feedbin_API {
 			case 429:
 				return new WP_Error(
 					'rate_limited',
-					__( 'API rate limit exceeded. Please try again later.', 'feed-to-blogroll' ),
+					__( 'API rate limit exceeded. Please try again later.', 'feed-blogroll' ),
 					array(
 						'endpoint' => $endpoint,
 						'code' => $response_code,
@@ -188,7 +188,7 @@ class Feed_To_Blogroll_Feedbin_API {
 				return new WP_Error(
 					'server_error',
 					/* translators: %d: HTTP response code */
-					sprintf( __( 'Feedbin server error (HTTP %d). Please try again later.', 'feed-to-blogroll' ), $response_code ),
+					sprintf( __( 'Feedbin server error (HTTP %d). Please try again later.', 'feed-blogroll' ), $response_code ),
 					array(
 						'endpoint' => $endpoint,
 						'code' => $response_code,
@@ -199,7 +199,7 @@ class Feed_To_Blogroll_Feedbin_API {
 				return new WP_Error(
 					'api_error',
 					/* translators: 1: HTTP response code, 2: endpoint path */
-					sprintf( __( 'Unexpected API response: HTTP %1$d from %2$s', 'feed-to-blogroll' ), $response_code, $endpoint ),
+					sprintf( __( 'Unexpected API response: HTTP %1$d from %2$s', 'feed-blogroll' ), $response_code, $endpoint ),
 					array(
 						'endpoint' => $endpoint,
 						'code' => $response_code,
@@ -223,10 +223,10 @@ class Feed_To_Blogroll_Feedbin_API {
 
 		if ( is_array( $response ) ) {
 			/* translators: %d: number of subscriptions */
-			return sprintf( __( 'Connection successful! Found %d subscriptions.', 'feed-to-blogroll' ), count( $response ) );
+			return sprintf( __( 'Connection successful! Found %d subscriptions.', 'feed-blogroll' ), count( $response ) );
 		}
 
-		return __( 'Connection successful but unexpected response format.', 'feed-to-blogroll' );
+		return __( 'Connection successful but unexpected response format.', 'feed-blogroll' );
 	}
 
 	/**
@@ -243,15 +243,15 @@ class Feed_To_Blogroll_Feedbin_API {
 
 		// Allow disabling tag fetching via constant or filter (performance)
 		$fetch_tags = true;
-		if ( defined( 'FEED_TO_BLOGROLL_FETCH_TAGS' ) ) {
-			$fetch_tags = (bool) constant( 'FEED_TO_BLOGROLL_FETCH_TAGS' );
+		if ( defined( 'FEED_BLOGROLL_FETCH_TAGS' ) ) {
+			$fetch_tags = (bool) constant( 'FEED_BLOGROLL_FETCH_TAGS' );
 		}
 		/**
 		 * Filter whether to fetch tags for subscriptions.
 		 *
 		 * @param bool $fetch_tags Default true.
 		 */
-		$fetch_tags = (bool) apply_filters( 'feed_to_blogroll_fetch_tags', $fetch_tags );
+		$fetch_tags = (bool) apply_filters( 'feed_blogroll_fetch_tags', $fetch_tags );
 
 		// Transform subscriptions to feed format
 		$feeds = array();
@@ -323,12 +323,12 @@ class Feed_To_Blogroll_Feedbin_API {
 		$status = array(
 			'configured' => $this->has_credentials(),
 			'connected'  => false,
-			'last_test' => get_option( 'feed_to_blogroll_api_last_test', '' ),
+			'last_test' => get_option( 'feed_blogroll_api_last_test', '' ),
 			'error'      => '',
 		);
 
 		if ( ! $status['configured'] ) {
-			$status['error'] = __( 'API credentials not configured', 'feed-to-blogroll' );
+			$status['error'] = __( 'API credentials not configured', 'feed-blogroll' );
 			return $status;
 		}
 
@@ -340,20 +340,20 @@ class Feed_To_Blogroll_Feedbin_API {
 			if ( is_wp_error( $test_result ) ) {
 				$status['error']     = $test_result->get_error_message();
 				$status['connected'] = false;
-				update_option( 'feed_to_blogroll_api_connected', false );
-				update_option( 'feed_to_blogroll_api_last_error', $test_result->get_error_message() );
+				update_option( 'feed_blogroll_api_connected', false );
+				update_option( 'feed_blogroll_api_last_error', $test_result->get_error_message() );
 			} else {
 				$status['connected'] = true;
 				$status['error']     = '';
-				update_option( 'feed_to_blogroll_api_connected', true );
-				update_option( 'feed_to_blogroll_api_last_error', '' );
+				update_option( 'feed_blogroll_api_connected', true );
+				update_option( 'feed_blogroll_api_last_error', '' );
 			}
 
-			update_option( 'feed_to_blogroll_api_last_test', current_time( 'mysql' ) );
+			update_option( 'feed_blogroll_api_last_test', current_time( 'mysql' ) );
 		} else {
 			// Use cached status
-			$status['connected'] = get_option( 'feed_to_blogroll_api_connected', false );
-			$status['error'] = get_option( 'feed_to_blogroll_api_last_error', '' );
+			$status['connected'] = get_option( 'feed_blogroll_api_connected', false );
+			$status['error'] = get_option( 'feed_blogroll_api_last_error', '' );
 		}
 
 		return $status;
@@ -383,26 +383,26 @@ class Feed_To_Blogroll_Feedbin_API {
 	public function validate_feed_url( $url ) {
 		$url = esc_url_raw( $url );
 		if ( ! $url ) {
-			return new WP_Error( 'invalid_url', __( 'Invalid URL format', 'feed-to-blogroll' ) );
+			return new WP_Error( 'invalid_url', __( 'Invalid URL format', 'feed-blogroll' ) );
 		}
 
 		// Test if URL is accessible
 		$response = wp_remote_head( $url, array( 'timeout' => 10 ) );
 
 		if ( is_wp_error( $response ) ) {
-			return new WP_Error( 'url_unreachable', __( 'URL is not accessible', 'feed-to-blogroll' ) );
+			return new WP_Error( 'url_unreachable', __( 'URL is not accessible', 'feed-blogroll' ) );
 		}
 
 		$response_code = wp_remote_retrieve_response_code( $response );
 		if ( 200 !== $response_code ) {
 			/* translators: %d: HTTP response code */
-			return new WP_Error( 'url_error', sprintf( __( 'URL returned HTTP %d', 'feed-to-blogroll' ), $response_code ) );
+			return new WP_Error( 'url_error', sprintf( __( 'URL returned HTTP %d', 'feed-blogroll' ), $response_code ) );
 		}
 
 		// Check if response looks like a feed
 		$content_type = wp_remote_retrieve_header( $response, 'content-type' );
 		if ( $content_type && strpos( $content_type, 'xml' ) === false && strpos( $content_type, 'rss' ) === false ) {
-			return new WP_Error( 'not_feed', __( 'URL does not appear to be a valid RSS feed', 'feed-to-blogroll' ) );
+			return new WP_Error( 'not_feed', __( 'URL does not appear to be a valid RSS feed', 'feed-blogroll' ) );
 		}
 
 		return true;
@@ -437,7 +437,7 @@ class Feed_To_Blogroll_Feedbin_API {
 	public function remove_subscription( $subscription_id ) {
 		$subscription_id = absint( $subscription_id );
 		if ( ! $subscription_id ) {
-			return new WP_Error( 'invalid_id', __( 'Invalid subscription ID', 'feed-to-blogroll' ) );
+			return new WP_Error( 'invalid_id', __( 'Invalid subscription ID', 'feed-blogroll' ) );
 		}
 
 		$response = $this->make_request( "subscriptions/{$subscription_id}.json", 'DELETE' );

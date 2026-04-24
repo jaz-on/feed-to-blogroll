@@ -2,7 +2,7 @@
 /**
  * Blogroll Synchronization
  *
- * @package FeedToBlogroll
+ * @package FeedBlogroll
  * @since 1.0.0
  */
 
@@ -16,12 +16,12 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @since 1.0.0
  */
-class Feed_To_Blogroll_Sync {
+class Feed_Blogroll_Sync {
 
 	/**
 	 * Feedbin API instance
 	 *
-	 * @var Feed_To_Blogroll_Feedbin_API
+	 * @var Feed_Blogroll_Feedbin_API
 	 */
 	private $api;
 
@@ -29,13 +29,13 @@ class Feed_To_Blogroll_Sync {
 	 * Constructor
 	 */
 	public function __construct() {
-		$this->api = new Feed_To_Blogroll_Feedbin_API();
+		$this->api = new Feed_Blogroll_Feedbin_API();
 
 		// Hook into WordPress cron
-		add_action( 'feed_to_blogroll_sync_cron', array( $this, 'scheduled_sync' ) );
+		add_action( 'feed_blogroll_sync_cron', array( $this, 'scheduled_sync' ) );
 
 		// Add manual sync action (admin only)
-		add_action( 'wp_ajax_feed_to_blogroll_manual_sync', array( $this, 'manual_sync' ) );
+		add_action( 'wp_ajax_feed_blogroll_manual_sync', array( $this, 'manual_sync' ) );
 	}
 
 	/**
@@ -43,7 +43,7 @@ class Feed_To_Blogroll_Sync {
 	 */
 	public function scheduled_sync() {
 		// Check if auto-sync is enabled
-		$options = get_option( 'feed_to_blogroll_options', array() );
+		$options = get_option( 'feed_blogroll_options', array() );
 		if ( empty( $options['auto_sync'] ) ) {
 			return;
 		}
@@ -65,7 +65,7 @@ class Feed_To_Blogroll_Sync {
 		if ( ! isset( $_SERVER['REQUEST_METHOD'] ) || 'POST' !== $_SERVER['REQUEST_METHOD'] ) {
 			wp_send_json_error(
 				array(
-					'message' => esc_html__( 'Invalid request method', 'feed-to-blogroll' ),
+					'message' => esc_html__( 'Invalid request method', 'feed-blogroll' ),
 					'code'    => 'invalid_method',
 					'context' => 'http_validation',
 				)
@@ -74,10 +74,10 @@ class Feed_To_Blogroll_Sync {
 
 		// Check nonce presence BEFORE any usage
 		$nonce = isset( $_POST['nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['nonce'] ) ) : '';
-		if ( empty( $nonce ) || ! wp_verify_nonce( $nonce, 'feed_to_blogroll_admin' ) ) {
+		if ( empty( $nonce ) || ! wp_verify_nonce( $nonce, 'feed_blogroll_admin' ) ) {
 			wp_send_json_error(
 				array(
-					'message' => esc_html__( 'Security check failed. Please refresh the page and try again.', 'feed-to-blogroll' ),
+					'message' => esc_html__( 'Security check failed. Please refresh the page and try again.', 'feed-blogroll' ),
 					'code'    => 'nonce_failed',
 					'context' => 'security_validation',
 				)
@@ -88,7 +88,7 @@ class Feed_To_Blogroll_Sync {
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error(
 				array(
-					'message' => esc_html__( 'Insufficient permissions to perform this action.', 'feed-to-blogroll' ),
+					'message' => esc_html__( 'Insufficient permissions to perform this action.', 'feed-blogroll' ),
 					'code'    => 'insufficient_permissions',
 					'context' => 'capability_check',
 				)
@@ -98,7 +98,7 @@ class Feed_To_Blogroll_Sync {
 		$result = $this->sync_blogroll();
 
 		if ( $result['success'] ) {
-			Feed_To_Blogroll_OPML::bust_cache();
+			Feed_Blogroll_OPML::bust_cache();
 			wp_send_json_success( $result );
 		} else {
 			wp_send_json_error(
@@ -131,7 +131,7 @@ class Feed_To_Blogroll_Sync {
 		try {
 			// Check if API credentials are configured
 			if ( ! $this->api->has_credentials() ) {
-				$result['message']     = __( 'Feedbin API credentials not configured', 'feed-to-blogroll' );
+				$result['message']     = __( 'Feedbin API credentials not configured', 'feed-blogroll' );
 				$result['duration']    = microtime( true ) - $start_time;
 				return $result;
 			}
@@ -166,7 +166,7 @@ class Feed_To_Blogroll_Sync {
 			$result['duration'] = microtime( true ) - $start_time;
 
 			// Update sync status and last-run stats for the dashboard.
-			$options = get_option( 'feed_to_blogroll_options', array() );
+			$options = get_option( 'feed_blogroll_options', array() );
 			if ( ! is_array( $options ) ) {
 				$options = array();
 			}
@@ -179,12 +179,12 @@ class Feed_To_Blogroll_Sync {
 				'duration'          => $result['duration'],
 				'completed_at'      => current_time( 'mysql' ),
 			);
-			update_option( 'feed_to_blogroll_options', $options );
+			update_option( 'feed_blogroll_options', $options );
 
 			$result['success'] = true;
 			$result['message'] = sprintf(
 				/* translators: 1: blogs added, 2: blogs updated, 3: blogs deactivated */
-				__( 'Synchronization completed successfully. %1$d blogs added, %2$d updated, %3$d deactivated.', 'feed-to-blogroll' ),
+				__( 'Synchronization completed successfully. %1$d blogs added, %2$d updated, %3$d deactivated.', 'feed-blogroll' ),
 				$result['blogs_added'],
 				$result['blogs_updated'],
 				$result['blogs_deactivated']
@@ -195,12 +195,12 @@ class Feed_To_Blogroll_Sync {
 			$result['errors'][] = $e->getMessage();
 
 			// Update sync status to error
-			$options = get_option( 'feed_to_blogroll_options', array() );
+			$options = get_option( 'feed_blogroll_options', array() );
 			if ( ! is_array( $options ) ) {
 				$options = array();
 			}
 			$options['sync_status'] = 'error';
-			update_option( 'feed_to_blogroll_options', $options );
+			update_option( 'feed_blogroll_options', $options );
 		}
 
 		if ( ! isset( $result['duration'] ) || 0.0 === (float) $result['duration'] ) {
@@ -234,7 +234,7 @@ class Feed_To_Blogroll_Sync {
 					$result['action'] = 'updated';
 				} else {
 					/* translators: %s: blog title */
-					$result['error'] = sprintf( __( 'Failed to update blog: %s', 'feed-to-blogroll' ), $feed['title'] );
+					$result['error'] = sprintf( __( 'Failed to update blog: %s', 'feed-blogroll' ), $feed['title'] );
 				}
 			} else {
 				// Create new blog
@@ -244,7 +244,7 @@ class Feed_To_Blogroll_Sync {
 					$result['action'] = 'added';
 				} else {
 					/* translators: %s: blog title */
-					$result['error'] = sprintf( __( 'Failed to create blog: %s', 'feed-to-blogroll' ), $feed['title'] );
+					$result['error'] = sprintf( __( 'Failed to create blog: %s', 'feed-blogroll' ), $feed['title'] );
 				}
 			}
 		} catch ( Exception $e ) {
@@ -275,11 +275,11 @@ class Feed_To_Blogroll_Sync {
 		global $wpdb;
 		$rss_url_escaped = esc_url_raw( $rss_url );
 		$cache_key = 'ftb_rss_to_postid_' . md5( (string) $rss_url_escaped );
-		$post_id = wp_cache_get( $cache_key, 'feed_to_blogroll' );
+		$post_id = wp_cache_get( $cache_key, 'feed_blogroll' );
 		if ( false === $post_id ) {
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Intentional optimized lookup with object cache layer above
 			$post_id = (int) $wpdb->get_var( $wpdb->prepare( "SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = %s AND meta_value = %s LIMIT 1", 'rss_url', $rss_url_escaped ) );
-			wp_cache_set( $cache_key, $post_id, 'feed_to_blogroll', 600 );
+			wp_cache_set( $cache_key, $post_id, 'feed_blogroll', 600 );
 		}
 		if ( $post_id > 0 ) {
 			$args['p'] = $post_id;
@@ -448,7 +448,7 @@ class Feed_To_Blogroll_Sync {
 	 */
 	public function get_sync_stats() {
 		$counts  = wp_count_posts( 'blogroll' );
-		$options = get_option( 'feed_to_blogroll_options', array() );
+		$options = get_option( 'feed_blogroll_options', array() );
 		if ( ! is_array( $options ) ) {
 			$options = array();
 		}

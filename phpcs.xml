@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<ruleset name="Feed to Blogroll Plugin">
-	<description>PHP CodeSniffer ruleset for Feed to Blogroll plugin with enhanced security and accessibility standards</description>
+<ruleset name="Feed Blogroll Plugin">
+	<description>PHP CodeSniffer ruleset for Feed Blogroll plugin with enhanced security and accessibility standards</description>
 
 	<!-- Include WordPress Coding Standards (keep to available sets) -->
 	<rule ref="WordPress-Core"/>

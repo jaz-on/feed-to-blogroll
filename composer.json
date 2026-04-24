@@ -1,5 +1,5 @@
 {
-    "name": "jaz-on/feed-to-blogroll",
+    "name": "jaz-on/feed-blogroll",
     "description": "Automatic blogroll synchronization with Feedbin API",
     "type": "wordpress-plugin",
     "license": "GPL-2.0-or-later",
@@ -21,10 +21,10 @@
         "accessibility",
         "performance"
     ],
-    "homepage": "https://github.com/jaz-on/feed-to-blogroll",
+    "homepage": "https://github.com/jaz-on/feed-blogroll",
     "support": {
-        "issues": "https://github.com/jaz-on/feed-to-blogroll/issues",
-        "source": "https://github.com/jaz-on/feed-to-blogroll"
+        "issues": "https://github.com/jaz-on/feed-blogroll/issues",
+        "source": "https://github.com/jaz-on/feed-blogroll"
     },
     "require": {
         "php": ">=8.2",
@@ -66,7 +66,7 @@
         "sort-packages": true
     },
     "extra": {
-        "installer-name": "feed-to-blogroll",
+        "installer-name": "feed-blogroll",
         "wordpress-install-dir": "wp-content/plugins"
     },
     "minimum-stability": "stable",

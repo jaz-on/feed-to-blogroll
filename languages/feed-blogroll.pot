@@ -1,0 +1,784 @@
+# Copyright (C) 2026 Jason Rouet
+# This file is distributed under the GPL v2 or later.
+msgid ""
+msgstr ""
+"Project-Id-Version: Feed Blogroll 1.2.0\n"
+"Report-Msgid-Bugs-To: https://github.com/jaz-on/feed-blogroll/issues\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-04-22T20:28:12+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.8.1\n"
+"X-Domain: feed-blogroll\n"
+
+#. Plugin Name of the plugin
+#: includes/class-feed-blogroll-admin.php:45
+#: includes/class-feed-blogroll-admin.php:451
+msgid "Feed Blogroll"
+msgstr ""
+
+#. Plugin URI of the plugin
+msgid "https://github.com/jaz-on/feed-blogroll"
+msgstr ""
+
+#. Description of the plugin
+msgid "Synchronizes your blogroll from the Feedbin API into WordPress custom post types with no external Composer dependencies."
+msgstr ""
+
+#. Author of the plugin
+msgid "Jason Rouet"
+msgstr ""
+
+#. Author URI of the plugin
+msgid "https://jasonrouet.com"
+msgstr ""
+
+#: class-feed-blogroll-plugin.php:67
+msgid "Once Weekly"
+msgstr ""
+
+#: class-feed-blogroll-plugin.php:231
+msgid "Blogroll Card"
+msgstr ""
+
+#: class-feed-blogroll-plugin.php:255
+msgid "Blogroll Grid"
+msgstr ""
+
+#: class-feed-blogroll-plugin.php:322
+msgid "Feed Blogroll: Required classes not found during activation."
+msgstr ""
+
+#: class-feed-blogroll-repair.php:33
+msgid "Repair Feed Blogroll CPT"
+msgstr ""
+
+#: class-feed-blogroll-repair.php:34
+msgid "Repair CPT"
+msgstr ""
+
+#: includes/class-feed-blogroll-admin.php:46
+#: includes/class-feed-blogroll-template.php:229
+#: assets/js/editor.js:11
+#: assets/js/editor.js:45
+msgid "Blogroll"
+msgstr ""
+
+#: includes/class-feed-blogroll-admin.php:57
+#: includes/class-feed-blogroll-admin.php:58
+#: includes/class-feed-blogroll-admin.php:462
+msgid "Dashboard"
+msgstr ""
+
+#: includes/class-feed-blogroll-admin.php:66
+#: includes/class-feed-blogroll-admin.php:67
+#: includes/class-feed-blogroll-cpt.php:51
+msgid "All Blogs"
+msgstr ""
+
+#: includes/class-feed-blogroll-admin.php:74
+#: includes/class-feed-blogroll-admin.php:75
+#: includes/class-feed-blogroll-cpt.php:47
+msgid "Add New Blog"
+msgstr ""
+
+#: includes/class-feed-blogroll-admin.php:82
+#: includes/class-feed-blogroll-admin.php:83
+#: includes/class-feed-blogroll-cpt.php:104
+msgid "Categories"
+msgstr ""
+
+#: includes/class-feed-blogroll-admin.php:92
+#: includes/class-feed-blogroll-admin.php:93
+msgid "Diagnostics"
+msgstr ""
+
+#: includes/class-feed-blogroll-admin.php:111
+#: includes/class-feed-blogroll-admin.php:486
+msgid "Settings"
+msgstr ""
+
+#: includes/class-feed-blogroll-admin.php:133
+msgid "GitHub"
+msgstr ""
+
+#: includes/class-feed-blogroll-admin.php:138
+msgid "Donate"
+msgstr ""
+
+#: includes/class-feed-blogroll-admin.php:161
+msgid "Feedbin API Configuration"
+msgstr ""
+
+#: includes/class-feed-blogroll-admin.php:169
+msgid "Feedbin Username"
+msgstr ""
+
+#: includes/class-feed-blogroll-admin.php:178
+msgid "Feedbin Password"
+msgstr ""
+
+#: includes/class-feed-blogroll-admin.php:187
+msgid "Synchronization Settings"
+msgstr ""
+
+#: includes/class-feed-blogroll-admin.php:195
+msgid "Automatic Synchronization"
+msgstr ""
+
+#: includes/class-feed-blogroll-admin.php:204
+msgid "Sync Frequency"
+msgstr ""
+
+#: includes/class-feed-blogroll-admin.php:213
+msgid "Last Synchronization"
+msgstr ""
+
+#: includes/class-feed-blogroll-admin.php:241
+msgid "Please enter a valid email address for Feedbin username."
+msgstr ""
+
+#: includes/class-feed-blogroll-admin.php:270
+msgid "Configure your Feedbin API credentials below. These are the same credentials you use to log into Feedbin.com."
+msgstr ""
+
+#: includes/class-feed-blogroll-admin.php:287
+msgid "Your Feedbin account email address"
+msgstr ""
+
+#: includes/class-feed-blogroll-admin.php:289
+msgid "This field is locked because FEED_BLOGROLL_USERNAME is defined in wp-config.php."
+msgstr ""
+
+#: includes/class-feed-blogroll-admin.php:307
+msgid "Your Feedbin account password"
+msgstr ""
+
+#: includes/class-feed-blogroll-admin.php:309
+msgid "This field is locked because FEED_BLOGROLL_PASSWORD is defined in wp-config.php."
+msgstr ""
+
+#: includes/class-feed-blogroll-admin.php:317
+msgid "Configure how often the plugin should automatically synchronize with your Feedbin account."
+msgstr ""
+
+#: includes/class-feed-blogroll-admin.php:331
+msgid "Enable automatic synchronization"
+msgstr ""
+
+#: includes/class-feed-blogroll-admin.php:333
+msgid "When enabled, the plugin will automatically sync with Feedbin according to the frequency set below."
+msgstr ""
+
+#: includes/class-feed-blogroll-admin.php:345
+msgid "Twice a day (morning & evening)"
+msgstr ""
+
+#: includes/class-feed-blogroll-admin.php:346
+msgid "Once a day (morning)"
+msgstr ""
+
+#: includes/class-feed-blogroll-admin.php:347
+msgid "Once a week (Monday morning)"
+msgstr ""
+
+#: includes/class-feed-blogroll-admin.php:367
+msgid "Next sync:"
+msgstr ""
+
+#: includes/class-feed-blogroll-admin.php:377
+msgid "Enable automatic synchronization above to set frequency"
+msgstr ""
+
+#: includes/class-feed-blogroll-admin.php:412
+msgid "Testing connection..."
+msgstr ""
+
+#: includes/class-feed-blogroll-admin.php:413
+msgid "Synchronizing..."
+msgstr ""
+
+#: includes/class-feed-blogroll-admin.php:414
+#: includes/class-feed-blogroll-template.php:72
+#: includes/class-feed-blogroll-template.php:325
+msgid "Exporting..."
+msgstr ""
+
+#: includes/class-feed-blogroll-admin.php:415
+msgid "An error occurred"
+msgstr ""
+
+#: includes/class-feed-blogroll-admin.php:455
+msgid "Blogroll management tabs"
+msgstr ""
+
+#: includes/class-feed-blogroll-admin.php:470
+msgid "Blogs"
+msgstr ""
+
+#: includes/class-feed-blogroll-admin.php:478
+msgid "Export"
+msgstr ""
+
+#: includes/class-feed-blogroll-admin.php:520
+msgid "Synchronization Status"
+msgstr ""
+
+#: includes/class-feed-blogroll-admin.php:546
+msgid "Last sync:"
+msgstr ""
+
+#. translators: %s: time ago
+#: includes/class-feed-blogroll-admin.php:549
+msgid "%s ago"
+msgstr ""
+
+#: includes/class-feed-blogroll-admin.php:551
+msgid "Status:"
+msgstr ""
+
+#: includes/class-feed-blogroll-admin.php:555
+msgid "No synchronization has been performed yet."
+msgstr ""
+
+#: includes/class-feed-blogroll-admin.php:561
+msgid "Last sync run"
+msgstr ""
+
+#: includes/class-feed-blogroll-admin.php:564
+msgid "Blogs added:"
+msgstr ""
+
+#: includes/class-feed-blogroll-admin.php:567
+msgid "Blogs updated:"
+msgstr ""
+
+#: includes/class-feed-blogroll-admin.php:570
+msgid "Blogs deactivated:"
+msgstr ""
+
+#: includes/class-feed-blogroll-admin.php:573
+msgid "Duration (seconds):"
+msgstr ""
+
+#: includes/class-feed-blogroll-admin.php:582
+msgid "Manual Sync"
+msgstr ""
+
+#: includes/class-feed-blogroll-admin.php:593
+msgid "Success"
+msgstr ""
+
+#: includes/class-feed-blogroll-admin.php:594
+#: includes/class-feed-blogroll-cpt.php:303
+#: includes/class-feed-blogroll-cpt.php:442
+msgid "Error"
+msgstr ""
+
+#: includes/class-feed-blogroll-admin.php:595
+msgid "Running"
+msgstr ""
+
+#: includes/class-feed-blogroll-admin.php:596
+msgid "Completed"
+msgstr ""
+
+#: includes/class-feed-blogroll-admin.php:597
+msgid "Idle"
+msgstr ""
+
+#: includes/class-feed-blogroll-admin.php:598
+msgid "Unknown"
+msgstr ""
+
+#: includes/class-feed-blogroll-admin.php:612
+#: includes/class-feed-blogroll-admin.php:673
+#: includes/class-feed-blogroll-sync.php:68
+msgid "Invalid request method"
+msgstr ""
+
+#: includes/class-feed-blogroll-admin.php:624
+#: includes/class-feed-blogroll-admin.php:685
+#: includes/class-feed-blogroll-sync.php:80
+msgid "Security check failed. Please refresh the page and try again."
+msgstr ""
+
+#: includes/class-feed-blogroll-admin.php:635
+#: includes/class-feed-blogroll-admin.php:696
+#: includes/class-feed-blogroll-sync.php:91
+msgid "Insufficient permissions to perform this action."
+msgstr ""
+
+#: includes/class-feed-blogroll-admin.php:715
+msgid "Not scheduled yet"
+msgstr ""
+
+#: includes/class-feed-blogroll-admin.php:725
+msgid "Due now"
+msgstr ""
+
+#. translators: %s: time until next sync
+#: includes/class-feed-blogroll-admin.php:733
+msgid "In %s"
+msgstr ""
+
+#: includes/class-feed-blogroll-admin.php:760
+msgid "Schedule: Morning (9:00 AM) and Evening (9:00 PM)"
+msgstr ""
+
+#: includes/class-feed-blogroll-admin.php:762
+msgid "Schedule: Every morning at 9:00 AM"
+msgstr ""
+
+#: includes/class-feed-blogroll-admin.php:764
+msgid "Schedule: Every Monday morning at 9:00 AM"
+msgstr ""
+
+#: includes/class-feed-blogroll-admin.php:766
+msgid "Schedule: Daily at 9:00 AM"
+msgstr ""
+
+#: includes/class-feed-blogroll-admin.php:776
+msgid "Feed Blogroll: Custom Post Type not registered. Please deactivate and reactivate the plugin."
+msgstr ""
+
+#. translators: %s: list of constants
+#: includes/class-feed-blogroll-admin.php:809
+msgid "Credentials are controlled by %s in wp-config.php. Related settings fields are read-only."
+msgstr ""
+
+#: includes/class-feed-blogroll-admin.php:822
+msgid "Manage synced blogs as a custom post type, or add entries manually."
+msgstr ""
+
+#: includes/class-feed-blogroll-admin.php:827
+msgid "All blogs"
+msgstr ""
+
+#: includes/class-feed-blogroll-admin.php:832
+msgid "Add new"
+msgstr ""
+
+#: includes/class-feed-blogroll-admin.php:850
+msgid "No blogroll entries yet."
+msgstr ""
+
+#: includes/class-feed-blogroll-admin.php:855
+msgid "Title"
+msgstr ""
+
+#: includes/class-feed-blogroll-admin.php:856
+#: includes/class-feed-blogroll-cpt.php:382
+msgid "Website"
+msgstr ""
+
+#: includes/class-feed-blogroll-admin.php:857
+#: includes/class-feed-blogroll-cpt.php:386
+msgid "Status"
+msgstr ""
+
+#: includes/class-feed-blogroll-admin.php:882
+msgid "Download an OPML file of all published blogroll feeds. The file matches what visitors can export from the front end when enabled."
+msgstr ""
+
+#: includes/class-feed-blogroll-admin.php:884
+msgid "Download OPML"
+msgstr ""
+
+#: includes/class-feed-blogroll-cpt.php:42
+msgctxt "Post type general name"
+msgid "Blogroll"
+msgstr ""
+
+#: includes/class-feed-blogroll-cpt.php:43
+msgctxt "Post type singular name"
+msgid "Blog"
+msgstr ""
+
+#: includes/class-feed-blogroll-cpt.php:44
+msgctxt "Admin Menu text"
+msgid "Blogroll"
+msgstr ""
+
+#: includes/class-feed-blogroll-cpt.php:45
+msgctxt "Add New on Toolbar"
+msgid "Blog"
+msgstr ""
+
+#: includes/class-feed-blogroll-cpt.php:46
+msgid "Add New"
+msgstr ""
+
+#: includes/class-feed-blogroll-cpt.php:48
+msgid "New Blog"
+msgstr ""
+
+#: includes/class-feed-blogroll-cpt.php:49
+msgid "Edit Blog"
+msgstr ""
+
+#: includes/class-feed-blogroll-cpt.php:50
+msgid "View Blog"
+msgstr ""
+
+#: includes/class-feed-blogroll-cpt.php:52
+msgid "Search Blogs"
+msgstr ""
+
+#: includes/class-feed-blogroll-cpt.php:53
+msgid "Parent Blogs:"
+msgstr ""
+
+#: includes/class-feed-blogroll-cpt.php:54
+#: includes/class-feed-blogroll-template.php:140
+#: includes/class-feed-blogroll-template.php:148
+msgid "No blogs found."
+msgstr ""
+
+#: includes/class-feed-blogroll-cpt.php:55
+msgid "No blogs found in Trash."
+msgstr ""
+
+#: includes/class-feed-blogroll-cpt.php:56
+msgctxt "Overrides the \"Featured Image\" phrase"
+msgid "Blog Featured Image"
+msgstr ""
+
+#: includes/class-feed-blogroll-cpt.php:57
+msgctxt "Overrides the \"Set featured image\" phrase"
+msgid "Set featured image"
+msgstr ""
+
+#: includes/class-feed-blogroll-cpt.php:58
+msgctxt "Overrides the \"Remove featured image\" phrase"
+msgid "Remove featured image"
+msgstr ""
+
+#: includes/class-feed-blogroll-cpt.php:59
+msgctxt "Overrides the \"Use as featured image\" phrase"
+msgid "Use as featured image"
+msgstr ""
+
+#: includes/class-feed-blogroll-cpt.php:60
+msgctxt "The post type archive label"
+msgid "Blog archives"
+msgstr ""
+
+#: includes/class-feed-blogroll-cpt.php:61
+msgctxt "Overrides the \"Insert into post\" phrase"
+msgid "Insert into blog"
+msgstr ""
+
+#: includes/class-feed-blogroll-cpt.php:62
+msgctxt "Overrides the \"Uploaded to this post\" phrase"
+msgid "Uploaded to this blog"
+msgstr ""
+
+#: includes/class-feed-blogroll-cpt.php:63
+msgctxt "Screen reader text for the filter links"
+msgid "Filter blogs list"
+msgstr ""
+
+#: includes/class-feed-blogroll-cpt.php:64
+msgctxt "Screen reader text for the pagination"
+msgid "Blogs list navigation"
+msgstr ""
+
+#: includes/class-feed-blogroll-cpt.php:65
+msgctxt "Screen reader text for the items list"
+msgid "Blogs list"
+msgstr ""
+
+#: includes/class-feed-blogroll-cpt.php:94
+msgctxt "taxonomy general name"
+msgid "Blog Categories"
+msgstr ""
+
+#: includes/class-feed-blogroll-cpt.php:95
+msgctxt "taxonomy singular name"
+msgid "Blog Category"
+msgstr ""
+
+#: includes/class-feed-blogroll-cpt.php:96
+msgid "Search Categories"
+msgstr ""
+
+#: includes/class-feed-blogroll-cpt.php:97
+msgid "All Categories"
+msgstr ""
+
+#: includes/class-feed-blogroll-cpt.php:98
+msgid "Parent Category"
+msgstr ""
+
+#: includes/class-feed-blogroll-cpt.php:99
+msgid "Parent Category:"
+msgstr ""
+
+#: includes/class-feed-blogroll-cpt.php:100
+msgid "Edit Category"
+msgstr ""
+
+#: includes/class-feed-blogroll-cpt.php:101
+msgid "Update Category"
+msgstr ""
+
+#: includes/class-feed-blogroll-cpt.php:102
+msgid "Add New Category"
+msgstr ""
+
+#: includes/class-feed-blogroll-cpt.php:103
+msgid "New Category Name"
+msgstr ""
+
+#: includes/class-feed-blogroll-cpt.php:140
+msgid "RSS Feed URL for this blog"
+msgstr ""
+
+#: includes/class-feed-blogroll-cpt.php:157
+msgid "Main website URL for this blog"
+msgstr ""
+
+#: includes/class-feed-blogroll-cpt.php:174
+msgid "Feedbin internal feed ID"
+msgstr ""
+
+#: includes/class-feed-blogroll-cpt.php:191
+#: includes/class-feed-blogroll-cpt.php:306
+msgid "Current synchronization status"
+msgstr ""
+
+#: includes/class-feed-blogroll-cpt.php:208
+#: includes/class-feed-blogroll-cpt.php:315
+msgid "When this blog was last synchronized"
+msgstr ""
+
+#: includes/class-feed-blogroll-cpt.php:236
+msgid "Blogroll Details"
+msgstr ""
+
+#: includes/class-feed-blogroll-cpt.php:265
+msgid "RSS Feed URL"
+msgstr ""
+
+#: includes/class-feed-blogroll-cpt.php:269
+msgid "Enter the RSS feed URL for this blog"
+msgstr ""
+
+#: includes/class-feed-blogroll-cpt.php:274
+msgid "Website URL"
+msgstr ""
+
+#: includes/class-feed-blogroll-cpt.php:278
+msgid "Enter the main website URL for this blog"
+msgstr ""
+
+#: includes/class-feed-blogroll-cpt.php:283
+msgid "Feedbin Feed ID"
+msgstr ""
+
+#: includes/class-feed-blogroll-cpt.php:287
+msgid "Feedbin internal feed ID (auto-populated)"
+msgstr ""
+
+#: includes/class-feed-blogroll-cpt.php:292
+msgid "Sync Status"
+msgstr ""
+
+#: includes/class-feed-blogroll-cpt.php:297
+#: includes/class-feed-blogroll-cpt.php:440
+msgid "Active"
+msgstr ""
+
+#: includes/class-feed-blogroll-cpt.php:300
+#: includes/class-feed-blogroll-cpt.php:441
+msgid "Inactive"
+msgstr ""
+
+#: includes/class-feed-blogroll-cpt.php:311
+#: includes/class-feed-blogroll-cpt.php:385
+msgid "Last Sync"
+msgstr ""
+
+#: includes/class-feed-blogroll-cpt.php:383
+#: includes/class-feed-blogroll-cpt.php:417
+#: includes/class-feed-blogroll-template.php:289
+#: includes/class-feed-blogroll-template.php:359
+msgid "RSS Feed"
+msgstr ""
+
+#: includes/class-feed-blogroll-cpt.php:384
+msgid "Author"
+msgstr ""
+
+#: includes/class-feed-blogroll-feedbin-api.php:83
+msgid "Feedbin credentials not configured"
+msgstr ""
+
+#. translators: %s: API endpoint path
+#: includes/class-feed-blogroll-feedbin-api.php:132
+msgid "Failed to decode JSON response from %s"
+msgstr ""
+
+#. translators: no placeholder
+#: includes/class-feed-blogroll-feedbin-api.php:145
+msgid "Feedbin authentication failed. Please check your username and password."
+msgstr ""
+
+#. translators: no placeholder
+#: includes/class-feed-blogroll-feedbin-api.php:156
+msgid "Access forbidden. Please check your Feedbin account permissions."
+msgstr ""
+
+#. translators: %s: endpoint path
+#: includes/class-feed-blogroll-feedbin-api.php:167
+msgid "API endpoint %s not found"
+msgstr ""
+
+#: includes/class-feed-blogroll-feedbin-api.php:177
+msgid "API rate limit exceeded. Please try again later."
+msgstr ""
+
+#. translators: %d: HTTP response code
+#: includes/class-feed-blogroll-feedbin-api.php:191
+msgid "Feedbin server error (HTTP %d). Please try again later."
+msgstr ""
+
+#. translators: 1: HTTP response code, 2: endpoint path
+#: includes/class-feed-blogroll-feedbin-api.php:202
+msgid "Unexpected API response: HTTP %1$d from %2$s"
+msgstr ""
+
+#. translators: %d: number of subscriptions
+#: includes/class-feed-blogroll-feedbin-api.php:226
+msgid "Connection successful! Found %d subscriptions."
+msgstr ""
+
+#: includes/class-feed-blogroll-feedbin-api.php:229
+msgid "Connection successful but unexpected response format."
+msgstr ""
+
+#: includes/class-feed-blogroll-feedbin-api.php:331
+msgid "API credentials not configured"
+msgstr ""
+
+#: includes/class-feed-blogroll-feedbin-api.php:386
+msgid "Invalid URL format"
+msgstr ""
+
+#: includes/class-feed-blogroll-feedbin-api.php:393
+msgid "URL is not accessible"
+msgstr ""
+
+#. translators: %d: HTTP response code
+#: includes/class-feed-blogroll-feedbin-api.php:399
+msgid "URL returned HTTP %d"
+msgstr ""
+
+#: includes/class-feed-blogroll-feedbin-api.php:405
+msgid "URL does not appear to be a valid RSS feed"
+msgstr ""
+
+#: includes/class-feed-blogroll-feedbin-api.php:440
+msgid "Invalid subscription ID"
+msgstr ""
+
+#: includes/class-feed-blogroll-sync.php:134
+msgid "Feedbin API credentials not configured"
+msgstr ""
+
+#. translators: 1: blogs added, 2: blogs updated, 3: blogs deactivated
+#: includes/class-feed-blogroll-sync.php:187
+msgid "Synchronization completed successfully. %1$d blogs added, %2$d updated, %3$d deactivated."
+msgstr ""
+
+#. translators: %s: blog title
+#: includes/class-feed-blogroll-sync.php:237
+msgid "Failed to update blog: %s"
+msgstr ""
+
+#. translators: %s: blog title
+#: includes/class-feed-blogroll-sync.php:247
+msgid "Failed to create blog: %s"
+msgstr ""
+
+#: includes/class-feed-blogroll-template.php:73
+#: includes/class-feed-blogroll-template.php:326
+msgid "OPML file downloaded successfully!"
+msgstr ""
+
+#: includes/class-feed-blogroll-template.php:74
+#: includes/class-feed-blogroll-template.php:327
+msgid "Export failed. Please try again."
+msgstr ""
+
+#: includes/class-feed-blogroll-template.php:75
+#: includes/class-feed-blogroll-template.php:237
+msgid "Export OPML"
+msgstr ""
+
+#: includes/class-feed-blogroll-template.php:231
+msgid "Blogroll export options"
+msgstr ""
+
+#: includes/class-feed-blogroll-template.php:252
+msgid "Opens in new window"
+msgstr ""
+
+#: includes/class-feed-blogroll-template.php:273
+msgid "Blog categories"
+msgstr ""
+
+#: includes/class-feed-blogroll-template.php:283
+msgid "Visit Site"
+msgstr ""
+
+#: includes/class-feed-blogroll-template.php:352
+msgid "Visit Website"
+msgstr ""
+
+#: includes/class-feed-blogroll-template.php:420
+msgid "Sorry, you are not allowed to access the blogroll endpoint."
+msgstr ""
+
+#: includes/class-feed-blogroll-template.php:437
+msgid "Sorry, you are not allowed to export OPML."
+msgstr ""
+
+#: includes/class-feed-blogroll-template.php:451
+msgid "OPML export is unavailable."
+msgstr ""
+
+#: assets/js/editor.js:12
+msgid "Display a blogroll of RSS feeds."
+msgstr ""
+
+#: assets/js/editor.js:48
+msgid "Blogroll content will be displayed here."
+msgstr ""
+
+#: assets/js/editor.js:53
+msgid "Settings:"
+msgstr ""
+
+#: assets/js/editor.js:56
+msgid "Category: %s, Limit: %s, Columns: %s"
+msgstr ""
+
+#: assets/js/editor.js:57
+#: assets/js/editor.js:58
+msgid "All"
+msgstr ""
+
+#: block.json
+msgctxt "block title"
+msgid "Blogroll"
+msgstr ""
+
+#: block.json
+msgctxt "block description"
+msgid "Automatic blogroll synchronization with Feedbin API"
+msgstr ""

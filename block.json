@@ -1,7 +1,7 @@
 {
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
-	"name": "feed-to-blogroll/blogroll",
+	"name": "feed-blogroll/blogroll",
 	"version": "1.2.0",
 	"title": "Blogroll",
 	"category": "widgets",
@@ -11,7 +11,7 @@
 		"html": false,
 		"align": ["wide", "full"]
 	},
-	"textdomain": "feed-to-blogroll",
+	"textdomain": "feed-blogroll",
 	"editorScript": "file:./assets/js/editor.js",
 	"editorStyle": "file:./assets/css/editor.css",
 	"style": "file:./assets/css/frontend.css",

@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
-- Renamed project identifiers from **feed-to-blogroll** / `feed_to_blogroll_*` / `Feed_To_Blogroll_*` to **feed-blogroll** / `feed_blogroll_*` / `Feed_Blogroll_*` (plugin bootstrap file, text domain, REST namespace, WP-Cron and AJAX hooks, Composer metadata, front-end CSS classes, block name, and wp-config constants `FEED_BLOGROLL_*`). Upgrades run a one-time migration of stored options and the legacy cron event.
+- Standardized plugin identifiers on **feed-blogroll** across plugin bootstrap, text domain, REST namespace, WP-Cron/AJAX hooks, Composer metadata, front-end CSS classes, block name, and `FEED_BLOGROLL_*` wp-config constants.
 
 ## [1.2.0] - 2026-04-20
 

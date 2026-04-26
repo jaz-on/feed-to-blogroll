@@ -21,27 +21,14 @@ delete_option( 'feed_blogroll_api_last_test' );
 delete_option( 'feed_blogroll_api_connected' );
 delete_option( 'feed_blogroll_api_last_error' );
 delete_option( 'feed_blogroll_cache_version' );
-delete_option( 'feed_blogroll_legacy_slug_migration' );
-
-// Legacy keys (pre–feed-blogroll rename).
-delete_option( 'feed_to_blogroll_options' );
-delete_option( 'feed_to_blogroll_plugin_version' );
-delete_option( 'feed_to_blogroll_api_last_test' );
-delete_option( 'feed_to_blogroll_api_connected' );
-delete_option( 'feed_to_blogroll_api_last_error' );
-delete_option( 'feed_to_blogroll_cache_version' );
 
 // Clean up transients
 delete_transient( 'feed_blogroll_sync_lock' );
 delete_transient( 'feed_blogroll_api_cache' );
 delete_transient( 'feed_blogroll_opml' );
-delete_transient( 'feed_to_blogroll_opml' );
-delete_transient( 'feed_to_blogroll_sync_lock' );
-delete_transient( 'feed_to_blogroll_api_cache' );
 
 // Clean up scheduled events
 wp_clear_scheduled_hook( 'feed_blogroll_sync_cron' );
-wp_clear_scheduled_hook( 'feed_to_blogroll_sync_cron' );
 
 // Clean up custom post types and their data
 $post_types = array( 'blogroll' );
@@ -85,10 +72,7 @@ foreach ( $taxonomies as $plugin_taxonomy ) {
 
 // Clean up uploaded files (if any)
 $upload_dir        = wp_upload_dir();
-$plugin_upload_dirs = array(
-	$upload_dir['basedir'] . '/feed-blogroll/',
-	$upload_dir['basedir'] . '/feed-to-blogroll/',
-);
+$plugin_upload_dirs = array( $upload_dir['basedir'] . '/feed-blogroll/' );
 
 if ( array_filter( $plugin_upload_dirs, 'is_dir' ) ) {
 	require_once ABSPATH . 'wp-admin/includes/class-wp-filesystem-base.php';

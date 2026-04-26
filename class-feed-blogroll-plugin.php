@@ -49,66 +49,9 @@ class Feed_Blogroll_Plugin {
 	 */
 	private function init_hooks() {
 		add_filter( 'cron_schedules', array( $this, 'register_weekly_cron_schedule' ) );
-		add_action( 'plugins_loaded', array( $this, 'migrate_legacy_slug_identifiers' ), 1 );
 		add_action( 'plugins_loaded', array( $this, 'maybe_upgrade' ), 5 );
 		add_action( 'updated_option', array( $this, 'on_updated_feed_blogroll_options' ), 10, 3 );
 		add_action( 'init', array( $this, 'init_plugin' ) );
-	}
-
-	/**
-	 * One-time migration from pre–feed-blogroll option keys, cron hook, and transients.
-	 */
-	public function migrate_legacy_slug_identifiers() {
-		if ( '1' === get_option( 'feed_blogroll_legacy_slug_migration', '' ) ) {
-			return;
-		}
-
-		$touched = false;
-
-		if ( false !== get_option( 'feed_to_blogroll_options', false ) ) {
-			$legacy  = (array) get_option( 'feed_to_blogroll_options', array() );
-			$current = get_option( 'feed_blogroll_options', false );
-			if ( false === $current ) {
-				update_option( 'feed_blogroll_options', $legacy );
-			} else {
-				update_option( 'feed_blogroll_options', wp_parse_args( (array) $current, $legacy ) );
-			}
-			delete_option( 'feed_to_blogroll_options' );
-			$touched = true;
-		}
-
-		$scalar_migrations = array(
-			'feed_to_blogroll_plugin_version'  => 'feed_blogroll_plugin_version',
-			'feed_to_blogroll_api_last_test'   => 'feed_blogroll_api_last_test',
-			'feed_to_blogroll_api_connected'   => 'feed_blogroll_api_connected',
-			'feed_to_blogroll_api_last_error'  => 'feed_blogroll_api_last_error',
-			'feed_to_blogroll_cache_version'   => 'feed_blogroll_cache_version',
-		);
-		foreach ( $scalar_migrations as $old_key => $new_key ) {
-			if ( false === get_option( $old_key, false ) ) {
-				continue;
-			}
-			if ( false === get_option( $new_key, false ) ) {
-				update_option( $new_key, get_option( $old_key ) );
-			}
-			delete_option( $old_key );
-			$touched = true;
-		}
-
-		while ( ( $timestamp = wp_next_scheduled( 'feed_to_blogroll_sync_cron' ) ) ) {
-			wp_unschedule_event( $timestamp, 'feed_to_blogroll_sync_cron' );
-			$touched = true;
-		}
-
-		delete_transient( 'feed_to_blogroll_opml' );
-		delete_transient( 'feed_to_blogroll_sync_lock' );
-		delete_transient( 'feed_to_blogroll_api_cache' );
-
-		update_option( 'feed_blogroll_legacy_slug_migration', '1' );
-
-		if ( $touched ) {
-			self::reschedule_sync_cron();
-		}
 	}
 
 	/**
